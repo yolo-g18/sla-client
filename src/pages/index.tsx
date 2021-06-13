@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <div>
       
-      <link href="/lading"></link>
-      <p>Welcome to SLA</p> 
+      {/* <Link href="/lading"></Link>
+      <p>Welcome to SLA</p>  */}
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import {GetStaticProps} from 'next';
 
-const register = () => {
+const login = () => {
     return (
         <div>
-            
+            Login
         </div>
     );
 }
@@ -18,4 +18,4 @@ export const getStaticProps:GetStaticProps = async (ctx) => {
     }
 }
 
-export default register;
+export default login;
