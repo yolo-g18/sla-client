@@ -1,97 +1,49 @@
-import FooterLight from '../kit/components/navigation/footer/FooterLight';
-import Meta from '../site/Meta';
-import AppHeader from '../site/header/AppHeader';
-
-const footerLink = [
-    {
-        label: 'Configuration',
-        link: '/started',
-    },
-    {
-        label: 'Github',
-        link: 'https://github.com/Charlie85270/tail-kit',
-    },
-    {
-        label: 'LinkedIn',
-        link: 'https://www.linkedin.com/in/crabiller/',
-    },
-];
-
-export const menuEntry = [
-    {
-        label: 'Elements',
-        desc: 'Buttons, Avatars, Badges, Alerts, Progress bar....',
-        link: '/components#elements',
-    },
-    {
-        label: 'Forms',
-        desc: 'Input text, Select, Textarea, Login pages, Signin templates ...',
-        link: '/components#forms',
-    },
-    {
-        label: 'Commerce',
-        desc: 'Pricing cards, Shopping cards, Basket layouts...',
-        link: '/components#commerce',
-    },
-    {
-        label: 'Navigation',
-        desc: 'Headers, Footers, Sidebar ...',
-        link: '/components#navigation',
-    },
-    {
-        label: 'Sections',
-        desc: 'Features, CTA, testimonial, Team sections ...',
-        link: '/components#pagesection',
-    },
-    {
-        label: 'List',
-        desc: 'List, Tables, Todo list, Description List, Actions list...',
-        link: '/components#list',
-    },
-];
-
-export const menuTemplates = [
-    {
-        label: 'Dashboard',
-        desc: 'Dashboard templates page, Admin templates....',
-        link: '/templates#dashboard',
-    },
-    {
-        label: 'Landing page',
-        desc: 'Template like sport site, product home page, Ecommerce',
-        link: '/templates#home',
-    },
-    {
-        label: 'Errors page',
-        desc: '404 templates page, Internal error templates....',
-        link: '/templates#errors',
-    },
-];
+import SideBar from "../sidebar/SideBar";
+import { links } from "../links";
+import { optionsListProfile } from "../optionsListProfile";
+import Meta from "../site/Meta";
+import Header from "../header/Header";
 
 interface Props {
-    title: string;
-    desc: string;
-    children: React.ReactNode;
+  title: string;
+  desc: string;
+  children: React.ReactNode;
 }
 
 const AppLayout = ({ title, desc, children }: Props) => {
-    return (
-        <div className="relative bg-white ">
-            <Meta pageTitle={title} description={desc} />
-            <div className="mx-auto h-full" style={{ minHeight: 85 + 'vh' }}>
-                <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:w-full lg:pb-28 xl:pb-32 h-full">
-                    <div className="dark">
-                        <AppHeader />
-                    </div>
+  const ddmItems = [
+    {
+      label: "Settings",
+    },
+    {
+      label: "Account",
+    },
+    {
+      label: "Logout",
+    },
+  ];
 
-                    <main className="mx-auto max-w-7xl px-4 mt-8 sm:px-6  lg:px-8 h-full">{children}</main>
-                </div>
+  return (
+    <div>
+      <Meta pageTitle={title} description={desc} />
+      <main className="bg-gray-100 dark:bg-gray-800 rounded-2xl h-screen overflow-hidden relative">
+        <div className="flex items-start justify-between">
+          <div className="h-screen hidden lg:block my-4 ml-1 shadow-lg relative w-80">
+            <div className="bg-white h-full rounded-2xl dark:bg-gray-700">
+              <SideBar />
             </div>
-            <div className="dark">
-                <FooterLight links={footerLink} />
+          </div>
+          <div className="flex flex-col w-full pl-0 md:p-4 md:space-y-4">
+            <Header />
+            <div className="overflow-auto h-screen pb-24 pt-2 pr-2 pl-2 md:pt-0 md:pr-0 md:pl-0">
+              {children}
             </div>
+            <div>{/* footer */}</div>
+          </div>
         </div>
-    );
+      </main>
+    </div>
+  );
 };
 
 export default AppLayout;
