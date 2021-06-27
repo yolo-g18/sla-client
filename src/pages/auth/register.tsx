@@ -1,7 +1,7 @@
-import {GetStaticProps} from 'next';
 import { useState } from 'react';
 import { PARAMS } from '../../common/params';
 import InputGroup from '../../components/InputGroup';
+import InputText from '../../components/inputtext/InputText';
 
 const register = () => {
 
@@ -83,6 +83,7 @@ const register = () => {
                         <h5 className="font-mono mb-1 text-center">Join SLA</h5>
                         <h1 className="mb-8 text-3xl text-center">Sign up</h1>
                         <form>
+                            <InputTe
                             <InputGroup
                                 type="email"
                                 handleInputChange={e => handelChange(e, "EMAIL")}
