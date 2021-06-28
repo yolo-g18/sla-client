@@ -3,7 +3,7 @@ import { AUTH, IAuthType } from '../types/authType'
 import { ALERT, IAlertType } from '../types/alertType'
 
 import { IUserLogin, IUserRegister } from '../../utils/TypeScript'
-import { postAPI, getAPI } from '../../utils/FetchData'
+import { postAPI, getAPI, postAPIWithoutHeaders } from '../../utils/FetchData'
 import { PARAMS } from '../../common/params'
 
 export const registerAction
@@ -12,7 +12,8 @@ export const registerAction
     dispatch({ type: ALERT, payload: { loading: true } })
     
     
-    const res = await postAPI(`${PARAMS.ENDPOINT}register`, userRegister)
+    const res = await postAPIWithoutHeaders(`${PARAMS.ENDPOINT}auth/register`, userRegister)
+
 
     dispatch({ type: ALERT, payload: { success: res.data.msg } })
   } catch (err: any) {

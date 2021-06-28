@@ -34,6 +34,8 @@ const register = () => {
 
   //check valid input onChange
   const handelChange = (event: any, typeField: string) => {
+    console.log(email, username, password);
+
     switch (typeField) {
       case "EMAIL": {
         setEmail(event.target.value);

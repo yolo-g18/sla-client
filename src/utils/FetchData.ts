@@ -22,6 +22,10 @@ export const postAPI = async (url: string, body: object) => {
   return axios.post(url, body, config);
 }
 
+export const postAPIWithoutHeaders = async (url: string, body: object) => {
+  return axios.post(url, body);
+}
+
 export const putAPI = async (url: string, body: object) => {
   const access_token = localStorage.getItem("access-token");
     const config = {
