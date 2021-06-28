@@ -1,17 +1,6 @@
 import axios from 'axios'
 
 
-export const postAPI = async (url: string, body: object) => {
-  const access_token = localStorage.getItem("access-token");
-    const config = {
-      headers: {
-      Authorization: `Bearer ${access_token}`
-    }
-  };
-  return axios.post(url, body, config);
-}
-
-
 export const getAPI = async (url: string) => {
 
   const access_token = localStorage.getItem("access-token");
@@ -21,6 +10,16 @@ export const getAPI = async (url: string) => {
     }
   };
   return axios.get(url, config);
+}
+
+export const postAPI = async (url: string, body: object) => {
+  const access_token = localStorage.getItem("access-token");
+    const config = {
+      headers: {
+      Authorization: `Bearer ${access_token}`
+    }
+  };
+  return axios.post(url, body, config);
 }
 
 export const putAPI = async (url: string, body: object) => {

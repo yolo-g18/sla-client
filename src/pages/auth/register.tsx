@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PARAMS } from "../../common/params";
 import InputGroup from "../../components/InputGroup";
 import { FormSubmit } from "../../utils/TypeScript";
+import { registerAction } from "../../redux/actions/authAction";
 
 import { useDispatch } from "react-redux";
 
@@ -12,7 +13,7 @@ const register = () => {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<any>({});
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const data = {
     email,
@@ -27,6 +28,8 @@ const register = () => {
       username,
       password,
     };
+
+    dispatch(registerAction(data));
   };
 
   //check valid input onChange
