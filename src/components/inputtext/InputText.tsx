@@ -5,6 +5,7 @@ interface Props {
   label?: string;
   required?: boolean;
   error?: string;
+  value: string;
   icon?: JSX.Element;
   helper?: string;
   placeholder?: string;
@@ -13,6 +14,7 @@ interface Props {
   square?: boolean;
   withForceIndications?: boolean;
   id?: string;
+  handleInputChange: (e: any) => void;
 }
 
 const InputText = (props: Props) => {
@@ -53,6 +55,8 @@ const InputText = (props: Props) => {
         } flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
         type={props.type || "text"}
         name={props.name}
+        value={props.value}
+        onChange={(e) => handleInputChange(e)}
         placeholder={props.placeholder}
       />
       {props.withForceIndications && (
@@ -89,3 +93,6 @@ const InputText = (props: Props) => {
 };
 
 export default InputText;
+function handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void {
+  throw new Error("Function not implemented.");
+}
