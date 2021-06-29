@@ -1,85 +1,35 @@
-import { useState } from "react";
-import { PARAMS } from "../../common/params";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 import InputGroup from "../../components/InputGroup";
-import { FormSubmit } from "../../utils/TypeScript";
+import { IErrors, FormSubmit, InputChange } from "../../utils/TypeScript";
 import { registerAction } from "../../redux/actions/authAction";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootStore } from "../../utils/TypeScript";
 
 const register = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [errors, setErrors] = useState<any>({});
 
   const dispatch = useDispatch();
 
-  const data = {
-    email,
-    username,
-    password,
-  };
-
   const handleSubmit = (e: FormSubmit) => {
     e.preventDefault();
-    const data = {
-      email,
-      username,
-      password,
-    };
+    const data = { email, username, password };
+    console.log(data);
 
     dispatch(registerAction(data));
   };
 
-  //check valid input onChange
-  const handelChange = (event: any, typeField: string) => {
-    console.log(email, username, password);
-
-    switch (typeField) {
-      case "EMAIL": {
-        setEmail(event.target.value);
-        let emailRegex = new RegExp(PARAMS.EMAIL_REGEX);
-
-        if (!emailRegex.test(email)) {
-          let err = "Email is invalid";
-          setErrors({ ...errors, email: err });
-        } else {
-          setErrors({ ...errors, email: "" });
-        }
-        break;
-      }
-      case "USERNAME": {
-        setUsername(event.target.value);
-        let usernameRegex = new RegExp(PARAMS.USERNAME_REGEX);
-
-        if (!usernameRegex.test(username)) {
-          let err =
-            "Usernames can only use letters, numbers, underscores and periods.";
-          setErrors({ ...errors, username: err });
-        } else {
-          setErrors({ ...errors, username: "" });
-        }
-        break;
-      }
-
-      case "PASSWORD": {
-        setPassword(event.target.value);
-
-        if (password.length < 5 || password.length > 20) {
-          let err = "Password length must be between 5 and 20 characters";
-          setErrors({ ...errors, password: err });
-        } else {
-          setErrors({ ...errors, password: "" });
-        }
-        break;
-      }
-
-      default: {
-        break;
-      }
-    }
-  };
+  const { alert } = useSelector((state: RootStore) => state);
+  const router = useRouter();
+  if (alert.success) {
+    router.push({
+      pathname: "/active-account/[username]",
+      query: { username: username },
+    });
+  }
 
   return (
     <div>
@@ -90,31 +40,33 @@ const register = () => {
             <h1 className="mb-8 text-3xl text-center">Sign up</h1>
             <form onSubmit={handleSubmit}>
               <InputGroup
-                type="email"
-                handleInputChange={(e) => handelChange(e, "EMAIL")}
+                type="text"
                 placeholder="Email"
-                error={errors.email}
+                setValue={setEmail}
+                error={alert.errors?.errors?.email}
                 required
                 label="Email"
               />
               <InputGroup
                 type="text"
-                handleInputChange={(e) => handelChange(e, "USERNAME")}
+                setValue={setUsername}
                 placeholder="Username"
-                error={errors.username}
+                error={alert.errors?.errors?.username}
                 required
                 label="Username"
               />
               <InputGroup
                 type="password"
-                handleInputChange={(e) => handelChange(e, "PASSWORD")}
+                setValue={setPassword}
                 placeholder="Password"
-                error={errors.password}
+                error={alert.errors?.errors?.password}
                 required
                 label="Password"
               />
               <div className="my-2">
-                <small className="font-medium text-red-600">{message}</small>
+                <small className="font-medium text-red-600">
+                  {alert.errors?.message}
+                </small>
               </div>
               <button className="w-full text-center py-3 rounded bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1">
                 Create Account

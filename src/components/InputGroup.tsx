@@ -8,7 +8,8 @@ interface InputGroupProps {
   required?: true;
   label?: string;
   id?: string;
-  handleInputChange?: (e: any) => void;
+  value?: string;
+  setValue: (str: string) => void;
 }
 
 const InputGroup: React.FC<InputGroupProps> = ({
@@ -16,9 +17,10 @@ const InputGroup: React.FC<InputGroupProps> = ({
   placeholder,
   error,
   required,
-  handleInputChange,
+  setValue,
   label,
   id,
+  value,
 }) => {
   return (
     <div className="relative">
@@ -33,8 +35,9 @@ const InputGroup: React.FC<InputGroupProps> = ({
           { "border-red-500": error }
         )}
         placeholder={placeholder}
-        onChange={handleInputChange}
-        required
+        onChange={(e) => setValue(e.target.value)}
+        required={required}
+        value={value}
       />
       {error && (
         <>

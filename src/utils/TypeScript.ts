@@ -1,8 +1,11 @@
 import { ChangeEvent, FormEvent } from 'react'
+import rootReducer from '../redux/reducers/index'
 
 export type InputChange = ChangeEvent<HTMLInputElement>
 
 export type FormSubmit = FormEvent<HTMLFormElement>
+
+export type RootStore = ReturnType<typeof rootReducer>
 
 export interface IUserLogin {
     username: string
@@ -31,8 +34,20 @@ export interface IUserLogin {
     favourTimeTo: Date
   }
 
+  export interface errorsApiRes  {
+    status? : string | null
+    message? : string | null 
+    errors : IErrors | null
+  }
+
+  export interface IErrors {
+    email? : string,
+    username? : string,
+    password?: string
+  }
+
   export interface IAlert {
     loading?: boolean
     success?: string | string[]
-    errors?: string | string[]
+    errors?: errorsApiRes 
   }
