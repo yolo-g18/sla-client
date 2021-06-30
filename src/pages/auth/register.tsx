@@ -11,10 +11,29 @@ const register = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isEmailTyping, setIsEmailTyping] = useState(false);
+  const [isUsernameTyping, setIsUsernameTyping] = useState(false);
+  const [isPasswordTyping, setIsPasswordTyping] = useState(false);
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    setIsEmailTyping(true);
+  }, [email]);
+
+  useEffect(() => {
+    setIsUsernameTyping(true);
+  }, [username]);
+
+  useEffect(() => {
+    setIsPasswordTyping(true);
+  }, [password]);
+
   const handleSubmit = (e: FormSubmit) => {
+    setIsEmailTyping(false);
+    setIsUsernameTyping(false);
+    setIsPasswordTyping(false);
+
     e.preventDefault();
     const data = { email, username, password };
     console.log(data);
@@ -31,11 +50,13 @@ const register = () => {
     });
   }
 
+  console.log(alert.loading);
+
   return (
     <div>
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
-          <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+          <div className="bg-white px-6 py-8 rounded shadow-  d text-black w-full">
             <h5 className="font-mono mb-1 text-center">Join SLA</h5>
             <h1 className="mb-8 text-3xl text-center">Sign up</h1>
             <form onSubmit={handleSubmit}>
@@ -43,7 +64,7 @@ const register = () => {
                 type="text"
                 placeholder="Email"
                 setValue={setEmail}
-                error={alert.errors?.errors?.email}
+                error={!isEmailTyping ? alert.errors?.errors?.email : ""}
                 required
                 label="Email"
               />
@@ -51,7 +72,7 @@ const register = () => {
                 type="text"
                 setValue={setUsername}
                 placeholder="Username"
-                error={alert.errors?.errors?.username}
+                error={!isUsernameTyping ? alert.errors?.errors?.username : ""}
                 required
                 label="Username"
               />
@@ -59,7 +80,7 @@ const register = () => {
                 type="password"
                 setValue={setPassword}
                 placeholder="Password"
-                error={alert.errors?.errors?.password}
+                error={!isPasswordTyping ? alert.errors?.errors?.password : ""}
                 required
                 label="Password"
               />
@@ -69,7 +90,25 @@ const register = () => {
                 </small>
               </div>
               <button className="w-full text-center py-3 rounded bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1">
-                Create Account
+                {alert.loading ? (
+                  <div className="flex justify-center items-center space-x-1">
+                    <svg
+                      fill="none"
+                      className="w-6 h-6 animate-spin"
+                      viewBox="0 0 32 32"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        clipRule="evenodd"
+                        d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  "Create Account"
+                )}
               </button>
               <div className="text-center text-sm text-grey-dark mt-4">
                 By signing up, you agree to the{" "}

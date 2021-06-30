@@ -9,6 +9,7 @@ import { validRegister } from '../../utils/Valid'
 
 export const registerAction
   = (userRegister: IUserRegister) => async (dispatch: Dispatch<IAuthType | IAlertType>) => {
+    dispatch({ type: ALERT, payload: { loading: true } })
 
     const check = validRegister(userRegister);
     
@@ -16,7 +17,7 @@ export const registerAction
       let errorRes: errorsApiRes  = {
         errors: check
       }
-      return dispatch({ type: ALERT, payload: { errors: errorRes } })
+      return dispatch({ type: ALERT, payload: { errors: errorRes, loading: false} })
     }
 
   try {
