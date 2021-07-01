@@ -20,15 +20,15 @@ export interface IUserLogin {
 
   export interface IUser extends IUserLogin {
     avatar: string
-    createdAt: string
     username: string
     fullname: string
     job: string
     phone: string
     email: string
     address: string
-    updatedAt: string
-    _id: string
+    createdAt: Date
+    updatedAt: Date
+    _id: number
     schoolName: string
     favourTimeFrom: Date
     favourTimeTo: Date

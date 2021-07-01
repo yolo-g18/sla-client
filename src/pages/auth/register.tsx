@@ -6,6 +6,7 @@ import { registerAction } from "../../redux/actions/authAction";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../utils/TypeScript";
+import Link from "next/link";
 
 const register = () => {
   const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ const register = () => {
     <div>
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
-          <div className="bg-white px-6 py-8 rounded shadow-  d text-black w-full">
+          <div className="bg-white px-6 py-8 rounded shadow-sm text-black w-full">
             <h5 className="font-mono mb-1 text-center">Join SLA</h5>
             <h1 className="mb-8 text-3xl text-center">Sign up</h1>
             <form onSubmit={handleSubmit}>
@@ -130,12 +131,11 @@ const register = () => {
           </div>
           <div className="text-grey-dark mt-6">
             Already have an account?{" "}
-            <a
-              className="no-underline border-b border-blue text-blue-600"
-              href="../auth/login/"
-            >
-              Log in
-            </a>
+            <Link href="/auth/login">
+              <a className="no-underline border-b border-blue text-blue-500 hover:underline focus:text-blue-500">
+                Log in.
+              </a>
+            </Link>
             .
           </div>
         </div>

@@ -23,11 +23,15 @@ const InputGroup: React.FC<InputGroupProps> = ({
   value,
 }) => {
   return (
-    <div className="relative">
-      <label htmlFor={id} className="text-gray-700">
-        {label}{" "}
-        {required && <span className="text-red-500 required-dot">*</span>}
-      </label>
+    <div className="relative mb-4">
+      <div className="flex items-center justify-between">
+        <label htmlFor={id} className="text-gray-700">
+          {label}{" "}
+          {required && <span className="text-red-500 required-dot">*</span>}
+        </label>
+        {}
+      </div>
+
       <input
         type={type}
         className={classNames(
