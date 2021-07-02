@@ -1,11 +1,11 @@
-import AppLayout from "../components/layout/AppLayout";
+import AppLayout2 from "../components/layout/AppLayput2";
 
 const library = () => {
   return (
     <div>
-      <AppLayout title="library" desc="library">
-        <h1>lib</h1>
-      </AppLayout>
+      <AppLayout2 title="library" desc="library">
+        aaa
+      </AppLayout2>
     </div>
   );
 };

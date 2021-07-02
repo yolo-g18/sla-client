@@ -1,11 +1,11 @@
-import AppLayout from "../components/layout/AppLayout";
+import AppLayout2 from "../components/layout/AppLayput2";
 
 const schedule = () => {
   return (
     <div>
-      <AppLayout title="library" desc="library">
+      <AppLayout2 title="library" desc="library">
         <h1>schedule</h1>
-      </AppLayout>
+      </AppLayout2>
     </div>
   );
 };

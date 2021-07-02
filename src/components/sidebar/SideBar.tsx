@@ -80,43 +80,18 @@ const SideBar = (props: Props) => {
 
   return (
     <div>
-      {!props.isHide ? (
-        <div className="h-screen my-4 ml-1 shadow-lg relative w-80 lg:block hidden">
-          <div className="bg-white h-full rounded-2xl dark:bg-gray-700">
-            <div className="flex items-center justify-start pt-6 ml-8">
-              <Link href="/home">
-                <span className="text-gray-600 dark:text-gray-300 ml-4 text-2xl font-bold">
-                  SLA
-                </span>
-              </Link>
-            </div>
-            {sidebarMenu}
+      <div className="h-screen my-4 ml-1 shadow-lg relative w-80 lg:block hidden">
+        <div className="bg-white h-full rounded-2xl dark:bg-gray-700">
+          <div className="flex items-center justify-start pt-6 ml-8">
+            <Link href="/home">
+              <span className="text-gray-600 dark:text-gray-300 ml-4 text-2xl font-bold">
+                SLA
+              </span>
+            </Link>
           </div>
+          {sidebarMenu}
         </div>
-      ) : (
-        <div className="absolute h-screen lg:hidden block pb-4 mb-4 w-80 ">
-          <div className="bg-white h-full rounded-2xl dark:bg-gray-700 shadow-sm">
-            <div className="flex left-2 items-center justify-start pt-4 ml-8">
-              <svg
-                width="20"
-                height="20"
-                className="text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 1792 1792"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M1664 1344v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45z"></path>
-              </svg>
-              <Link href="/home">
-                <span className="text-gray-600 dark:text-gray-300 ml-4 text-2xl font-bold">
-                  SLA
-                </span>
-              </Link>
-            </div>
-            {sidebarMenu}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

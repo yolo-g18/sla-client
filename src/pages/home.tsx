@@ -1,10 +1,10 @@
 import SimpleLevelsCard from "../components/card/SimpleLevelsCard";
-import AppLayout from "../components/layout/AppLayout";
+import AppLayout2 from "../components/layout/AppLayput2";
 
 const home = () => {
   return (
     <div>
-      <AppLayout title="home" desc="home">
+      <AppLayout2 title="home" desc="home">
         <div className="overflow-auto h-screen pb-24 px-4 md:px-6">
           <h1 className="text-4xl font-semibold text-gray-800 dark:text-white">
             Overview
@@ -16,7 +16,7 @@ const home = () => {
             <SimpleLevelsCard title="PRJ301" learning={54} notStudied={120} />
           </div>
         </div>
-      </AppLayout>
+      </AppLayout2>
     </div>
   );
 };

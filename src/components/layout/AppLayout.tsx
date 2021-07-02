@@ -1,9 +1,11 @@
 import SideBar from "../sidebar/SideBar";
 import Meta from "../site/Meta";
 import Header from "../header/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RootStore } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import { getUserProfile } from "../../redux/actions/authAction";
 
 interface Props {
   title: string;
@@ -12,6 +14,18 @@ interface Props {
 }
 
 const AppLayout = ({ title, desc, children }: Props) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (localStorage.getItem("access-token")) {
+      dispatch(getUserProfile());
+      router.push("/home");
+    } else {
+      router.push("/");
+    }
+  }, []);
+
   const { auth, alert } = useSelector((state: RootStore) => state);
 
   const ddmItems = [
