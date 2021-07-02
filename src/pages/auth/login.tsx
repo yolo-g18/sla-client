@@ -27,8 +27,12 @@ const login = () => {
   };
 
   const { auth, alert } = useSelector((state: RootStore) => state);
+  const router = useRouter();
+  useEffect(() => {
+    if (auth.authenticationToken) router.push("/home");
+  }, [auth.authenticationToken]);
 
-  console.log(auth.user);
+  console.log(auth);
 
   return (
     <div>

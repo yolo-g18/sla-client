@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/classnames": "^2.3.1",
     "@types/react": "17.0.9",
+    "@types/react-router-dom": "^5.1.7",
     "autoprefixer": "^10.2.6",
     "postcss": "^8.3.0",
     "tailwindcss": "^2.1.4",

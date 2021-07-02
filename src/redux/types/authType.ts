@@ -3,9 +3,10 @@ import { IUser } from '../../utils/TypeScript'
 export const AUTH = 'AUTH'
 
 export interface IAuth {
-  msg?: string
-  access_token?: string
-  user?: IUser
+  authenticationToken?: string
+  refreshToken?: string
+  expiresAt?: Date
+  userResponse?: IUser
 }
 
 export interface IAuthType{

@@ -1,34 +1,22 @@
-import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import Link from "next/link";
-import LittleSidebar from "../components/kit/components/navigation/sidebar/LittleSidebar";
-import SideBar from "../components/kit/components/navigation/sidebar/Sidebar";
-
 import { links } from "../components/links";
+import { getUserProfile } from "../redux/actions/authAction";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Home() {
-  const linksWithIcons: any = [];
-  links.map((link) => {
-    linksWithIcons.push({
-      label: link.label,
-      icon: (
-        <svg
-          width={link.width}
-          height={link.height}
-          className={link.className}
-          fill={link.fill}
-          viewBox={link.viewBox}
-          xmlns={link.xmlns}
-        >
-          <path d={link.d} />
-        </svg>
-      ),
-    });
-  });
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-  return (
-    <div>
-    </div>
-  );
+  useEffect(() => {
+    if (localStorage.getItem("access-token")) {
+      dispatch(getUserProfile());
+      router.push("/home");
+    } else {
+      router.push("/auth/login");
+    }
+  }, []);
+
+  return <div>Welcome SLA</div>;
 }

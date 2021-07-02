@@ -2,6 +2,8 @@ import SideBar from "../sidebar/SideBar";
 import Meta from "../site/Meta";
 import Header from "../header/Header";
 import { useState } from "react";
+import { RootStore } from "../../utils/TypeScript";
+import { useDispatch, useSelector } from "react-redux";
 
 interface Props {
   title: string;
@@ -10,6 +12,8 @@ interface Props {
 }
 
 const AppLayout = ({ title, desc, children }: Props) => {
+  const { auth, alert } = useSelector((state: RootStore) => state);
+
   const ddmItems = [
     {
       label: "Settings",
@@ -31,7 +35,7 @@ const AppLayout = ({ title, desc, children }: Props) => {
         <div className="flex items-start justify-between">
           <SideBar isHide={false} />
           <div className="flex flex-col w-full pl-0 md:p-4 md:space-y-4">
-            <Header />
+            <Header username={auth.userResponse?.username} />
             <div className="overflow-auto h-screen pb-24 pt-2 pr-2 pl-2 md:pt-0 md:pr-0 md:pl-0">
               {children}
             </div>

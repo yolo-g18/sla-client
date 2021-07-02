@@ -50,10 +50,26 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
 
     dispatch({ type: ALERT, payload: { success: res.data } })
     localStorage.setItem('access-token', res.data.authenticationToken);
-    localStorage.setItem('refresh-token', res.data.authenticationToken);
+    localStorage.setItem('refresh-token', res.data.refreshToken);
     localStorage.setItem('expiresAt', res.data.expiresAt);
     
   } catch (err: any) {
+    dispatch({ type: ALERT, payload: { errors: err.response.data } })
+  }
+}
+
+export const getUserProfile = () => async (dispatch: Dispatch<IAuthType | IAlertType>) => {
+  try {
+    const token = localStorage.getItem("access-token");
+    if (token) {
+      dispatch({ type: ALERT, payload: { loading: true } })
+      const res = await getAPI(`${PARAMS.ENDPOINT}me/about`);
+
+      dispatch({ type: AUTH,payload: res.data })
+      dispatch({ type: ALERT, payload: { success: res.data } })
+  
+    }
+  }catch (err: any) {
     dispatch({ type: ALERT, payload: { errors: err.response.data } })
   }
 }
