@@ -35,12 +35,12 @@ export interface IUserLogin {
   }
 
   export interface errorsApiRes  {
-    status? : string | null
+    status? : number | null
     message? : string | null 
-    errors : IErrors | null
+    errors? : IAuthErrors | null
   }
 
-  export interface IErrors {
+  export interface IAuthErrors {
     email? : string,
     username? : string,
     password?: string

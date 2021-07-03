@@ -25,7 +25,7 @@ const ddmItems = [
   },
   {
     label: "Help",
-    link: "help",
+    link: "/help",
   },
   {
     label: "Logout",
@@ -58,7 +58,7 @@ const AppLayput2 = (props: Props) => {
     if (localStorage.getItem("access-token")) {
       dispatch(getUserProfile());
     } else {
-      router.push("/login");
+      router.push("/auth/login");
     }
   }, []);
 
@@ -207,7 +207,7 @@ const AppLayput2 = (props: Props) => {
                       withBackground={false}
                       forceOpen={false}
                       items={ddmItems.map((item) => {
-                        return { label: item.label };
+                        return { label: item.label, link: item.link };
                       })}
                       username={auth.userResponse?.username}
                     />

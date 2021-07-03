@@ -70,6 +70,27 @@ export const getUserProfile = () => async (dispatch: Dispatch<IAuthType | IAlert
   
     }
   }catch (err: any) {
-    dispatch({ type: ALERT, payload: { errors: err.response.data } })
+    if(err.responserr) {
+      dispatch({ type: ALERT, payload: { errors: err.response.data } })
+    } else {
+      dispatch({ type: ALERT, payload: { errors: {message: "The Server has problem"} } })
+    }
+    
+  }
+}
+
+export const logout = () => 
+async (dispatch: Dispatch<IAuthType | IAlertType>) => {
+  
+  console.log("calling logout");
+  
+  try {
+    await getAPI(`${PARAMS.ENDPOINT}auth/logout`)
+    localStorage.removeItem('access-token')
+    localStorage.removeItem('refresh-token')
+    localStorage.removeItem('expiresAt')
+    window.location.href = "/"
+  } catch (err: any) {
+    dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
   }
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Link as Link2, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 
 interface Props {
@@ -84,6 +85,7 @@ const DropDownMenu = (props: Props) => {
             aria-orientation="vertical"
             aria-labelledby="options-menu"
           >
+            {}
             <Link href="/me">
               <div className="block lock px-4 py-2 text-sm text-gray-700 border-b-2  hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600">
                 <a href="">
@@ -94,26 +96,28 @@ const DropDownMenu = (props: Props) => {
             </Link>
             {props.items.map((item) => {
               return (
-                <Link href={item.link || ""}>
-                  <a
-                    key={item.label}
-                    className={`${
-                      item.icon ? "flex items-center" : "block"
-                    } block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600`}
-                    role="menuitem"
-                  >
-                    {item.icon}
+                <div>
+                  <Link href={item.link || ""}>
+                    <a
+                      key={item.label}
+                      className={`${
+                        item.icon ? "flex items-center" : "block"
+                      } block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600`}
+                      role="menuitem"
+                    >
+                      {item.icon}
 
-                    <span className="flex flex-col">
-                      <span>{item.label}</span>
-                      {item.desc && (
-                        <span className="text-gray-400 text-xs">
-                          {item.desc}
-                        </span>
-                      )}
-                    </span>
-                  </a>
-                </Link>
+                      <span className="flex flex-col">
+                        <span>{item.label}</span>
+                        {item.desc && (
+                          <span className="text-gray-400 text-xs">
+                            {item.desc}
+                          </span>
+                        )}
+                      </span>
+                    </a>
+                  </Link>
+                </div>
               );
             })}
           </div>
