@@ -1,16 +1,16 @@
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import Loading from "../components/loading/Loading";
+import AppLayput2 from "../components/layout/AppLayput2";
 
 export default function Home() {
-  const router = useRouter();
-  useEffect(() => {
-    router.push("/auth/login");
-  }, []);
+  // const router = useRouter();
+  // useEffect(() => {
+  //   router.push("/home");
+  // }, []);
 
   return (
     <div>
-      <Loading />
+      <AppLayput2 title="SLA" desc="">
+        <h1>Let Learn</h1>
+      </AppLayput2>
     </div>
   );
 }

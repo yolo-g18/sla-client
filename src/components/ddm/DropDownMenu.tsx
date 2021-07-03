@@ -85,15 +85,17 @@ const DropDownMenu = (props: Props) => {
             aria-orientation="vertical"
             aria-labelledby="options-menu"
           >
-            {}
-            <Link href="/me">
-              <div className="block lock px-4 py-2 text-sm text-gray-700 border-b-2  hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600">
-                <a href="">
-                  <h5 className="text-gray-500">Signed in as</h5>
-                  <span className="font-semibold">{props.username}</span>
-                </a>
-              </div>
-            </Link>
+            {props.username ? (
+              <Link href="/me">
+                <div className="block lock px-4 py-2 text-sm text-gray-700 border-b-2  hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600">
+                  <a href="">
+                    <h5 className="text-gray-500">Signed in as</h5>
+                    <span className="font-semibold">{props.username}</span>
+                  </a>
+                </div>
+              </Link>
+            ) : null}
+
             {props.items.map((item) => {
               return (
                 <div>

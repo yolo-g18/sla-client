@@ -89,7 +89,6 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     localStorage.removeItem('access-token')
     localStorage.removeItem('refresh-token')
     localStorage.removeItem('expiresAt')
-    window.location.href = "/"
   } catch (err: any) {
     dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
   }
