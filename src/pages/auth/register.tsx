@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import InputGroup from "../../components/InputGroup";
-import { IErrors, FormSubmit, InputChange } from "../../utils/TypeScript";
+import { FormSubmit, InputChange } from "../../utils/TypeScript";
 import { registerAction } from "../../redux/actions/authAction";
 
 import { useDispatch, useSelector } from "react-redux";

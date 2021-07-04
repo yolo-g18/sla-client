@@ -54,8 +54,6 @@ const AppLayput2 = (props: Props) => {
 
   const [isOpenSidebar, setOpenSidebar] = useState(true);
 
-  const [authenticated, setAuthenticated] = useState(false);
-
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
       dispatch(getUserProfile());
@@ -127,7 +125,7 @@ const AppLayput2 = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/home") !== -1
-                          ? "justify-start border-b-2 border-green-500"
+                          ? "justify-start border-b-2 border-yellow-500"
                           : ""
                       }`}
                     >
@@ -138,18 +136,23 @@ const AppLayput2 = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/schedule") !== -1
-                          ? "justify-start border-b-2 border-green-500"
+                          ? "justify-start border-b-2 border-yellow-500"
                           : ""
                       }`}
                     >
                       SCHEDULE
                     </a>
                   </Link>
-                  <Link href="/library">
+                  <Link
+                    href={{
+                      pathname: "/[username]/library/sets",
+                      query: { username: auth.userResponse.username },
+                    }}
+                  >
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/library") !== -1
-                          ? "justify-start border-b-2 border-green-500"
+                          ? "justify-start border-b-2 border-yellow-500"
                           : ""
                       }`}
                     >
@@ -160,7 +163,7 @@ const AppLayput2 = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/activity") !== -1
-                          ? "justify-start border-b-2 border-green-500"
+                          ? "justify-start border-b-2 border-yellow-500"
                           : ""
                       }`}
                     >
@@ -278,8 +281,8 @@ const AppLayput2 = (props: Props) => {
             </div>
           )}
         </header>
-        <div className="bg-gray-200 flex h-screen items-center">
-          <div className="container mx-auto flex flex-col justify-between items-center pt-12">
+        <div className="bg-gray-100 flex h-screen ">
+          <div className="container mx-auto flex flex-col justify-between pt-2">
             {props.children}
           </div>
         </div>
