@@ -93,3 +93,7 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
   }
 }
+
+export const clearError = () => async (dispatch: Dispatch< IAlertType>) => {
+  dispatch({ type: ALERT, payload: {errors: undefined }});
+}

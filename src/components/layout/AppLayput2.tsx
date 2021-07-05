@@ -7,6 +7,7 @@ import { RootStore } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getUserProfile } from "../../redux/actions/authAction";
+import { Redirect } from "next/dist/lib/load-custom-routes";
 
 interface Props {
   title: string;
@@ -233,7 +234,7 @@ const AppLayput2 = (props: Props) => {
             </div>
           ) : (
             <div className="container mx-auto px-6 flex items-center justify-between">
-              <div className="text-gray-700 dark:text-white  flex items-center">
+              <div className="text-gray-700 dark:text-white flex items-center">
                 <span className="text-2xl font-bold ml-3">SLA</span>
                 <div className="relative text-gray-600 ml-6">
                   <svg
@@ -245,7 +246,7 @@ const AppLayput2 = (props: Props) => {
                   </svg>
                   <input
                     type="text"
-                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-2xl focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
+                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
                     placeholder="Search"
                   />
                 </div>

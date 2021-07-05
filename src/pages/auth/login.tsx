@@ -6,7 +6,7 @@ import InputGroup from "../../components/InputGroup";
 
 import { RootStore } from "../../utils/TypeScript";
 import Link from "next/link";
-import { loginAction } from "../../redux/actions/authAction";
+import { loginAction, clearError } from "../../redux/actions/authAction";
 
 const login = () => {
   const [username, setUsername] = useState("");
@@ -15,6 +15,14 @@ const login = () => {
   const [isPasswordTyping, setIsPasswordTyping] = useState(false);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setIsUsernameTyping(true);
+  }, [username]);
+
+  useEffect(() => {
+    setIsPasswordTyping(true);
+  }, [password]);
 
   const handleSubmit = (e: FormSubmit) => {
     setIsUsernameTyping(false);
@@ -31,6 +39,10 @@ const login = () => {
   useEffect(() => {
     if (auth.authenticationToken) router.push("/home");
   }, [auth.authenticationToken]);
+
+  const clearError = () => {
+    dispatch(clearError());
+  };
 
   console.log(auth);
 
@@ -137,7 +149,10 @@ const login = () => {
           <div className="text-grey-dark mt-4">
             New to SLA?{" "}
             <Link href="/auth/register">
-              <a className="no-underline border-b border-blue text-blue-500 hover:underline focus:text-blue-500">
+              <a
+                className="no-underline border-b border-blue text-blue-500 hover:underline focus:text-blue-500"
+                onClick={clearError}
+              >
                 Create an account.
               </a>
             </Link>
