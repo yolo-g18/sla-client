@@ -7,7 +7,7 @@ import { RootStore } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getUserProfile } from "../../redux/actions/authAction";
-import { Redirect } from "next/dist/lib/load-custom-routes";
+import { ddmItemsAdd, menuitem } from "../../common/listCommon";
 
 interface Props {
   title: string;
@@ -15,45 +15,12 @@ interface Props {
   children: React.ReactNode;
 }
 
-const ddmItems = [
-  {
-    label: "Your Profile",
-    link: "/me",
-  },
-  {
-    label: "Setting",
-    link: "/setting",
-  },
-  {
-    label: "Help",
-    link: "/help",
-  },
-  {
-    label: "Logout",
-    link: "/landing",
-  },
-];
-
-const ddmItemsAdd = [
-  {
-    label: "New study set ",
-    link: "/me",
-  },
-  {
-    label: "New folder",
-    link: "/setting",
-  },
-  {
-    label: "New class",
-    link: "help",
-  },
-];
-
 const AppLayput2 = (props: Props) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [isOpenSidebar, setOpenSidebar] = useState(true);
+  const { auth, alert } = useSelector((state: RootStore) => state);
 
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
@@ -62,8 +29,6 @@ const AppLayput2 = (props: Props) => {
       router.push("/");
     }
   }, []);
-
-  const { auth, alert } = useSelector((state: RootStore) => state);
 
   const handleOnClick = () => {
     setOpenSidebar(!isOpenSidebar);
@@ -77,7 +42,11 @@ const AppLayput2 = (props: Props) => {
           {auth.userResponse ? (
             <div className="container mx-auto px-6 flex items-center justify-between">
               <div className="  text-gray-700 dark:text-white  flex items-center">
-                <span className="text-2xl font-bold ml-3">SLA</span>
+                <Link href="/home">
+                  <a href="" className="text-2xl font-bold ml-3">
+                    SLA
+                  </a>
+                </Link>
                 <div className="relative text-gray-600 ml-6">
                   <svg
                     className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
@@ -214,7 +183,7 @@ const AppLayput2 = (props: Props) => {
                         }
                         withBackground={false}
                         forceOpen={false}
-                        items={ddmItems.map((item) => {
+                        items={menuitem.map((item) => {
                           return { label: item.label, link: item.link };
                         })}
                         username={auth.userResponse?.username}
@@ -235,7 +204,11 @@ const AppLayput2 = (props: Props) => {
           ) : (
             <div className="container mx-auto px-6 flex items-center justify-between">
               <div className="text-gray-700 dark:text-white flex items-center">
-                <span className="text-2xl font-bold ml-3">SLA</span>
+                <Link href="/home">
+                  <a href="" className="text-2xl font-bold ml-3">
+                    SLA
+                  </a>
+                </Link>
                 <div className="relative text-gray-600 ml-6">
                   <svg
                     className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"

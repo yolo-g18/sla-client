@@ -4,7 +4,7 @@ import classNames from "classnames";
 interface InputGroupProps {
   type?: string;
   placeholder: string;
-  error: string | undefined;
+  error?: string | undefined;
   required?: true;
   label?: string;
   id?: string;
@@ -25,7 +25,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
   return (
     <div className="relative mb-4">
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-gray-700">
+        <label htmlFor={id} className="text-gray-700 text-sm font-bold mb-2">
           {label}{" "}
           {required && <span className="text-red-500 required-dot">*</span>}
         </label>
@@ -34,8 +34,9 @@ const InputGroup: React.FC<InputGroupProps> = ({
 
       <input
         type={type}
+        id={id}
         className={classNames(
-          "block border border-grey-light w-full p-3 rounded mb-1",
+          "block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm",
           { "border-red-500": error }
         )}
         placeholder={placeholder}

@@ -1,99 +1,84 @@
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 interface Props {
-  isHide: boolean;
+  headerText?: string;
+  headerImg?: string;
+  links: Links[];
+  bottomLink?: { label: string; icon?: JSX.Element; link?: string };
+  withDivider?: boolean;
+}
+interface Links {
+  label: string;
+  selected?: boolean;
+  icon?: JSX.Element;
+  notifications?: number;
+  link?: string | undefined;
 }
 
 const SideBar = (props: Props) => {
   const router = useRouter();
-
-  const sidebarMenu = (
-    <nav className="mt-10">
-      <Link href="/home">
-        <a
-          className={`hover:text-gray-700 hover:bg-gray-100 flex items-center pl-6 py-2 my-6 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
-            router.pathname.indexOf("/home") !== -1
-              ? "justify-start border-r-4 border-green-500"
-              : ""
-          } `}
-        >
-          <img src="blackboard.svg" width="20" height="20" />
-          <span className="mx-4 text-lg font-normal">Home</span>
-          <span className="flex-grow text-right"></span>
-        </a>
-      </Link>
-      <Link href="/schedule">
-        <a
-          className={`hover:text-gray-700 hover:bg-gray-100 flex items-center pl-6 py-2 my-6 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
-            router.pathname.indexOf("/schedule") !== -1
-              ? "ustify-start border-r-4 border-green-500"
-              : ""
-          } `}
-        >
-          <img src="schedule.svg" width="20" height="20" />
-          <span className="mx-4 text-lg font-normal">Schedule</span>
-          <span className="flex-grow text-right"></span>
-        </a>
-      </Link>
-      <Link href="/library">
-        <a
-          className={`hover:text-gray-700 hover:bg-gray-100 flex items-center pl-6 py-2 my-6 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
-            router.pathname.indexOf("/library") !== -1
-              ? "ustify-start border-r-4 border-green-500"
-              : ""
-          } `}
-        >
-          <img src="library.svg" width="20" height="20" />
-          <span className="mx-4 text-lg font-normal">Library</span>
-          <span className="flex-grow text-right"></span>
-        </a>
-      </Link>
-      <Link href="/activity">
-        <a
-          className={`hover:text-gray-700 hover:bg-gray-100 flex items-center pl-6 py-2 my-6 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
-            router.pathname.indexOf("/activity") !== -1
-              ? "justify-start border-r-4 border-green-500"
-              : ""
-          } `}
-        >
-          <img src="notebook.svg" width="20" height="20" />
-          <span className="mx-4 text-lg font-normal">Activity Overview</span>
-          <span className="flex-grow text-right"></span>
-        </a>
-      </Link>
-      <Link href="/explore">
-        <a
-          className={`hover:text-gray-700 hover:bg-gray-100 flex items-center pl-6 py-2 my-6 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
-            router.pathname.indexOf("/explore") !== -1
-              ? "ustify-start border-r-4 border-green-500"
-              : ""
-          } `}
-        >
-          <img src="telescope.svg" width="20" height="20" />
-          <span className="mx-4 text-lg font-normal">Explore</span>
-          <span className="flex-grow text-right"></span>
-        </a>
-      </Link>
-    </nav>
-  );
+  const withHeader = !!props.headerText || props.headerImg;
 
   return (
-    <div>
-      <div className="h-screen my-4 ml-1 shadow-lg relative w-80 lg:block hidden">
-        <div className="bg-white h-full rounded-2xl dark:bg-gray-700">
-          <div className="flex items-center justify-start pt-6 ml-8">
-            <Link href="/home">
-              <span className="text-gray-600 dark:text-gray-300 ml-4 text-2xl font-bold">
-                SLA
-              </span>
-            </Link>
-          </div>
-          {sidebarMenu}
+    <div className="relative  dark:bg-gray-800">
+      <div className="flex flex-col sm:flex-row sm:justify-around">
+        <div className="w-full h-screen">
+          {withHeader && (
+            <div className="flex items-center justify-start mx-6 mt-10">
+              {props.headerImg && (
+                <img className="h-10" src="/icons/rocket.svg" />
+              )}
+              {props.headerText && (
+                <span
+                  className={`text-gray-600 dark:text-gray-300 ml-4 text-2xl font-bold`}
+                >
+                  {props.headerText}
+                </span>
+              )}
+            </div>
+          )}
+
+          <nav
+            className={`mt-10 border-black${
+              props.withDivider ? "divide-y divide-gray-200" : ""
+            }`}
+          >
+            {props.links.map((link) => {
+              return (
+                <Link href={link.link ? link.link : ""}>
+                  <a
+                    className={`hover:text-gray-900 hover:bg-gray-100 bg-white flex py-1 my-3   transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
+                      router.pathname.indexOf(link.link ? link.link : "") !== -1
+                        ? "justify-start border-l-2 border-yellow-500"
+                        : ""
+                    } `}
+                  >
+                    {link.icon}
+                    <span className="mx-4 text-md">{link.label}</span>
+                  </a>
+                </Link>
+              );
+            })}
+          </nav>
+          {props.bottomLink && (
+            <div className="absolute bottom-0 my-10">
+              <a
+                className={`text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200 flex items-center py-4`}
+                href={props.bottomLink.link || "#"}
+              >
+                {props.bottomLink.icon}
+
+                <span className="mx-4 font-medium">
+                  {props.bottomLink.label}
+                </span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
-
 export default SideBar;

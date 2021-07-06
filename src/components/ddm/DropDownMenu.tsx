@@ -86,7 +86,7 @@ const DropDownMenu = (props: Props) => {
             aria-labelledby="options-menu"
           >
             {props.username ? (
-              <Link href="/me">
+              <Link href="/me/profile">
                 <div className="block lock px-4 py-2 text-sm text-gray-700 border-b-2  hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600">
                   <a href="">
                     <h5 className="text-gray-500">Signed in as</h5>
@@ -99,7 +99,7 @@ const DropDownMenu = (props: Props) => {
             {props.items.map((item) => {
               return (
                 <div>
-                  <Link href={item.link || ""}>
+                  <Link href={item.link ? item.link : ""}>
                     <a
                       key={item.label}
                       className={`${

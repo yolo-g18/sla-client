@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import InputGroup from "../../components/InputGroup";
+import InputGroup from "../../components/input/InputGroup";
 import { FormSubmit, InputChange } from "../../utils/TypeScript";
 import { registerAction } from "../../redux/actions/authAction";
 
@@ -90,7 +90,7 @@ const register = () => {
                   {alert.errors?.message}
                 </small>
               </div>
-              <button className="w-full text-center py-3 rounded bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1">
+              <button className="w-full text-center py-3 rounded hover:bg-green-600 bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1">
                 {alert.loading ? (
                   <div className="flex justify-center items-center space-x-1">
                     <svg
@@ -132,11 +132,10 @@ const register = () => {
           <div className="text-grey-dark mt-6">
             Already have an account?{" "}
             <Link href="/auth/login">
-              <a className="no-underline border-b border-blue text-blue-500 hover:underline focus:text-blue-500">
+              <a className="no-underline border-b border-blue text-blue-600 hover:underline focus:text-blue-600">
                 Log in.
               </a>
             </Link>
-            .
           </div>
         </div>
       </div>

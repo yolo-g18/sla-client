@@ -26,13 +26,18 @@ const schedule = () => {
   return (
     <div>
       <AppLayout2 title="library" desc="library">
-        <Paper>
-          <Scheduler data={schedulerData}>
-            <ViewState currentDate={currentDate} />
-            <DayView startDayHour={9} endDayHour={14} />
-            <Appointments />
-          </Scheduler>
-        </Paper>
+        <div className="grid grid-cols-4 py-6">
+          <div className="col-span-1"></div>
+          <div className="col-span-3">
+            <Paper>
+              <Scheduler data={schedulerData}>
+                <ViewState currentDate={currentDate} />
+                <DayView startDayHour={9} endDayHour={14} />
+                <Appointments />
+              </Scheduler>
+            </Paper>
+          </div>
+        </div>
       </AppLayout2>
     </div>
   );

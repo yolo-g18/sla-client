@@ -2,7 +2,7 @@ import { FormSubmit } from "../../utils/TypeScript";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import InputGroup from "../../components/InputGroup";
+import InputGroup from "../../components/input/InputGroup";
 
 import { RootStore } from "../../utils/TypeScript";
 import Link from "next/link";
@@ -116,13 +116,13 @@ const login = () => {
                 <Link href="#">
                   <a
                     href="#"
-                    className="text-sm float-right text-blue-500 hover:underline focus:text-blue-500"
+                    className="text-sm float-right text-blue-600 hover:underline focus:text-blue-600"
                   >
                     Forgot Password?
                   </a>
                 </Link>
 
-                <button className="w-full mt-4 text-center py-3 rounded bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1">
+                <button className="w-full mt-4 text-center py-3 rounded bg-green-500 hover:bg-green-600 text-white hover:bg-green-dark focus:outline-none my-1">
                   {alert.loading ? (
                     <div className="flex justify-center items-center space-x-1">
                       <svg
@@ -150,7 +150,7 @@ const login = () => {
             New to SLA?{" "}
             <Link href="/auth/register">
               <a
-                className="no-underline border-b border-blue text-blue-500 hover:underline focus:text-blue-500"
+                className="no-underline border-b border-blue text-blue-600 hover:underline focus:text-blue-600"
                 onClick={clearError}
               >
                 Create an account.

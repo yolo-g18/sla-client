@@ -30,7 +30,7 @@ const LibraryLayout = (props: Props) => {
 
   return (
     <div>
-      <AppLayout2 title="library" desc="library">
+      <AppLayout2 title={`${username} | SLA`} desc="library">
         {/* <h1 className="text-4xl pl-12 pt-6 font-semibold text-gray-800 dark:text-white">
           Library
         </h1> */}
@@ -67,9 +67,11 @@ const LibraryLayout = (props: Props) => {
                 ) : null}
 
                 {userProfileFake.username === auth.userResponse?.username ? (
-                  <button className="w-full mt-4 text-center py-1 rounded-md text-gray-700 border-gray-300 border-2 hover:text-gray-900 hover:bg-gray-100 my-1">
-                    Edit profile
-                  </button>
+                  <Link href="/me/profile">
+                    <button className="w-full mt-4 text-center py-1 rounded-md text-gray-700 border-gray-300 border-2 hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none">
+                      Edit profile
+                    </button>
+                  </Link>
                 ) : null}
               </div>
             </div>
@@ -158,10 +160,10 @@ const LibraryLayout = (props: Props) => {
                     placeholder="Search"
                   />
                 </div>
-                <div className="text-gray-900 py-3 flex relative">
+                <div className="py-3 flex relative">
                   <button
                     className="w-32 h-8 text-md flex items-center justify-center rounded-md px-4 
-                   text-sm font-medium py-1 bg-green-500 
+                   text-sm font-medium py-1 bg-green-500 hover:bg-green-600
                 text-white hover:bg-green-dark focus:outline-none"
                   >
                     add new
