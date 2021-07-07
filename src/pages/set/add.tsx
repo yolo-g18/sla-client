@@ -111,6 +111,7 @@ const add = () => {
                           value={limit}
                           label="Limit"
                           error={errors.limit}
+                          disabled={!isHide}
                         />
                         <p className="text-gray-600 text-xs px-1 -mt-3 mb-2">
                           Limit number of card in your set, you can add more
@@ -168,12 +169,16 @@ const add = () => {
             <div className="h-full mt-4">
               <h1 className="text-md mt-4 mb-2">Add cards</h1>
               <hr />
-              <div className=" w-full bg-yellow-200 my-4">
+              <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div className="bg-pink-300 h-48 rounded-xl grid grid-cols-2 gap-4">
-                      <div className="col-span-1 bg-gray-200">{index}</div>
-                      <div className="col-span-1 bg-gray-200">{index}</div>
+                    <div className="h-48 rounded-xl grid grid-cols-2 gap-4 my-4">
+                      <div className="col-span-1 rounded-xl bg-gray-200">
+                        {index}
+                      </div>
+                      <div className="col-span-1 rounded-xl bg-gray-200">
+                        {index}
+                      </div>
                     </div>
                   );
                 })}

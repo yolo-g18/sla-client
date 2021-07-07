@@ -8,34 +8,34 @@ export type FormSubmit = FormEvent<HTMLFormElement>
 export type RootStore = ReturnType<typeof rootReducer>
 
 export interface IUserLogin {
-    username: string | undefined | number
-    password: string | undefined | number
+    username: string 
+    password: string 
   } 
 
   export interface IUserRegister extends IUserLogin {
-      email: string | undefined
-    username: string | undefined
-    password: string | undefined
+      email: string 
+    username: string 
+    password: string 
   }
 
  
 
   export interface IUser extends IUserLogin {
-    _id: number | undefined
-    username: string | undefined
-    firstname: string | undefined
-    avatar: string | undefined
-    lastname: string | undefined
-    job: string | undefined
-    email: string | undefined
-    address: string | undefined
-    schoolName: string | undefined
-    major: string | undefined
-    bio: string | undefined
-    createdAt: Date | undefined
-    updatedAt: Date | undefined
-    favourTimeFrom: Date|  undefined
-    favourTimeTo: Date | undefined
+    _id: number 
+    username: string 
+    firstname: string 
+    avatar: string 
+    lastname: string 
+    job: string 
+    email: string 
+    address: string 
+    schoolName: string 
+    major: string 
+    bio: string 
+    createdAt: Date
+    updatedAt: Date 
+    favourTimeFrom: Date
+    favourTimeTo: Date
   }
 
   export interface errorsApiRes  {

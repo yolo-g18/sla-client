@@ -1,5 +1,4 @@
 import React from "react";
-import classNames from "classnames";
 
 interface InputGroupProps {
   type?: string;
@@ -10,6 +9,7 @@ interface InputGroupProps {
   id?: string;
   value?: string;
   setValue: (str: string) => void;
+  disabled?: boolean;
 }
 
 const InputGroup: React.FC<InputGroupProps> = ({
@@ -21,6 +21,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
   label,
   id,
   value,
+  disabled,
 }) => {
   return (
     <div className="relative mb-4">
@@ -35,14 +36,13 @@ const InputGroup: React.FC<InputGroupProps> = ({
       <input
         type={type}
         id={id}
-        className={classNames(
-          "block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm",
-          { "border-red-500": error }
-        )}
+        className={` block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm 
+          ${error ? "border-red-500" : ""}`}
         placeholder={placeholder}
         onChange={(e) => setValue(e.target.value)}
         required={required}
         value={value}
+        disabled={disabled}
       />
       {error && (
         <>
