@@ -9,6 +9,7 @@ const folder = (props: Props) => {
   const {
     query: { username },
   } = router;
+
   return (
     <div>
       <LibraryLayout>

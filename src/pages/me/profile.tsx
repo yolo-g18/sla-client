@@ -5,7 +5,7 @@ import InputGroup from "../../components/input/InputGroup";
 import InputArea from "../../components/input/InputArea";
 
 import { useState, useEffect } from "react";
-import { putAPI } from "../../utils/FetchData";
+import { postAPI, putAPI } from "../../utils/FetchData";
 import { PARAMS } from "../../common/params";
 import { ALERT } from "../../redux/types/alertType";
 import { getUserProfile } from "../../redux/actions/authAction";

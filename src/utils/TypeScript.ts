@@ -8,9 +8,9 @@ export type FormSubmit = FormEvent<HTMLFormElement>
 export type RootStore = ReturnType<typeof rootReducer>
 
 export interface IUserLogin {
-    username: string | undefined
-    password: string | undefined
-  }
+    username: string | undefined | number
+    password: string | undefined | number
+  } 
 
   export interface IUserRegister extends IUserLogin {
       email: string | undefined
@@ -56,4 +56,17 @@ export interface IUserLogin {
     loading?: boolean
     success?: string | string[]
     errors?: errorsApiRes 
+  }
+
+  export interface ISet {
+    title? :string
+    limit?: number
+    desc?: string
+    tag?: string
+    isPublic?: boolean
+  }
+
+  export interface ICard {
+    front: string
+    back: string
   }

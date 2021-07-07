@@ -49,9 +49,11 @@ const LibraryLayout = (props: Props) => {
               </svg>
               <div className="w-full px-2 text-center">
                 {userProfileFake.fullname ? (
-                  <h2 className="text-xl pt-4">{userProfileFake.fullname}</h2>
+                  <h2 className="text-3xl font-semibold pt-4">
+                    {userProfileFake.fullname}
+                  </h2>
                 ) : null}
-                <h2 className="font-bold text-2xl pt-4">
+                <h2 className="font-light text-2xl text-gray-700 pt-4">
                   {userProfileFake.username}
                 </h2>
                 {userProfileFake.job ? (
@@ -63,7 +65,12 @@ const LibraryLayout = (props: Props) => {
                   </h2>
                 ) : null}
                 {userProfileFake.address ? (
-                  <h2 className="text-md pt-2">{userProfileFake.address}</h2>
+                  <div className="">
+                    <svg width="16" height="16">
+                      <path d="M11.536 3.464a5 5 0 010 7.072L8 14.07l-3.536-3.535a5 5 0 117.072-7.072v.001zm1.06 8.132a6.5 6.5 0 10-9.192 0l3.535 3.536a1.5 1.5 0 002.122 0l3.535-3.536zM8 9a2 2 0 100-4 2 2 0 000 4z"></path>
+                    </svg>
+                    <h2 className="text-md pt-2">{userProfileFake.address}</h2>
+                  </div>
                 ) : null}
 
                 {userProfileFake.username === auth.userResponse?.username ? (
