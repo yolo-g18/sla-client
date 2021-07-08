@@ -67,6 +67,7 @@ export interface IUserLogin {
   }
 
   export interface ICard {
+    index?: number
     front: string
     back: string
   }

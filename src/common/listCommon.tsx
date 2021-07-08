@@ -38,7 +38,7 @@ export const menuitem = [
 export const ddmItemsAdd = [
   {
     label: "New study set ",
-    link: "/me",
+    link: "/set/add",
   },
   {
     label: "New folder",

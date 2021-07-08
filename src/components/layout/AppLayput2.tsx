@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getUserProfile } from "../../redux/actions/authAction";
 import { ddmItemsAdd, menuitem } from "../../common/listCommon";
+import link from "next/link";
 
 interface Props {
   title: string;
@@ -84,7 +85,7 @@ const AppLayput2 = (props: Props) => {
                     withBackground={false}
                     forceOpen={false}
                     items={ddmItemsAdd.map((item) => {
-                      return { label: item.label };
+                      return { label: item.label, link: item.link };
                     })}
                   />
                 </div>

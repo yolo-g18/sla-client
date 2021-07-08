@@ -13,3 +13,13 @@ module.exports = {
   },
   plugins: [],
 }
+
+module.exports = {
+    theme: {
+     extend: {
+       backdropBlur: {
+         xs: '2px',
+       }
+     }
+    }
+  }
