@@ -145,7 +145,7 @@ const AppLayput2 = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/explore") !== -1
-                          ? "justify-start border-b-2 border-green-500"
+                          ? "justify-start border-b-2 border-yellow-500"
                           : ""
                       }`}
                     >
@@ -256,7 +256,7 @@ const AppLayput2 = (props: Props) => {
             </div>
           )}
         </header>
-        <div className="bg-gray-100 flex h-screen ">
+        <div className="bg-gray-100 flex  ">
           <div className="container mx-auto flex flex-col justify-between pt-2">
             {props.children}
           </div>

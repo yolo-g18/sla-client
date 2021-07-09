@@ -18,8 +18,6 @@ export interface IUserLogin {
     password: string 
   }
 
- 
-
   export interface IUser extends IUserLogin {
     _id: number 
     username: string 
@@ -71,3 +69,24 @@ export interface IUserLogin {
     front: string
     back: string
   }
+
+  export interface IStudySetInfo {
+    _id?:number
+    title?: string
+    description?: string
+    tag?:string 
+    creatorName?:string
+    isPublic?:false
+  }
+  
+  // export interface IStudySet { 
+  //   _id?:number
+  //   title?: string
+  //   description?: string
+  //   tag?:string
+  //   creatorName?:string
+  //   isPublic?:false
+  //   cards?:ICard[]
+  // }
+
+  //

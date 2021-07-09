@@ -65,10 +65,12 @@ const formats = [
   "video",
 ];
 
-const add = () => {
+const SetEditLayout = () => {
   const { auth, alert } = useSelector((state: RootStore) => state);
   const router = useRouter();
   const dispatch = useDispatch();
+
+  //   const id: number;
 
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -82,7 +84,15 @@ const add = () => {
   const [text, setText] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  // ======================================
+  //when user edit studyset
+  const [studySet, setStudySet] = useState({});
+  if (router.pathname.indexOf(`/set/${IDBFactory}`) !== -1) {
+    const {
+      query: { id },
+    } = router;
+  }
+  // ===================================
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsPublic(!isPublic);
   };
@@ -382,4 +392,4 @@ const add = () => {
   );
 };
 
-export default add;
+export default SetEditLayout;
