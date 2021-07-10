@@ -1,161 +1,23 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale = 1">
-    <title>CSS Card Flip</title>
-    <style>
-    body{
-    background: #3C5377;
-    }
-
-/* THE MAINCONTAINER HOLDS EVERYTHING */
-.maincontainer{
-  position: absolute;
-  width: 250px;
-  height: 320px;
-  background: none;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-}
-
-/* THE CARD HOLDS THE FRONT AND BACK FACES */
-.thecard{
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  transform-style: preserve-3d;
-  transition: all 0.8s ease;
-}
-
-/* THE PSUEDO CLASS CONTROLS THE FLIP ON MOUSEOVER AND MOUSEOUT */
-.thecard:hover{
-  transform: rotateY(180deg);
-}
-
-/* THE FRONT FACE OF THE CARD, WHICH SHOWS BY DEFAULT */
- .thefront{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  backface-visibility: hidden;
-  overflow: hidden;
-  background: #ffc728;
-  color: #000;
-}
-
-/* THE BACK FACE OF THE CARD, WHICH SHOWS ON MOUSEOVER */
-.theback{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  backface-visibility: hidden;
-  overflow: hidden;
-  background: #fafafa;
-  color: #333;
-  text-align: center;
-  transform: rotateY(180deg);
-}
-
-
-/*This block (starts here) is merely styling for the flip card, and is NOT an essential part of the flip code */
-.thefront h1, .theback h1{
-  font-family: 'zilla slab', sans-serif;
-  padding: 30px;
-  font-weight: bold;
-  font-size: 24px;
-  text-align: center;
-}
-
-.thefront p, .theback p{
-  font-family: 'zilla slab', sans-serif;
-  padding: 30px;
-  font-weight: normal;
-  font-size: 12px;
-  text-align: center;
-}
-/*This block (ends here) is merely styling for the flip card, and is NOT an essential part of the flip code */
-    </style>
-  </head>
-
-  <body>
-    <div class="maincontainer">
-
-      <div class="thecard">
-
-        <div class="thefront"><h1>Front of Card</h1><p>This is the front of the card. It contains important information. Please see overleaf for more details.</p></div>
-
-        <div class="theback"><h1>Back of Card</h1><p>Your use of this site is subject to the terms and conditions governing this and all transactions.</p>
-        <button>Submit</button></div>
-
-      </div>
+<div class="flex min-h-screen items-center justify-center">
+  <div x-data="{ tooltip: false }" class="relative z-30 inline-flex">
+    <div x-on:mouseover="tooltip = true" x-on:mouseleave="tooltip = false" class="rounded-md px-3 py-2 bg-indigo-500 text-white cursor-pointer shadow">
+      Hover over me
     </div>
+    <div class="relative" x-cloak x-show.transition.origin.top="tooltip">
+      <div class="absolute top-0 z-10 w-32 p-2 -mt-1 text-sm leading-tight text-white transform -translate-x-1/2 -translate-y-full bg-orange-500 rounded-lg shadow-lg">
+        Hi, I am Tooltip
+      </div>
+      <svg class="absolute z-10 w-6 h-6 text-orange-500 transform -translate-x-12 -translate-y-3 fill-current stroke-current" width="8" height="8">
+        <rect x="12" y="-10" width="8" height="8" transform="rotate(45)" />
+      </svg>
+    </div>
+  </div>
 
-  </body>
-</html>
-
-
-
-.thecard:hover {
-	transform: rotateY(180deg);
-  }
-  /* THE FRONT FACE OF THE CARD, WHICH SHOWS BY DEFAULT */
-  .thefront {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	border-radius: 10px;
-	backface-visibility: hidden;
-	overflow: hidden;
-	background: #ffc728;
-	color: #000;
-  }
-  
-  /* THE BACK FACE OF THE CARD, WHICH SHOWS ON MOUSEOVER */
-  .theback {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	border-radius: 10px;
-	backface-visibility: hidden;
-	overflow: hidden;
-	background: #fafafa;
-	color: #333;
-	text-align: center;
-	transform: rotateY(180deg);
-  }
-  
-  /*This block (starts here) is merely styling for the flip card, and is NOT an essential part of the flip code */
-  .thefront h1,
-  .theback h1 {
-	font-family: "zilla slab", sans-serif;
-	padding: 30px;
-	font-weight: bold;
-	font-size: 24px;
-	text-align: center;
-  }
-  
-  .thefront p,
-  .theback p {
-	font-family: "zilla slab", sans-serif;
-	padding: 30px;
-	font-weight: normal;
-	font-size: 12px;
-	text-align: center;
-  }
-  /*This block (ends here) is merely styling for the flip card, and is NOT an essential part of the flip code */
-  
+  <div class="flex items-end justify-end absolute bottom-0 right-0 mb-4 mr-4">
+    <div>
+      <a title="Buy me a coffee" href="https://www.buymeacoffee.com/rHcLDkY" target="_blank" class="block w-16 h-16">
+        <img alt="Buy me a coffee" class="object-cover object-center w-full h-full rounded-full shadow-md hover:shadow-lg" src="https://cdn.dribbble.com/users/3349322/screenshots/14039201/media/616e4ae6995fb288e434c3f0927541ce.png" />
+      </a>
+    </div>
+  </div>
+</div>

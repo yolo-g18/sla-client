@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AppLayput2 from "../../components/layout/AppLayput2";
+import AppLayput2 from "../../components/layout/AppLayout";
 import InputGroup from "../../components/input/InputGroup";
 import InputArea from "../../components/input/InputArea";
 import ReactTagInput from "@pathofdev/react-tag-input";

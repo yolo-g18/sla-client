@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import AppLayput2 from "../components/layout/AppLayput2";
+import AppLayout from "../components/layout/AppLayout";
 
 export default function Home() {
   const router = useRouter();
@@ -10,9 +10,9 @@ export default function Home() {
 
   return (
     <div>
-      <AppLayput2 title="SLA" desc="">
+      <AppLayout title="SLA" desc="">
         let learn
-      </AppLayput2>
+      </AppLayout>
     </div>
   );
 }

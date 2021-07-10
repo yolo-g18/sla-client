@@ -1,5 +1,5 @@
 import SimpleLevelsCard from "../components/card/SimpleLevelsCard";
-import AppLayout2 from "../components/layout/AppLayput2";
+import AppLayout2 from "../components/layout/AppLayout";
 
 const home = () => {
   return (

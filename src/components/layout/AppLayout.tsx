@@ -16,7 +16,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const AppLayput2 = (props: Props) => {
+const AppLayout = (props: Props) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -257,7 +257,7 @@ const AppLayput2 = (props: Props) => {
           )}
         </header>
         <div className="bg-gray-100 flex  ">
-          <div className="container mx-auto flex flex-col justify-between pt-2">
+          <div className="container mx-auto flex flex-col justify-between pt-2 position:relative">
             {props.children}
           </div>
         </div>
@@ -266,4 +266,4 @@ const AppLayput2 = (props: Props) => {
   );
 };
 
-export default AppLayput2;
+export default AppLayout;

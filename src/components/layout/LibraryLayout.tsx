@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import AppLayout2 from "../layout/AppLayput2";
+import AppLayout from "./AppLayout";
 import { RootStore } from "../../utils/TypeScript";
 import { useSelector } from "react-redux";
 import Link from "next/link";
@@ -30,7 +30,7 @@ const LibraryLayout = (props: Props) => {
 
   return (
     <div>
-      <AppLayout2 title={`${username} | SLA`} desc="library">
+      <AppLayout title={`${username} | SLA`} desc="library">
         {/* <h1 className="text-4xl pl-12 pt-6 font-semibold text-gray-800 dark:text-white">
           Library
         </h1> */}
@@ -181,7 +181,7 @@ const LibraryLayout = (props: Props) => {
             <div className="bg-yellow-50">{props.children}</div>
           </div>
         </div>
-      </AppLayout2>
+      </AppLayout>
     </div>
   );
 };

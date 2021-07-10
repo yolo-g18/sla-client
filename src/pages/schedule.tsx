@@ -1,4 +1,4 @@
-import AppLayout2 from "../components/layout/AppLayput2";
+import AppLayout2 from "../components/layout/AppLayout";
 import * as React from "react";
 import Paper from "@material-ui/core/Paper";
 import { ViewState } from "@devexpress/dx-react-scheduler";

@@ -1,4 +1,4 @@
-import AppLayput2 from "../../components/layout/AppLayput2";
+import AppLayput2 from "./AppLayout";
 import { RootStore } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../sidebar/SideBar";

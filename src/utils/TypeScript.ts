@@ -77,6 +77,7 @@ export interface IUserLogin {
     tag?:string 
     creatorName?:string
     isPublic?:false
+    numberCard?: number
   }
   
   // export interface IStudySet { 

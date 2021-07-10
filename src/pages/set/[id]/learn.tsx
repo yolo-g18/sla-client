@@ -1,4 +1,4 @@
-import AppLayput2 from "../../../components/layout/AppLayput2";
+import AppLayput2 from "../../../components/layout/AppLayout";
 import dynamic from "next/dynamic";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
