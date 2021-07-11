@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent } from 'react'
+import { TriggerConfig } from 'react-hook-form'
 import rootReducer from '../redux/reducers/index'
 
 export type InputChange = ChangeEvent<HTMLInputElement>
@@ -80,14 +81,22 @@ export interface IUserLogin {
     numberCard?: number
   }
   
-  // export interface IStudySet { 
-  //   _id?:number
-  //   title?: string
-  //   description?: string
-  //   tag?:string
-  //   creatorName?:string
-  //   isPublic?:false
-  //   cards?:ICard[]
-  // }
-
-  //
+  export interface IEvent {
+    id?: number
+    username?:string
+    description?:string
+    fromTime?:Date
+    toTime?: Date
+    color?:string
+    createDate?:Date
+    updateDate?:Date
+  }
+ 
+  export interface IEventRe {
+    startDate:Date
+    endDate:Date
+    title?: string
+    notes?:string
+    id:number
+    color?:string
+  }

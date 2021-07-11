@@ -7,6 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import SelectBox from "../ddm/SelectBox";
 import { itemsFoldersFilter, itemsSetsFilter } from "../../common/listCommon";
 
+import DomainIcon from "@material-ui/icons/Domain";
+import RoomIcon from "@material-ui/icons/Room";
+import ClassIcon from "@material-ui/icons/Class";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import WorkOutlineIcon from "@material-ui/icons/WorkOutline";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -24,7 +30,10 @@ const LibraryLayout = (props: Props) => {
     username: "_testuser0",
     fullname: "Nguyen Thai Duong",
     address: "Haiphong, Vietnam",
-    school: "Fpt Uni",
+    school: "MA",
+    bio: "I am currently working as a Sr Frontend Engineer for Swimlane 👌",
+    major: "computer science",
+    email: "duongnguyen@email.com",
     job: "student",
   };
 
@@ -47,35 +56,64 @@ const LibraryLayout = (props: Props) => {
               >
                 <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z" />
               </svg>
-              <div className="w-full px-2 text-center">
-                {userProfileFake.fullname ? (
-                  <h2 className="text-3xl font-semibold pt-4">
+              <div className=" px-2 w-3/4 justify-between">
+                <p className=" mt-4">
+                  <span className="w-full text-2xl font-medium">
                     {userProfileFake.fullname}
-                  </h2>
-                ) : null}
-                <h2 className="font-light text-2xl text-gray-700 pt-4">
-                  {userProfileFake.username}
-                </h2>
-                {userProfileFake.job ? (
-                  <h2 className="text-md pt-1">
-                    {userProfileFake.job},{" "}
-                    {userProfileFake.school ? (
-                      <span>{userProfileFake.school}</span>
-                    ) : null}
-                  </h2>
-                ) : null}
-                {userProfileFake.address ? (
-                  <div className="">
-                    <svg width="16" height="16">
-                      <path d="M11.536 3.464a5 5 0 010 7.072L8 14.07l-3.536-3.535a5 5 0 117.072-7.072v.001zm1.06 8.132a6.5 6.5 0 10-9.192 0l3.535 3.536a1.5 1.5 0 002.122 0l3.535-3.536zM8 9a2 2 0 100-4 2 2 0 000 4z"></path>
-                    </svg>
-                    <h2 className="text-md pt-2">{userProfileFake.address}</h2>
-                  </div>
-                ) : null}
+                  </span>
+                  <br />
+                  <span className="text-md font-mono text-gray-700">
+                    {userProfileFake.username}
+                  </span>
+                </p>
+                <p className="text-left mt-4">
+                  <span className="">{userProfileFake.bio}</span>
+                </p>
+                <p className="text-left mt-4 text-sm">
+                  {userProfileFake.school ? (
+                    <DomainIcon
+                      fontSize="small"
+                      className="text-gray-600 -mt-1"
+                    />
+                  ) : null}{" "}
+                  {userProfileFake.school}
+                  <br />
+                  {userProfileFake.address ? (
+                    <RoomIcon fontSize="small" className="text-gray-600" />
+                  ) : null}{" "}
+                  {userProfileFake.address}
+                  <br />
+                  <span>
+                    {userProfileFake.major ? (
+                      <ClassIcon fontSize="small" className="text-gray-600" />
+                    ) : null}{" "}
+                    {userProfileFake.major}
+                  </span>
+                  <br />
+                  <span>
+                    {userProfileFake.email ? (
+                      <MailOutlineIcon
+                        fontSize="small"
+                        className="text-gray-600"
+                      />
+                    ) : null}{" "}
+                    {userProfileFake.email}
+                  </span>
+                  <br />
+                  <span>
+                    {userProfileFake.job ? (
+                      <WorkOutlineIcon
+                        fontSize="small"
+                        className="text-gray-600"
+                      />
+                    ) : null}{" "}
+                    {userProfileFake.job}
+                  </span>
+                </p>
 
                 {userProfileFake.username === auth.userResponse?.username ? (
                   <Link href="/me/profile">
-                    <button className="w-full mt-4 text-center py-1 rounded-md text-gray-700 border-gray-300 border-2 hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none">
+                    <button className="w-full mt-8 text-center py-1 rounded-md text-gray-700 border-gray-300 border-2 hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none">
                       Edit profile
                     </button>
                   </Link>

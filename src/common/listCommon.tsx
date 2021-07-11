@@ -50,9 +50,12 @@ export const ddmItemsAdd = [
   },
 ];
 
-// export const removeItem = [
+// export const fakeEvent = [
 //   {
-//     lable: "remove",
-//     link: ""
-//   }
-// ]
+//     startDate:
+//     endDate:Date
+//     title?: string
+//     id:number
+//   },
+//   {},
+// ];
