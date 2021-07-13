@@ -9,33 +9,33 @@ export type FormSubmit = FormEvent<HTMLFormElement>
 export type RootStore = ReturnType<typeof rootReducer>
 
 export interface IUserLogin {
-    username: string 
-    password: string 
-  } 
+  username?: string 
+  password?: string 
+} 
 
-  export interface IUserRegister extends IUserLogin {
-      email: string 
-    username: string 
-    password: string 
-  }
+export interface IUserRegister extends IUserLogin {
+    email?: string 
+  username?: string 
+  password?: string 
+}
 
-  export interface IUser extends IUserLogin {
-    _id: number 
-    username: string 
-    firstname: string 
-    avatar: string 
-    lastname: string 
-    job: string 
-    email: string 
-    address: string 
-    schoolName: string 
-    major: string 
-    bio: string 
-    createdAt: Date
-    updatedAt: Date 
-    favourTimeFrom: Date
-    favourTimeTo: Date
-  }
+export interface IUser extends IUserLogin {
+  _id?: number 
+  username?: string 
+  firstname?: string 
+  avatar?: string 
+  lastname?: string 
+  job?: string 
+  email?: string 
+  address?: string 
+  schoolName?: string 
+  major?: string 
+  bio?: string 
+  createdAt?: Date
+  updatedAt?: Date 
+  favourTimeFrom?: Date
+  favourTimeTo?: Date
+}
 
   export interface errorsApiRes  {
     status? : number | null

@@ -422,7 +422,7 @@ const SetEditLayout = (props: Props) => {
               <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div className="h-64 rounded-xl grid grid-cols-11 gap-4 my-4">
+                    <div className="rounded-xl grid grid-cols-11 gap-4 my-4">
                       <div
                         className="col-span-5 rounded-xl bg-gray-200"
                         onClick={() => {

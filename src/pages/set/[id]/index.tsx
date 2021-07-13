@@ -122,9 +122,9 @@ const index = () => {
 
   //get data of set by id
   useEffect(() => {
-    dispatch({ type: ALERT, payload: { loading: true } });
     const fetchData = async () => {
       try {
+        dispatch({ type: ALERT, payload: { loading: true } });
         const studySetRes = await getAPI(
           `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
@@ -401,12 +401,13 @@ const index = () => {
               <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div className="h-64 rounded-xl grid grid-cols-11 gap-4 my-4">
+                    <div className=" rounded-xl grid grid-cols-11 gap-4 my-4">
                       <div className="col-span-5  rounded-xl bg-white shadow-sm">
                         <QuillNoSSRWrapper
                           readOnly={true}
                           theme="bubble"
                           value={card.front}
+                          className="w-72"
                         />
                       </div>
                       <div className="col-span-5 rounded-xl bg-white shadow-sm ">
@@ -414,6 +415,7 @@ const index = () => {
                           readOnly={true}
                           theme="bubble"
                           value={card.back}
+                          className="w-72"
                         />
                       </div>
                       <div className="col-span-1">
@@ -444,7 +446,7 @@ const index = () => {
                     modules={modules}
                     formats={formats}
                     theme="snow"
-                    className="h-80 relative mb-12"
+                    className="h-80 relative mb-12 "
                     onChange={setFront}
                     value={front}
                   />

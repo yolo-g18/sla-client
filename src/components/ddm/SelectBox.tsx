@@ -53,7 +53,7 @@ const SelectBox = (props: Props) => {
         <div>
           <button
             type="button"
-            className=" border w-32 border-gray-300 bg-white dark:bg-gray-800 shadow-sm 
+            className=" border w-24 border-gray-300 bg-white dark:bg-gray-800 shadow-sm 
             flex items-center justify-center rounded-md px-4 py-1 text-sm font-medium text-gray-700 dark:text-gray-50
              hover:text-gray-900 dark:hover:bg-gray-500 focus:outline-none"
             id="options-menu"
@@ -66,7 +66,7 @@ const SelectBox = (props: Props) => {
               fill="currentColor"
               viewBox="0 0 1792 1792"
               xmlns="http://www.w3.org/2000/svg"
-              className="pl-2"
+              className="pl-1"
             >
               <path d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z" />
             </svg>

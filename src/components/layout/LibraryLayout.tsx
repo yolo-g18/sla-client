@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 import AppLayout from "./AppLayout";
-import { RootStore } from "../../utils/TypeScript";
-import { useSelector } from "react-redux";
+import { IUser, RootStore } from "../../utils/TypeScript";
+import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SelectBox from "../ddm/SelectBox";
 import { itemsFoldersFilter, itemsSetsFilter } from "../../common/listCommon";
 
@@ -12,13 +12,15 @@ import RoomIcon from "@material-ui/icons/Room";
 import ClassIcon from "@material-ui/icons/Class";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import WorkOutlineIcon from "@material-ui/icons/WorkOutline";
+import { getUserByUsername } from "../../redux/actions/userAction";
 
 interface Props {
   children: React.ReactNode;
 }
 
 const LibraryLayout = (props: Props) => {
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, user } = useSelector((state: RootStore) => state);
+  const dispatch = useDispatch();
 
   const router = useRouter();
   const {
@@ -26,16 +28,11 @@ const LibraryLayout = (props: Props) => {
   } = router;
 
   //call api get user profile by username de lay ra fullname, address, email, school, job de hien thi
-  const userProfileFake = {
-    username: "_testuser0",
-    fullname: "Nguyen Thai Duong",
-    address: "Haiphong, Vietnam",
-    school: "MA",
-    bio: "I am currently working as a Sr Frontend Engineer for Swimlane 👌",
-    major: "computer science",
-    email: "duongnguyen@email.com",
-    job: "student",
-  };
+  useEffect(() => {
+    dispatch(getUserByUsername(`${username}`));
+  }, [username]);
+
+  console.log("dasbdhasb");
 
   return (
     <div>
@@ -59,59 +56,59 @@ const LibraryLayout = (props: Props) => {
               <div className=" px-2 w-3/4 justify-between">
                 <p className=" mt-4">
                   <span className="w-full text-2xl font-medium">
-                    {userProfileFake.fullname}
+                    {user.firstname} {user.lastname}
                   </span>
                   <br />
                   <span className="text-md font-mono text-gray-700">
-                    {userProfileFake.username}
+                    {user.username}
                   </span>
                 </p>
                 <p className="text-left mt-4">
-                  <span className="">{userProfileFake.bio}</span>
+                  <span className="">{user.bio}</span>
                 </p>
                 <p className="text-left mt-4 text-sm">
-                  {userProfileFake.school ? (
+                  {user.schoolName ? (
                     <DomainIcon
                       fontSize="small"
                       className="text-gray-600 -mt-1"
                     />
                   ) : null}{" "}
-                  {userProfileFake.school}
+                  {user.schoolName}
                   <br />
-                  {userProfileFake.address ? (
+                  {user.address ? (
                     <RoomIcon fontSize="small" className="text-gray-600" />
                   ) : null}{" "}
-                  {userProfileFake.address}
+                  {user.address}
                   <br />
                   <span>
-                    {userProfileFake.major ? (
+                    {user.major ? (
                       <ClassIcon fontSize="small" className="text-gray-600" />
                     ) : null}{" "}
-                    {userProfileFake.major}
+                    {user.major}
                   </span>
                   <br />
                   <span>
-                    {userProfileFake.email ? (
+                    {user.email ? (
                       <MailOutlineIcon
                         fontSize="small"
                         className="text-gray-600"
                       />
                     ) : null}{" "}
-                    {userProfileFake.email}
+                    {user.email}
                   </span>
                   <br />
                   <span>
-                    {userProfileFake.job ? (
+                    {user.job ? (
                       <WorkOutlineIcon
                         fontSize="small"
                         className="text-gray-600"
                       />
                     ) : null}{" "}
-                    {userProfileFake.job}
+                    {user.job}
                   </span>
                 </p>
 
-                {userProfileFake.username === auth.userResponse?.username ? (
+                {user.username === auth.userResponse?.username ? (
                   <Link href="/me/profile">
                     <button className="w-full mt-8 text-center py-1 rounded-md text-gray-700 border-gray-300 border-2 hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none">
                       Edit profile
@@ -131,7 +128,7 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                    className={`col-span-1 py-4  flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/sets") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
@@ -147,7 +144,7 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                    className={`col-span-1 py-4 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/folders") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
@@ -163,7 +160,7 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                    className={`col-span-1 py-4 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/rooms") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
@@ -216,7 +213,7 @@ const LibraryLayout = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div className="bg-yellow-50">{props.children}</div>
+            <div>{props.children}</div>
           </div>
         </div>
       </AppLayout>

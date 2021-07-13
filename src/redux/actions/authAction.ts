@@ -48,13 +48,13 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     
     dispatch({ type: AUTH,payload: res.data })  
 
-    dispatch({ type: ALERT, payload: { success: res.data } })
+    dispatch({ type: ALERT, payload: {loading:false, success: res.data } })
     localStorage.setItem('access-token', res.data.authenticationToken);
     localStorage.setItem('refresh-token', res.data.refreshToken);
     localStorage.setItem('expiresAt', res.data.expiresAt);
     
   } catch (err: any) {
-    dispatch({ type: ALERT, payload: { errors: err.response.data } })
+    dispatch({ type: ALERT, payload: {loading:false, errors: err.response.data } })
   }
 }
 
@@ -70,7 +70,7 @@ export const getUserProfile = () => async (dispatch: Dispatch<IAuthType | IAlert
   
     }
   }catch (err: any) {
-    if(err.responserr) {
+    if(err.response) {
       dispatch({ type: ALERT, payload: { errors: err.response.data } })
     } else {
       dispatch({ type: ALERT, payload: { errors: {message: "The Server has problem"} } })
