@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AppLayout from "../../../components/layout/AppLayout";
-import { getAPI, putAPI } from "../../../utils/FetchData";
+import { deleteAPI, getAPI, putAPI } from "../../../utils/FetchData";
 import { ICard, RootStore } from "../../../utils/TypeScript";
 import { PARAMS } from "../../../common/params";
 import { ALERT } from "../../../redux/types/alertType";
@@ -13,7 +13,13 @@ import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
 import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 let useClickOutside = (handler: any) => {
   let domNode: any = useRef();
@@ -87,14 +93,27 @@ const index = () => {
   const [cards, setCards] = useState<ICard[]>([]);
   const [username, setUsername] = useState("");
   const [numberOfCard, setNumberOfCard] = useState();
-  const [isFront, setIsFront] = useState(true);
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
   const [currentCard, setCurrentCard] = useState(0);
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [typeToast, setTypeToast] = useState("success");
+  const [messageToast, setMessageToast] = useState("");
+
   const router = useRouter();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
 
   //lay ra id tu path
   const {
@@ -165,8 +184,59 @@ const index = () => {
         type: ALERT,
         payload: { loading: false, success: "😎 Your card updated!" },
       });
+      setTypeToast("success");
+      setMessageToast("😎 Your card updated!");
+      setIsToastOpen(true);
       setIsModalEditOpen(false);
-    } catch (err) {}
+    } catch (err) {
+      dispatch({
+        type: ALERT,
+        payload: {
+          loading: false,
+          errors: { message: "An error occurred" },
+        },
+      });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+    }
+  };
+
+  //handel delete set
+  const displayModalDelete = () => {
+    setShowModalDelete(true);
+  };
+
+  const handelDeleteStudySet = async () => {
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await deleteAPI(`${PARAMS.ENDPOINT}studySet/delete?id=${id}`);
+      dispatch({
+        type: ALERT,
+        payload: { loading: false, success: "Deleted!" },
+      });
+
+      setShowModalDelete(false);
+      // setTypeToast("success");
+      // setIsToastOpen(true);
+      setMessageToast("Deleted!");
+      router.push({
+        pathname: "/[username]/library/sets",
+        query: { username: auth.userResponse?.username },
+      });
+    } catch (err) {
+      setTypeToast("error");
+
+      dispatch({
+        type: ALERT,
+        payload: {
+          loading: false,
+          errors: { message: "An error occurred" },
+        },
+      });
+      setMessageToast("An error occurred");
+      setIsToastOpen(true);
+    }
   };
 
   console.log("tags is: " + tags);
@@ -300,11 +370,22 @@ const index = () => {
                       >
                         <div>
                           <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                            className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                            hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                             role="menuitem"
                           >
                             <span className="flex flex-col">
-                              <span>add hint</span>
+                              <span>fork</span>
+                            </span>
+                          </a>
+                          <a
+                            className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500
+                             hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                            role="menuitem"
+                            onClick={() => setShowModalDelete(true)}
+                          >
+                            <span className="flex flex-col">
+                              <span>delete</span>
                             </span>
                           </a>
                         </div>
@@ -398,6 +479,50 @@ const index = () => {
             </div>
           </div>
         ) : null}
+        {showModalDelete ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-4"></div>
+                <div className="mb-8">
+                  <p>Are you sure want to delete this study set</p>
+                  <p className="text-gray-600 text-xs px-1 mb-2">
+                    When you delete this study set, all information about your
+                    learning process and others about this study set will no
+                    longer exist.
+                  </p>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={handelDeleteStudySet}
+                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    Remove
+                  </button>
+                  <button
+                    onClick={() => setShowModalDelete(false)}
+                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
       </AppLayout>
     </div>
   );

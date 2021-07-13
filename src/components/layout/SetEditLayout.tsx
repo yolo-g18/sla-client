@@ -20,7 +20,7 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.bubble.css";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
-
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -127,7 +127,7 @@ const SetEditLayout = (props: Props) => {
           );
           console.log("study set data is: " + JSON.stringify(studySetRes.data));
           console.log("study set data is: " + JSON.stringify(cardRes.data));
-
+          dispatch({ type: ALERT, payload: { loading: false } });
           setTitle(studySetRes.data.title);
           setDesc(studySetRes.data.description);
           setIsPublic(studySetRes.data.public);
@@ -184,7 +184,7 @@ const SetEditLayout = (props: Props) => {
     if (isNaN(size) || size < 2) {
       setErrors({
         ...errors,
-        limit: "Number of cards must be positive number",
+        limit: "You need two cards to create a set",
       });
     } else {
       setErrors({
@@ -258,9 +258,47 @@ const SetEditLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { errors: err.response.data } });
       }
     } else {
-      //update
+      const dataUpdate = {
+        ...addData,
+        id: props.id,
+      };
+      const studySetData = {
+        id: props.id,
+        creator: auth.userResponse?._id,
+        title,
+        description: desc,
+        tag: _.map(tags).join(", "),
+        isPublic: isPublic,
+      };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const cardsUpdateRes = await putAPI(
+          `${PARAMS.ENDPOINT}card/edit`,
+          cards
+        );
+        const studySetUpdateRes = await putAPI(
+          `${PARAMS.ENDPOINT}studySet/edit`,
+          studySetData
+        );
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Your study set updated!" },
+        });
+        router.push({
+          pathname: "/set/[id]",
+          query: { id: props.id },
+        });
+      } catch (err) {
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, errors: { message: "An error occurred" } },
+        });
+      }
     }
   };
+
+  //handel delete card
+  const handelDeleteCard = (index: number) => {};
 
   console.log("tags is: " + tags);
   console.log("status: " + alert.success);
@@ -384,9 +422,9 @@ const SetEditLayout = (props: Props) => {
               <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div className="h-64 rounded-xl grid grid-cols-2 gap-4 my-4">
+                    <div className="h-64 rounded-xl grid grid-cols-11 gap-4 my-4">
                       <div
-                        className="col-span-1 rounded-xl bg-gray-200"
+                        className="col-span-5 rounded-xl bg-gray-200"
                         onClick={() => {
                           setIsFront(true);
                           handelCardOnClick(card.front, index);
@@ -399,7 +437,7 @@ const SetEditLayout = (props: Props) => {
                         />
                       </div>
                       <div
-                        className="col-span-1 rounded-xl bg-gray-200"
+                        className="col-span-5 rounded-xl bg-gray-200"
                         onClick={() => {
                           setIsFront(false);
                           handelCardOnClick(card.back, index);
@@ -410,6 +448,18 @@ const SetEditLayout = (props: Props) => {
                           theme="bubble"
                           value={card.back}
                         />
+                      </div>
+                      <div className="col-span-1">
+                        <button
+                          onClick={(event) => handelDeleteCard(index)}
+                          className="mx-2 tooltip focus:outline-none"
+                        >
+                          <DeleteOutlineIcon
+                            fontSize="small"
+                            className="hover:text-gray-400 text-gray-700"
+                          />
+                          <span className="tooltiptext -mt-2 w-16">delete</span>
+                        </button>
                       </div>
                     </div>
                   );
@@ -441,7 +491,7 @@ const SetEditLayout = (props: Props) => {
                       />
                     </div>
                     {/*footer*/}
-                    <div className="flex items-center justify-end px-4 py-6">
+                    <div className="flex items-center justify-end px-4 py-6 mt-12">
                       <button
                         className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
                         type="button"

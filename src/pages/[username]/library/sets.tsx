@@ -6,6 +6,7 @@ const sets = (props: any) => {
   const {
     query: { username },
   } = router;
+
   return (
     <div>
       <LibraryLayout>{username}</LibraryLayout>
