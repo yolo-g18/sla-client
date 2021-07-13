@@ -77,7 +77,7 @@ const Folder = () => {
                 <div>
                   <svg
                     fill="currentColor"
-                    className="w-16 h-16 text-gray-700"
+                    className="w-12 h-12 text-gray-800"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                   >
@@ -95,7 +95,9 @@ const Folder = () => {
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-md text-gray-800">{folderData.desc}</p>
+                <p className="text-sm font-light text-gray-800">
+                  {folderData.desc}
+                </p>
               </div>
             </div>
           </div>

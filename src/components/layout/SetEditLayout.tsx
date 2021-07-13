@@ -9,7 +9,7 @@ import "@pathofdev/react-tag-input/build/index.css";
 import "react-quill/dist/quill.snow.css";
 import { PARAMS } from "../../common/params";
 import { ALERT } from "../../redux/types/alertType";
-import { postAPI, putAPI } from "../../utils/FetchData";
+import { getAPI, postAPI, putAPI } from "../../utils/FetchData";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../utils/TypeScript";
 import { useRouter } from "next/router";
@@ -18,6 +18,13 @@ import _, { divide } from "lodash";
 import { ICard, IErrors } from "../../utils/TypeScript";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.bubble.css";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 interface ITag {
   id: string;
@@ -65,16 +72,19 @@ const formats = [
   "video",
 ];
 
-const SetEditLayout = () => {
+interface Props {
+  id?: any;
+}
+
+const SetEditLayout = (props: Props) => {
   const { auth, alert } = useSelector((state: RootStore) => state);
-  const router = useRouter();
   const dispatch = useDispatch();
 
   //   const id: number;
 
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-  const [limit, setLimit] = useState("0");
+  const [limit, setLimit] = useState("2");
   const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [cards, setCards] = useState<ICard[]>([]);
@@ -84,17 +94,61 @@ const SetEditLayout = () => {
   const [text, setText] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [severity, setSeverity] = useState("");
+
+  const router = useRouter();
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
+
   // ======================================
   //when user edit studyset
-  const [studySet, setStudySet] = useState({});
-  if (router.pathname.indexOf(`/set/${IDBFactory}`) !== -1) {
-    const {
-      query: { id },
-    } = router;
+  if (!(router.pathname.indexOf("/set/add") !== -1)) {
+    console.log("this is edit page");
+    console.log("id is: " + props.id);
+
+    useEffect(() => {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const fetchData = async () => {
+        try {
+          const studySetRes = await getAPI(
+            `${PARAMS.ENDPOINT}studySet/view?id=${props.id}`
+          );
+          const cardRes = await getAPI(
+            `${PARAMS.ENDPOINT}card/list?id=${props.id}`
+          );
+          console.log("study set data is: " + JSON.stringify(studySetRes.data));
+          console.log("study set data is: " + JSON.stringify(cardRes.data));
+
+          setTitle(studySetRes.data.title);
+          setDesc(studySetRes.data.description);
+          setIsPublic(studySetRes.data.public);
+          studySetRes.data.tag
+            ? setTags(_.split(studySetRes.data.tag, ", "))
+            : null;
+          setCards(cardRes.data);
+        } catch (err) {
+          console.log("error is: " + err);
+
+          // router.push("/");
+        }
+      };
+      fetchData();
+    }, [props.id]);
   }
+
   // ===================================
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsPublic(!isPublic);
+    console.log("public: " + isPublic);
   };
 
   const [isHide, setIsHide] = useState(true);
@@ -127,7 +181,7 @@ const SetEditLayout = () => {
 
   useEffect(() => {
     let size = _.toNumber(limit);
-    if (isNaN(size) || size < 0) {
+    if (isNaN(size) || size < 2) {
       setErrors({
         ...errors,
         limit: "Number of cards must be positive number",
@@ -172,51 +226,71 @@ const SetEditLayout = () => {
 
     e.preventDefault();
 
-    //create null card by limit input
-
-    let publicValue = isPublic ? 1 : 0;
-
-    const data = {
+    //========create null card by limit input
+    const addData = {
       creator: auth.userResponse?._id,
       title,
       description: desc,
       tag: _.map(tags).join(", "),
       cards,
-      isPublic: publicValue,
+      isPublic: isPublic,
     };
 
-    dispatch({ type: ALERT, payload: { loading: true } });
-    try {
-      const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, data);
-      dispatch({ type: ALERT, payload: { loading: false } });
-      router.push({
-        pathname: "/set/[id]/edit",
-        query: { pid: res.data.id },
-      });
-    } catch (err) {
-      dispatch({ type: ALERT, payload: { errors: err.response.data } });
-    }
+    console.log(addData);
 
-    console.log(data);
+    dispatch({ type: ALERT, payload: { loading: true } });
+    if (router.pathname.indexOf("/set/add") !== -1) {
+      //add
+      try {
+        const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, addData);
+
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Nice! Ready to learn?" },
+        });
+        setIsToastOpen(true);
+        setSeverity("success");
+        router.push({
+          pathname: "/set/[id]",
+          query: { id: res.data },
+        });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { errors: err.response.data } });
+      }
+    } else {
+      //update
+    }
   };
 
-  console.log(tags);
+  console.log("tags is: " + tags);
+  console.log("status: " + alert.success);
 
   return (
     <div>
-      <AppLayput2 title="create set" desc="create set">
+      <AppLayput2
+        title={`${
+          router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
+        }`}
+        desc="create set"
+      >
         <div className="lg:w-3/4 mx-auto h-full mt-4 px-4">
           <form onSubmit={handleSubmit}>
             <div className="flex justify-around">
               <div className="flex flex-grow">
-                <h1 className="text-3xl font-semibold">Create Study Set</h1>
+                <h1 className="text-3xl font-semibold">
+                  {router.pathname.indexOf("/set/add") !== -1
+                    ? "Create Study Set"
+                    : "Edit Your Set"}
+                </h1>
               </div>
               <div className="flex relative">
                 <button
                   className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600"
                   // onClick={handleSubmit}
                 >
-                  {router.pathname.indexOf("/set/add") !== -1
+                  {alert.loading
+                    ? "Saving..."
+                    : router.pathname.indexOf("/set/add") !== -1
                     ? "Create"
                     : "Update"}
                 </button>
@@ -239,21 +313,23 @@ const SetEditLayout = () => {
                           required
                         />
                       </div>
-                      <div className="lg:col-span-1 col-span-1">
-                        <InputGroup
-                          type="text"
-                          setValue={setLimit}
-                          placeholder="your last name"
-                          value={limit}
-                          label="Limit"
-                          error={errors.limit}
-                          // disabled={!isHide}
-                        />
-                        <p className="text-gray-600 text-xs px-1 -mt-3 mb-2">
-                          Limit number of card in your set, you can add more
-                          card later
-                        </p>
-                      </div>
+                      {router.pathname.indexOf("/set/add") !== -1 ? (
+                        <div className="lg:col-span-1 col-span-1">
+                          <InputGroup
+                            type="text"
+                            setValue={setLimit}
+                            placeholder="your last name"
+                            value={limit}
+                            label="Limit"
+                            error={errors.limit}
+                            // disabled={!isHide}
+                          />
+                          <p className="text-gray-600 text-xs px-1 -mt-3 mb-2">
+                            Limit number of card in your set, you can add more
+                            card later
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
 
                     <div className=" w-full">
@@ -285,7 +361,7 @@ const SetEditLayout = () => {
                     <label className="text-gray-700 text-sm font-bold mb-2">
                       Tags
                     </label>
-                    <div className="mt-1 py-1 ">
+                    <div className="mt-1 py-1">
                       <ReactTagInput
                         tags={tags}
                         onChange={(newTags) => setTags(newTags)}
@@ -301,7 +377,7 @@ const SetEditLayout = () => {
               </div>
             </div>
           </form>
-          {!isHide ? (
+          {true ? (
             <div className="h-full mt-4">
               <h1 className="text-md mt-4 mb-2">Add cards</h1>
               <hr />
@@ -387,6 +463,15 @@ const SetEditLayout = () => {
             </>
           ) : null}
         </div>
+        <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity="success">
+            This is a success message!
+          </Alert>
+        </Snackbar>
       </AppLayput2>
     </div>
   );
