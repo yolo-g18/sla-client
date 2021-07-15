@@ -6,6 +6,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Typography from "@material-ui/core/FormControl";
 import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import _ from "lodash";
 import {
   ViewState,
   EditingState,
@@ -25,6 +28,7 @@ import {
   DayView,
   MonthView,
   Resources,
+  ConfirmationDialog,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { memo, useCallback, useState } from "react";
 import { IEventRe } from "../../utils/TypeScript";
@@ -50,6 +54,14 @@ const editingOptionsList = [
 
 const Schedule = () => {
   const [data, setData] = useState<IEventRe[]>([]);
+  const [colorList, setColorList] = useState([
+    { colorId: "RED", text: "Red", color: "#F87171" },
+    { colorId: "YELLOW", text: "Yellow", color: "#FBBF24" },
+    { colorId: "GREEN", text: "Green", color: "#10B981" },
+    { colorId: "BLUE", text: "Blue", color: "#3B82F6" },
+    { colorId: "PURPLE", text: "Purple", color: "#A78BFA" },
+    { colorId: "PINK", text: "Pink", color: "#F472B6" },
+  ]);
   const [addData, setAddData] = useState<any>();
   console.log(data);
   const [editingOptions, setEditingOptions] = useState({
@@ -124,15 +136,15 @@ const Schedule = () => {
 
   var resources = [
     {
-      fieldName: "location",
-      title: "Location",
+      fieldName: "color",
+      title: "Color",
       instances: [
-        { id: "RED", text: "Red" },
-        { id: "YELLOW", text: "Yellow" },
-        { id: "GREEN", text: "Green" },
-        { id: "BLUE", text: "Blue" },
-        { id: "PURPLE", text: "Purple" },
-        { id: "PINK", text: "Pink" },
+        { id: "RED", text: "Red", color: "#F87171" },
+        { id: "YELLOW", text: "Yellow", color: "#FBBF24" },
+        { id: "GREEN", text: "Green", color: "#10B981" },
+        { id: "BLUE", text: "Blue", color: "#3B82F6" },
+        { id: "PURPLE", text: "Purple", color: "#A78BFA" },
+        { id: "PINK", text: "Pink", color: "#F472B6" },
       ],
     },
   ];
@@ -146,7 +158,7 @@ const Schedule = () => {
         {...restProps}
         style={{
           backgroundColor: "",
-          borderRadius: "8px",
+          borderRadius: "",
         }}
       >
         {children}
@@ -154,12 +166,114 @@ const Schedule = () => {
     );
   };
 
-  const onAppointmentFormOpening = (data: any) => {};
+  // const getEventById = (id: number) => {
+  //   return _.find(data, { id: id });
+  // };
+
+  // const getColorById = (id: string) => {
+  //   return _.find(colorList, { id: id });
+  // };
+
+  // const onAppointmentFormOpening = (data: any, color: any) => {
+  //   let form = data.form,
+  //     event = getEventById(data.id) || {
+  //       title: null,
+  //       notes: null,
+  //       id: null,
+  //       color: null,
+  //     },
+  //     startDate = data.startDate,
+  //     endDate = data.endDate;
+  //   form.option("items", [
+  //     {
+  //       label: {
+  //         text: "Title",
+  //       },
+  //       name: "title",
+  //       editorType: "dxTextBox",
+  //       editorOptions: {
+  //         value: event.title,
+  //       },
+  //     },
+  //     {
+  //       dataField: "startDate",
+  //       editorType: "dxDateBox",
+  //       editorOptions: {
+  //         width: "100%",
+  //         type: "datetime",
+  //         onValueChanged: function (args: any) {
+  //           startDate = args.value;
+  //         },
+  //       },
+  //     },
+  //     {
+  //       dataField: "endDate",
+  //       editorType: "dxDateBox",
+  //       editorOptions: {
+  //         width: "100%",
+  //         type: "datetime",
+  //         onValueChanged: function (args: any) {
+  //           endDate = args.value;
+  //         },
+  //       },
+  //     },
+  //     {
+  //       label: {
+  //         text: "Description",
+  //       },
+  //       name: "notes",
+  //       editorType: "dxTextArea",
+  //       editorOptions: {
+  //         value: event.notes,
+  //       },
+  //     },
+  //     {
+  //       label: {
+  //         text: "Color",
+  //       },
+  //       name: "",
+  //       editorType: "dxSelectBox",
+  //       editorOptions: {
+  //         value: event.notes,
+  //       },
+  //     },
+  //   ]);
+  // };
+
+  // const CommandButton = (props: any) => {
+  //   if (props.id !== "cancelButton")
+  //     return <AppointmentForm.CommandButton {...props} />;
+  //   else {
+  //     const cancelClick = () => {
+  //       console.log("cancel");
+  //       // this.setState({
+  //       //   errors: {}
+  //       // });
+  //       props.onExecute();
+  //     };
+  //     return (
+  //       <AppointmentForm.CommandButton {...props} onExecute={cancelClick} />
+  //     );
+  //   }
+  // };
+
+  const Header = ({
+    children,
+    appointmentData,
+    ...restProps
+  }: ComponentType<HeaderProps>) => {
+    <AppointmentTooltip.Header {...restProps} appointmentData={appointmentData}>
+      <button
+        /* eslint-disable-next-line no-alert */
+        onClick={() => alert(JSON.stringify(appointmentData))}
+      ></button>
+    </AppointmentTooltip.Header>;
+  };
 
   return (
     <React.Fragment>
       <Paper>
-        <Scheduler data={data} height={650}>
+        <Scheduler data={data} height={750}>
           <ViewState
             // currentDate={currentDate}
             defaultCurrentDate={currentDate}
@@ -182,11 +296,16 @@ const Schedule = () => {
           <TodayButton />
           <DayView startDayHour={0} endDayHour={24} />
           <MonthView />
+          <ConfirmationDialog />
           <Appointments appointmentComponent={Appointment} />
-          <Resources data={resources} mainResourceName="color" />
-          <AppointmentTooltip showOpenButton showDeleteButton={allowDeleting} />
+          <Resources data={resources} />
+          <AppointmentTooltip
+            headerComponent={Header}
+            // contentComponent={}
+            showOpenButton
+            showDeleteButton={allowDeleting}
+          />
           <AppointmentForm
-            // commandButtonComponent={CommandButton}
             readOnly={isAppointmentBeingCreated ? false : !allowUpdating}
           />
           <DragDropProvider allowDrag={allowDrag} allowResize={allowResize} />

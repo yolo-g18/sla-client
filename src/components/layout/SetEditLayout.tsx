@@ -246,7 +246,10 @@ const SetEditLayout = (props: Props) => {
 
         dispatch({
           type: ALERT,
-          payload: { loading: false, success: "😎 Nice! Ready to learn?" },
+          payload: {
+            loading: false,
+            success: "😎 Nice! This set Ready to learn?",
+          },
         });
         setIsToastOpen(true);
         setSeverity("success");

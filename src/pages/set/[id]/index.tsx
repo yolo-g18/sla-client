@@ -101,6 +101,8 @@ const index = () => {
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [typeToast, setTypeToast] = useState("success");
   const [messageToast, setMessageToast] = useState("");
+  const [creatorId, setCreatorId] = useState();
+  const [isSuc, setIsSuc] = useState(false);
 
   const router = useRouter();
 
@@ -122,6 +124,7 @@ const index = () => {
 
   //get data of set by id
   useEffect(() => {
+    setIsSuc(false);
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -137,15 +140,18 @@ const index = () => {
         setDesc(studySetRes.data.description);
         setIsPublic(studySetRes.data.public);
         setTags(studySetRes.data.tag);
-        setUsername(studySetRes.data.username);
+        setUsername(studySetRes.data.creatorName);
         setCards(cardRes.data);
         setNumberOfCard(studySetRes.data.numberOfCard);
+        setCreatorId(studySetRes.data.userId);
       } catch (err) {
         console.log("error is: " + err);
       }
     };
     fetchData();
-  }, [id, alert.success]);
+  }, [id, isSuc]);
+
+  // console.log("card value: " + cards[0].front);
 
   //handel click open menu
   const handelExpandMoreBtnClick = () => {
@@ -184,6 +190,7 @@ const index = () => {
         type: ALERT,
         payload: { loading: false, success: "😎 Your card updated!" },
       });
+      setIsSuc(true);
       setTypeToast("success");
       setMessageToast("😎 Your card updated!");
       setIsToastOpen(true);
@@ -312,15 +319,18 @@ const index = () => {
               </div>
               {/* toolbar */}
               <div className="flex h-8">
-                {username === auth.userResponse?.username ? (
+                {creatorId === auth.userResponse?._id ? (
                   <div className="flex">
-                    <button
-                      className="w-24 text-md rounded-md px-4 mx-2
+                    <Link href={`/set/${id}/learn`}>
+                      <button
+                        className="w-24 text-md rounded-md px-4 mx-2
                    text-sm font-medium bg-green-500 hover:bg-green-600 
                 text-white focus:outline-none"
-                    >
-                      learn
-                    </button>
+                      >
+                        learn
+                      </button>
+                    </Link>
+
                     <button className="mx-2 tooltip focus:outline-none">
                       <AddIcon
                         fontSize="small"
@@ -401,7 +411,10 @@ const index = () => {
               <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div className=" rounded-xl grid grid-cols-11 gap-4 my-4">
+                    <div
+                      key={index}
+                      className=" rounded-xl grid grid-cols-11 gap-4 my-4"
+                    >
                       <div className="col-span-5  rounded-xl bg-white shadow-sm">
                         <QuillNoSSRWrapper
                           readOnly={true}
@@ -500,7 +513,7 @@ const index = () => {
                     onClick={handelDeleteStudySet}
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                    Remove
+                    Delete
                   </button>
                   <button
                     onClick={() => setShowModalDelete(false)}

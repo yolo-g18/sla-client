@@ -39,7 +39,7 @@ const AppLayout = (props: Props) => {
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
       <main className="dark:bg-gray-800 flex flex-col ">
-        <header className="z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center w-full shadow-sm border-b-2">
+        <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center w-full shadow-sm border-b-2">
           {auth.userResponse ? (
             <div className="container mx-auto px-6 flex items-center justify-between">
               <div className="  text-gray-700 dark:text-white  flex items-center">

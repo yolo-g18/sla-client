@@ -72,6 +72,16 @@ export interface IUser extends IUserLogin {
     back: string
   }
 
+  export interface ICardLearning {
+    userId?:number
+    cardId?:number
+    studySetId?:number
+    front:string
+    back:string
+    hint?:string
+    color?:string
+  }
+
   export interface IStudySetInfo {
     _id?:number
     title?: string
