@@ -13,13 +13,21 @@ import ClassIcon from "@material-ui/icons/Class";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import WorkOutlineIcon from "@material-ui/icons/WorkOutline";
 import { getUserByUsername } from "../../redux/actions/userAction";
+import { FormSubmit } from "../../utils/TypeScript";
+
+import { postAPI } from "../../utils/FetchData";
+import { getAPI } from "../../utils/FetchData";
+import InputGroup from "../input/InputGroup";
+import React from "react";
 
 interface Props {
   children: React.ReactNode;
 }
 
+const colorFolderList: String[] = [];
+
 const LibraryLayout = (props: Props) => {
-  const { auth, alert, user } = useSelector((state: RootStore) => state);
+  const {  user } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -32,7 +40,141 @@ const LibraryLayout = (props: Props) => {
     dispatch(getUserByUsername(`${username}`));
   }, [username]);
 
-  console.log("dasbdhasb");
+  function handleAddNew() {
+
+    if (router.pathname.includes("sets"))
+      return;
+
+    setShowModal(true);
+
+  }
+
+  const { auth, alert } = useSelector((state: RootStore) => state);
+
+  const [showModal, setShowModal] = useState(false);
+
+  // state in form add folder/room
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isTitleTyping, setIsTitleTyping] = useState(false);
+  const [isDescriptionTyping, setIsDescriptionTyping] = useState(false);
+  const [name, setName] = useState("");
+  const [isNameTyping, setIsNameTyping] = useState(false);
+
+  // set state for array color
+  const [colors, setColors]: [String[], (colors: String[]) => void] = React.useState(
+    colorFolderList
+  );
+
+  const [loading, setLoading]: [
+    boolean,
+    (loading: boolean) => void
+  ] = React.useState<boolean>(true);
+
+  const [error, setError]: [string, (error: string) => void] = React.useState(
+    'not found'
+  );
+
+   // call api folder color
+   React.useEffect(() => {
+
+
+    async function excute() {
+
+      try {
+
+        const res = await getAPI(`http://localhost:8080/getColorFolder`);
+        setColors(res.data);
+        setLoading(false);
+
+      } catch (err) {
+        setLoading(false);
+        setError(err);
+
+      }
+    }
+
+    excute();
+
+
+  }, []);
+
+
+  // load option for select of folder color 
+  const listColorItems = colors.map((item) =>
+    <option key={item.toString()}>{item}</option>
+  );
+
+
+
+  // get value of color in select
+  const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
+
+  const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
+  };
+  const color_folder = React.useRef<HTMLSelectElement>(null);
+
+  React.useEffect(() => {
+    setIsDescriptionTyping(true);
+  }, [description]);
+
+  React.useEffect(() => {
+    setIsNameTyping(true);
+  }, [name]);
+
+  React.useEffect(() => {
+    setIsTitleTyping(true);
+  }, [title]);
+
+  const handleSubmit = async (e: FormSubmit) => {
+    {
+
+
+      setIsDescriptionTyping(false);
+
+      if (router.pathname.includes("folders")) {
+        setIsTitleTyping(false);
+        e.preventDefault();
+        const color = "" + color_folder.current?.value;
+        const creator_id = "" + user._id;
+        const data = { title, description, color, creator_id };
+        setLoading(true);
+        try {
+
+          const res = await postAPI('http://localhost:8080/createFolder', data);
+          setLoading(false);
+
+        } catch (err) {
+          setLoading(false);
+          setError(err);
+        }
+
+
+      }
+
+
+      if (router.pathname.includes("rooms")) {
+        setIsNameTyping(false);
+        e.preventDefault();
+        const owner_id = "" + user._id;
+        const data = { owner_id, name, description };
+        setLoading(true);
+        try {
+
+          const res = await postAPI('http://localhost:8080/createRoom', data);
+          setLoading(false);
+        } catch (err) {
+          setLoading(false);
+          setError(err);
+        }
+
+      }
+
+      setShowModal(false);
+    }
+
+  };
 
   return (
     <div>
@@ -128,11 +270,10 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-4  flex flex-grow justify-center hover:text-gray-900 ${
-                      router.pathname.indexOf("/sets") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                    }`}
+                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${router.pathname.indexOf("/sets") !== -1
+                      ? "justify-start border-b-2 border-yellow-500"
+                      : ""
+                      }`}
                   >
                     Sets
                   </a>
@@ -144,11 +285,10 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-4 flex flex-grow justify-center hover:text-gray-900 ${
-                      router.pathname.indexOf("/folders") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                    }`}
+                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${router.pathname.indexOf("/folders") !== -1
+                      ? "justify-start border-b-2 border-yellow-500"
+                      : ""
+                      }`}
                   >
                     Folders
                   </a>
@@ -160,11 +300,10 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-4 flex flex-grow justify-center hover:text-gray-900 ${
-                      router.pathname.indexOf("/rooms") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                    }`}
+                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${router.pathname.indexOf("/rooms") !== -1
+                      ? "justify-start border-b-2 border-yellow-500"
+                      : ""
+                      }`}
                   >
                     Rooms
                   </a>
@@ -203,7 +342,7 @@ const LibraryLayout = (props: Props) => {
                   />
                 </div>
                 <div className="py-3 flex relative">
-                  <button
+                  <button id="btnAddNew" onClick={handleAddNew}
                     className="w-32 h-8 text-md flex items-center justify-center rounded-md px-4 
                    text-sm font-medium py-1 bg-green-500 hover:bg-green-600
                 text-white hover:bg-green-dark focus:outline-none"
@@ -213,10 +352,130 @@ const LibraryLayout = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div>{props.children}</div>
+            <div className="bg-yellow-50">{props.children}</div>
           </div>
         </div>
       </AppLayout>
+       {/* popup editor */}
+
+       {showModal ? (
+        <>
+          <div hidden className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12" >
+            <div className="relative w-auto my-6 max-w-3xl">
+              {/*content*/}
+              <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="justify-between px-4 py-6 rounded-t">
+                  <p>{router.pathname.includes("folders") ? "Create Folder" : "Create Room"}</p>
+                </div>
+                {/*body*/}
+                <form onSubmit={handleSubmit}>
+                  <div className="w-full px-4 flex-wrap">
+                    {router.pathname.includes("folders") ? (
+                      <>
+                        <InputGroup
+                          type="text"
+                          setValue={setTitle}
+                          placeholder="Title"
+                          error={!isTitleTyping ? alert.errors?.errors?.title : ""}
+                          required
+                          label="Title"
+                        />
+
+                      </>) :
+                      <>
+
+                        <InputGroup
+                          type="text"
+                          setValue={setName}
+                          placeholder="Name"
+                          error={!isNameTyping ? alert.errors?.errors?.name : ""}
+                          required
+                          label="Name"
+                        />
+
+                      </>}
+
+                    <InputGroup
+                      type="text"
+                      setValue={setDescription}
+                      placeholder="Description"
+                      error={!isDescriptionTyping ? alert.errors?.errors?.description : ""}
+                      required
+                      label="Description"
+                    />
+                    <div className="my-2">
+                      <small className="font-medium text-red-600">
+                        {alert.errors?.message}
+                      </small>
+                    </div>
+                    {router.pathname.includes("folders") ? (
+                      <>
+                        <div className="relative mb-4">
+                          <div className="flex items-center justify-between">
+                            <label className="text-gray-700 text-sm font-bold mb-2" >
+
+                              Colors
+                            </label>
+                          </div>
+                          <select id="color"
+                            className="block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm"
+                            ref={color_folder}
+                            name="color"
+                            onChange={formValue}
+                            value={stateColorFolder.color}
+                          >
+                            {listColorItems}
+                          </select>
+
+                        </div>
+                      </>)
+                      : null}
+
+                  </div>
+
+                  {/*footer*/}
+                  <div className="flex items-center justify-end px-12 py-6">
+                    <button
+                      className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
+                      type="submit"
+
+                    >
+                      {alert.loading ? (
+                        <div className="flex justify-center items-center space-x-1">
+                          <svg
+                            fill="none"
+                            className="w-6 h-6 animate-spin"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                              fill="currentColor"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        "Create"
+                      )}
+                    </button>
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
+
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };

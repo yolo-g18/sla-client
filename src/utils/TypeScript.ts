@@ -50,6 +50,7 @@ export interface IUser extends IUserLogin {
     bio?: string
     title?:string
     description?:string
+    name?:string
   }
 
 
