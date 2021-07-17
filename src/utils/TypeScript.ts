@@ -111,3 +111,14 @@ export interface IUser extends IUserLogin {
     id:number
     color?:string
   }
+
+  export interface IFolder {
+    folder_id: number;
+    title: string;
+    description: string;
+    color: string;
+    numberOfSets: number;
+    createdDate: string;
+    creatorUserName: string;
+  };
+  
