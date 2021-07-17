@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import { deleteAPI } from '../../../utils/FetchData';
 import { getAPI } from '../../../utils/FetchData';
 import Link from "next/link";
+
 interface Props {
   username?: string;
 }
@@ -55,7 +56,7 @@ const folder = (props: Props) => {
 
     excute();
 
-  }, [username, user._id, folders]);
+  }, [username, folders]);
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
   const [idRemoveFolder, setIdRemoveFolder]: [number, (idRemoveFolder: number) => void]

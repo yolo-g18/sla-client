@@ -48,6 +48,8 @@ export interface IUser extends IUserLogin {
     username? : string,
     password?: string
     bio?: string
+    title?:string
+    description?:string
   }
 
 
@@ -121,4 +123,39 @@ export interface IUser extends IUserLogin {
     createdDate: string;
     creatorUserName: string;
   };
+
+  export interface INewFolder {
+ 
+    title: string;
+    color: string;
+    description: string;
+    creator_id: string;
+  };
+  
+  export interface IRoom {
+    room_id: number;
+    name: string;
+    numberOfMembers: number;
+    createdDate: string;
+  };
+  
+  export interface INewRoom {
+   
+    name: string;
+    description: string;
+    owner_id: string;
+  };
+  
+  
+
+  export interface IStudySet{
+    studySet_id:number
+    title: string
+    description: string
+    tags:string 
+    numberOfCards:number
+    creatorName:string
+    color:string
+    
+  }
   
