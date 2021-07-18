@@ -64,11 +64,11 @@ const folder = (props: Props) => {
   async function removeFolder() {
 
 
-    // update static data
+    // delete static data
     let index = folders.findIndex(obj => obj.folder_id === idRemoveFolder);
 
     const tempStudySets = folders.splice(index, 1);
-    // update dynamic data
+    // delete dynamic data
     setLoading(true);
     try {
 

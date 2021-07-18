@@ -25,6 +25,7 @@ import { putAPI } from "../../utils/FetchData";
 import Icon from '@material-ui/core/Icon';
 import { ISetAdd } from "../../utils/TypeScript";
 
+
 const colorFolderList: String[] = [];
 const defaultFolder: IFolder = {
 
@@ -85,22 +86,22 @@ const Folder = () => {
   );
 
   const [idRemoveStudySet, setIdRemoveStudySet]: [number, (idRemoveStudySet: number) => void]
-  = React.useState<number>(0);
+    = React.useState<number>(0);
 
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [isTitleTyping, setIsTitleTyping] = React.useState(false);
   const [isDescriptionTyping, setIsDescriptionTyping] = React.useState(false);
 
-   // get value of color in select
-   const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
+  // get value of color in select
+  const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
 
 
-   const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-     setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
-   };
- 
-   const color_folder = React.useRef<HTMLSelectElement>(null);
+  const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
+  };
+
+  const color_folder = React.useRef<HTMLSelectElement>(null);
 
   React.useEffect(() => {
 
@@ -145,7 +146,7 @@ const Folder = () => {
 
     excute();
 
-  }, [id]);
+  }, [studySets]);
 
   const removeStudySet = async () => {
 
@@ -180,7 +181,7 @@ const Folder = () => {
     setIsShowRemoveModal(!isShowRemoveModal);
   };
 
-  
+
 
   const editFolder = async (e: FormSubmit) => {
 
@@ -253,11 +254,6 @@ const Folder = () => {
     <option key={item.toString()}>{item}</option>
   );
 
-
- 
-
-
-
   React.useEffect(() => {
     async function excute() {
       setLoading(true);
@@ -293,18 +289,33 @@ const Folder = () => {
     </li>
   )
 
-  function addStudySetToFolder(studySetAdd_id: number) {
+  async function addStudySetToFolder(studySetAdd_id: number) {
 
-     // update static data
-     let index = addSets.findIndex(obj => obj.id === studySetAdd_id);
-     var list = document.getElementById("ulSetAdd");
-     
-     list?.removeChild(list?.childNodes[index]);
+    // add static data
 
-     const tempStudySets = addSets.splice(index, 1);
+    let index = addSets.findIndex(obj => obj.id === studySetAdd_id);
 
-     //update dynamic data
-     
+    const tempStudySets = addSets.splice(index, 1);
+
+    // add dynamic data
+    const data = {
+      "folder_id": id,
+      "studySet_id": studySetAdd_id
+    }
+
+    setLoading(true);
+    try {
+
+      const res = await putAPI(`http://localhost:8080/addStudySetToFolder`, data);
+      console.log(res.data);
+      setLoading(false);
+
+    } catch (err) {
+      setLoading(false);
+      setError(err);
+
+    }
+
   }
 
 
@@ -458,25 +469,25 @@ const Folder = () => {
                       onClick={removeStudySet}
                       className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                     >
-                       {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Remove"
-                        )}
+                      {alert.loading ? (
+                        <div className="flex justify-center items-center space-x-1">
+                          <svg
+                            fill="none"
+                            className="w-6 h-6 animate-spin"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                              fill="currentColor"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        "Remove"
+                      )}
                     </button>
                     <button
                       onClick={closeRemoveStudySetModal}
@@ -593,28 +604,28 @@ const Folder = () => {
                       Add StudySet To Folder
                     </p>
                   </div>
-                
-                    <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
-                      Add new studySet
-                    </button>
-                    <br></br>
-                    <div className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow">
-                      <ul id="ulSetAdd" className="flex flex-col divide divide-y">
-                        {listSetAdd}
-                      </ul>
-                    </div>
-                    <div className="flex items-center justify-center px-6 py-6">
-                    
-                      <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
-                        type="button"
-                        onClick={() => setIsShowAddModal(!isShowAddModal)}
-                      >
-                        Close
-                      </button>
 
-                    </div>
-              
+                  <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
+                    Add new studySet
+                  </button>
+                  <br></br>
+                  <div className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow">
+                    <ul id="ulSetAdd" className="flex flex-col divide divide-y">
+                      {listSetAdd}
+                    </ul>
+                  </div>
+                  <div className="flex items-center justify-center px-6 py-6">
+
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                      onClick={() => setIsShowAddModal(!isShowAddModal)}
+                    >
+                      Close
+                    </button>
+
+                  </div>
+
                 </div>
               </div>
             </div>
