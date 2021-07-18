@@ -67,12 +67,6 @@ const folder = (props: Props) => {
   // remove folder from listFolder of user
   async function removeFolder() {
 
-
-    // delete static data
-    let index = folders.findIndex(obj => obj.folder_id === idRemoveFolder);
-
-    const tempStudySets = folders.splice(index, 1);
-    // delete dynamic data
     setLoading(true);
     try {
 
