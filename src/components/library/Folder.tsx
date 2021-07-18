@@ -104,7 +104,7 @@ const Folder = () => {
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
   React.useEffect(() => {
-
+    // load detail data of folder
     async function excute() {
 
       try {
@@ -129,6 +129,7 @@ const Folder = () => {
 
 
   React.useEffect(() => {
+    // list SS already in folder
     async function excute() {
       setLoading(true);
       try {
@@ -148,6 +149,7 @@ const Folder = () => {
 
   }, [studySets]);
 
+  // remove SS from folder
   const removeStudySet = async () => {
 
     // delete static data
@@ -181,8 +183,7 @@ const Folder = () => {
     setIsShowRemoveModal(!isShowRemoveModal);
   };
 
-
-
+  // edit folder
   const editFolder = async (e: FormSubmit) => {
 
     setIsTitleTyping(false);
@@ -220,14 +221,15 @@ const Folder = () => {
     setIsShowEditModal(!isShowEditModal);
   }
 
+  // share link
   function shareLink() {
     navigator.clipboard.writeText(window.location.href);
   }
 
-  // call api folder color
+  
   React.useEffect(() => {
 
-
+    // load folder color
     async function excute() {
 
       try {
@@ -254,7 +256,9 @@ const Folder = () => {
     <option key={item.toString()}>{item}</option>
   );
 
+  
   React.useEffect(() => {
+    // load SS of user for adding to folder
     async function excute() {
       setLoading(true);
       try {
@@ -274,6 +278,7 @@ const Folder = () => {
 
   }, []);
 
+  // populate SS to li in ul
   const listSetAdd = addSets.map((set) =>
     <li key={set.title} className="flex flex-row" >
       <div className="select-none cursor-pointer flex flex-1 items-center p-4">
@@ -289,6 +294,7 @@ const Folder = () => {
     </li>
   )
 
+  // add existing SS to Folder
   async function addStudySetToFolder(studySetAdd_id: number) {
 
     // add static data

@@ -27,7 +27,7 @@ interface Props {
 const colorFolderList: String[] = [];
 
 const LibraryLayout = (props: Props) => {
-  const {  user } = useSelector((state: RootStore) => state);
+  const { user } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -75,10 +75,10 @@ const LibraryLayout = (props: Props) => {
     'not found'
   );
 
-   // call api folder color
-   React.useEffect(() => {
 
+  React.useEffect(() => {
 
+    // call api folder color
     async function excute() {
 
       try {
@@ -105,8 +105,6 @@ const LibraryLayout = (props: Props) => {
     <option key={item.toString()}>{item}</option>
   );
 
-
-
   // get value of color in select
   const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
 
@@ -129,7 +127,7 @@ const LibraryLayout = (props: Props) => {
 
   const handleSubmit = async (e: FormSubmit) => {
     {
-
+      // create new folder and create new room
 
       setIsDescriptionTyping(false);
 
@@ -356,9 +354,9 @@ const LibraryLayout = (props: Props) => {
           </div>
         </div>
       </AppLayout>
-       {/* popup editor */}
+      {/* popup editor */}
 
-       {showModal ? (
+      {showModal ? (
         <>
           <div hidden className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12" >
             <div className="relative w-auto my-6 max-w-3xl">

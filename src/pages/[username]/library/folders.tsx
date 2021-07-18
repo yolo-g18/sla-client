@@ -37,8 +37,13 @@ const folder = (props: Props) => {
   const {
     query: { username }, //id of folder get from path
   } = router;
-  React.useEffect(() => {
 
+  const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
+  const [idRemoveFolder, setIdRemoveFolder]: [number, (idRemoveFolder: number) => void]
+    = React.useState<number>(0);
+
+  React.useEffect(() => {
+    // list all folders of user 
     async function excute() {
 
       try {
@@ -58,9 +63,8 @@ const folder = (props: Props) => {
 
   }, [username, user._id, folders]);
 
-  const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
-  const [idRemoveFolder, setIdRemoveFolder]: [number, (idRemoveFolder: number) => void]
-    = React.useState<number>(0);
+ 
+  // remove folder from listFolder of user
   async function removeFolder() {
 
 
@@ -85,11 +89,13 @@ const folder = (props: Props) => {
 
   }
 
+
   const handleRemoveFolder = (folder_id: number) => {
     setIsShowRemoveModal(!isShowRemoveModal);
     setIdRemoveFolder(folder_id);
 
   };
+  
   const closeRemoveFolderModal = () => {
     setIsShowRemoveModal(!isShowRemoveModal);
   };
