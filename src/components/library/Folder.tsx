@@ -125,7 +125,7 @@ const Folder = () => {
 
     excute();
 
-  }, [id]);
+  }, [folder]);
 
 
   React.useEffect(() => {
@@ -153,9 +153,9 @@ const Folder = () => {
   const removeStudySet = async () => {
 
     // delete static data
-    let index = studySets.findIndex(obj => obj.studySet_id === idRemoveStudySet);
+    //let index = studySets.findIndex(obj => obj.studySet_id === idRemoveStudySet);
 
-    const tempStudySets = studySets.splice(index, 1);
+    // tempStudySets = studySets.splice(index, 1);
 
     //delete dynamic data
     setLoading(true);
