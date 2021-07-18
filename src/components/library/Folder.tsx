@@ -604,10 +604,16 @@ const Folder = () => {
                       Add StudySet To Folder
                     </p>
                   </div>
-
+                  <Link
+                      href={{
+                        pathname: "/set/add",
+                      
+                      }}
+                    >
                   <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
                     Add new studySet
                   </button>
+                  </Link>
                   <br></br>
                   <div className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow">
                     <ul id="ulSetAdd" className="flex flex-col divide divide-y">

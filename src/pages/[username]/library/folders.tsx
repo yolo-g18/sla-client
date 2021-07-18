@@ -56,7 +56,7 @@ const folder = (props: Props) => {
 
     excute();
 
-  }, [username,user._id ,folders]);
+  }, [username, user._id, folders]);
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
   const [idRemoveFolder, setIdRemoveFolder]: [number, (idRemoveFolder: number) => void]
