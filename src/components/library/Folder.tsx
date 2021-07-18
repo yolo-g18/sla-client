@@ -23,7 +23,7 @@ import InputGroup from "../input/InputGroup";
 import { FormSubmit } from "../../utils/TypeScript";
 import { putAPI } from "../../utils/FetchData";
 import Icon from '@material-ui/core/Icon';
-
+import { ISetAdd } from "../../utils/TypeScript";
 
 const colorFolderList: String[] = [];
 const defaultFolder: IFolder = {
@@ -39,8 +39,13 @@ const defaultFolder: IFolder = {
 };
 
 const defaultStudySets: IStudySet[] = [];
-const Folder = () => {
 
+const defaulAddSets: ISetAdd[] = [];
+const Folder = () => {
+  // add SS to folder
+  const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] = React.useState(
+    defaulAddSets
+  );
   // set state for array color
   const [colors, setColors]: [String[], (colors: String[]) => void] = React.useState(
     colorFolderList
@@ -52,7 +57,7 @@ const Folder = () => {
 
   const [isShowAddModal, setIsShowAddModal] = React.useState(false);
 
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, user } = useSelector((state: RootStore) => state);
 
   const router = useRouter();
   //lay ra id tu path
@@ -79,7 +84,23 @@ const Folder = () => {
     'not found'
   );
 
+  const [idRemoveStudySet, setIdRemoveStudySet]: [number, (idRemoveStudySet: number) => void]
+  = React.useState<number>(0);
 
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [isTitleTyping, setIsTitleTyping] = React.useState(false);
+  const [isDescriptionTyping, setIsDescriptionTyping] = React.useState(false);
+
+   // get value of color in select
+   const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
+
+
+   const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
+     setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
+   };
+ 
+   const color_folder = React.useRef<HTMLSelectElement>(null);
 
   React.useEffect(() => {
 
@@ -126,13 +147,6 @@ const Folder = () => {
 
   }, [id]);
 
-
-
-  const [idRemoveStudySet, setIdRemoveStudySet]: [number, (idRemoveStudySet: number) => void]
-    = React.useState<number>(0);
-
-
-
   const removeStudySet = async () => {
 
     // delete static data
@@ -166,10 +180,7 @@ const Folder = () => {
     setIsShowRemoveModal(!isShowRemoveModal);
   };
 
-  const [title, setTitle] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [isTitleTyping, setIsTitleTyping] = React.useState(false);
-  const [isDescriptionTyping, setIsDescriptionTyping] = React.useState(false);
+  
 
   const editFolder = async (e: FormSubmit) => {
 
@@ -243,15 +254,60 @@ const Folder = () => {
   );
 
 
-  // get value of color in select
-  const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
+ 
 
 
-  const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
-  };
 
-  const color_folder = React.useRef<HTMLSelectElement>(null);
+  React.useEffect(() => {
+    async function excute() {
+      setLoading(true);
+      try {
+
+        const res = await getAPI(`http://localhost:8080/api/lib/ss/created?userId=${user._id}`);
+        setAddSets(res.data);
+        setLoading(false);
+
+      } catch (err) {
+        setLoading(false);
+        setError(err);
+
+      }
+    }
+
+    excute();
+
+  }, []);
+
+  const listSetAdd = addSets.map((set) =>
+    <li key={set.title} className="flex flex-row" >
+      <div className="select-none cursor-pointer flex flex-1 items-center p-4">
+        <div className="flex-1 pl-1 mr-16">
+          <div className="font-medium dark:text-white">
+            {set.title}
+          </div>
+        </div>
+        <button onClick={() => addStudySetToFolder(set.id)} className="w-24 text-right flex justify-end" type="button">
+          <Icon>add_circle</Icon>
+        </button>
+      </div>
+    </li>
+  )
+
+  function addStudySetToFolder(studySetAdd_id: number) {
+
+     // update static data
+     let index = addSets.findIndex(obj => obj.id === studySetAdd_id);
+     var list = document.getElementById("ulSetAdd");
+     
+     list?.removeChild(list?.childNodes[index]);
+
+     const tempStudySets = addSets.splice(index, 1);
+
+     //update dynamic data
+     
+  }
+
+
 
   return (
     <div>
@@ -402,7 +458,25 @@ const Folder = () => {
                       onClick={removeStudySet}
                       className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                     >
-                      Remove
+                       {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Remove"
+                        )}
                     </button>
                     <button
                       onClick={closeRemoveStudySetModal}
@@ -519,67 +593,28 @@ const Folder = () => {
                       Add StudySet To Folder
                     </p>
                   </div>
-                  <form >
+                
                     <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
                       Add new studySet
                     </button>
                     <br></br>
-                    <div className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow" key="1">
-                      <ul className="flex flex-col divide divide-y">
-                        <li className="flex flex-row">
-                          <div className="select-none cursor-pointer flex flex-1 items-center p-4">
-                            <div className="flex-1 pl-1 mr-16">
-
-                              <div className="font-medium dark:text-white">
-                                title
-                              </div>
-
-
-                            </div>
-
-                            <button className="w-24 text-right flex justify-end">
-                              <Icon>add_circle</Icon>
-                            </button>
-                          </div>
-                        </li>
+                    <div className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow">
+                      <ul id="ulSetAdd" className="flex flex-col divide divide-y">
+                        {listSetAdd}
                       </ul>
                     </div>
-                    <div className="flex items-center justify-end px-12 py-6">
-                      <button
-                        className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
-                        type="submit"
-
-                      >
-                        {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Add"
-                        )}
-                      </button>
+                    <div className="flex items-center justify-center px-6 py-6">
+                    
                       <button
                         className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
                         type="button"
                         onClick={() => setIsShowAddModal(!isShowAddModal)}
                       >
-                        Cancel
+                        Close
                       </button>
 
                     </div>
-                  </form>
+              
                 </div>
               </div>
             </div>

@@ -160,3 +160,8 @@ export interface IUser extends IUserLogin {
     
   }
   
+
+  export interface ISetAdd{
+    id:number
+    title?:string
+  }
