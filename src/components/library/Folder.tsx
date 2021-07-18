@@ -125,7 +125,7 @@ const Folder = () => {
 
     excute();
 
-  }, [folder]);
+  }, [id]);
 
 
   React.useEffect(() => {
@@ -147,17 +147,11 @@ const Folder = () => {
 
     excute();
 
-  }, [studySets]);
+  }, [studySets,id]);
 
   // remove SS from folder
   const removeStudySet = async () => {
 
-    // delete static data
-    //let index = studySets.findIndex(obj => obj.studySet_id === idRemoveStudySet);
-
-    // tempStudySets = studySets.splice(index, 1);
-
-    //delete dynamic data
     setLoading(true);
     try {
 
@@ -297,13 +291,7 @@ const Folder = () => {
   // add existing SS to Folder
   async function addStudySetToFolder(studySetAdd_id: number) {
 
-    // add static data
-
-    let index = addSets.findIndex(obj => obj.id === studySetAdd_id);
-
-    const tempStudySets = addSets.splice(index, 1);
-
-    // add dynamic data
+   
     const data = {
       "folder_id": id,
       "studySet_id": studySetAdd_id
@@ -323,8 +311,6 @@ const Folder = () => {
     }
 
   }
-
-
 
   return (
     <div>
