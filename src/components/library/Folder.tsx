@@ -24,7 +24,13 @@ import { FormSubmit } from "../../utils/TypeScript";
 import { putAPI } from "../../utils/FetchData";
 import Icon from '@material-ui/core/Icon';
 import { ISetAdd } from "../../utils/TypeScript";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const colorFolderList: String[] = [];
 const defaultFolder: IFolder = {
@@ -103,6 +109,10 @@ const Folder = () => {
 
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
+
+  const [isToastOpen, setIsToastOpen] = React.useState(false);
+  const [typeToast, setTypeToast] = React.useState("success");
+  const [messageToast, setMessageToast] = React.useState("");
   React.useEffect(() => {
     // load detail data of folder
     async function excute() {
@@ -147,7 +157,7 @@ const Folder = () => {
 
     excute();
 
-  }, [studySets,id]);
+  }, [studySets, id]);
 
   // remove SS from folder
   const removeStudySet = async () => {
@@ -157,6 +167,9 @@ const Folder = () => {
 
       const res = await deleteAPI('http://localhost:8080/deleteStudySetFromFolder/' + id + "/" + idRemoveStudySet);
       setLoading(false);
+      setMessageToast("remove studySet from folder successfully");
+      setTypeToast("success");
+      setIsToastOpen(true);
 
     } catch (err) {
       setError(err);
@@ -199,8 +212,10 @@ const Folder = () => {
       try {
 
         const res = await putAPI(`http://localhost:8080/editFolder`, data);
-        console.log(res.data);
         setLoading(false);
+        setMessageToast("edit folder successfully");
+        setTypeToast("success");
+        setIsToastOpen(true);
 
       } catch (err) {
         setLoading(false);
@@ -220,7 +235,7 @@ const Folder = () => {
     navigator.clipboard.writeText(window.location.href);
   }
 
-  
+
   React.useEffect(() => {
 
     // load folder color
@@ -250,14 +265,14 @@ const Folder = () => {
     <option key={item.toString()}>{item}</option>
   );
 
-  
+
   React.useEffect(() => {
     // load SS of user for adding to folder
     async function excute() {
       setLoading(true);
       try {
 
-        const res = await getAPI(`http://localhost:8080/api/lib/ss/created?userId=${user._id}`);
+        const res = await getAPI(`http://localhost:8080/api/lib/ss/created?userId=${auth.userResponse?._id}`);
         setAddSets(res.data);
         setLoading(false);
 
@@ -270,7 +285,7 @@ const Folder = () => {
 
     excute();
 
-  }, []);
+  }, [auth.userResponse?._id, addSets]);
 
   // populate SS to li in ul
   const listSetAdd = addSets.map((set) =>
@@ -291,7 +306,7 @@ const Folder = () => {
   // add existing SS to Folder
   async function addStudySetToFolder(studySetAdd_id: number) {
 
-   
+
     const data = {
       "folder_id": id,
       "studySet_id": studySetAdd_id
@@ -301,8 +316,19 @@ const Folder = () => {
     try {
 
       const res = await putAPI(`http://localhost:8080/addStudySetToFolder`, data);
-      console.log(res.data);
       setLoading(false);
+      console.log(res.data);
+
+      if (res.data === "cancel adding") {
+        setMessageToast("studySet existed in folder");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
+      else {
+        setMessageToast("add studySet to folder successfully");
+        setTypeToast("success");
+        setIsToastOpen(true);
+      }
 
     } catch (err) {
       setLoading(false);
@@ -312,6 +338,15 @@ const Folder = () => {
 
   }
 
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
   return (
     <div>
       <AppLayout title="folder" desc="folder">
@@ -597,14 +632,14 @@ const Folder = () => {
                     </p>
                   </div>
                   <Link
-                      href={{
-                        pathname: "/set/add",
-                      
-                      }}
-                    >
-                  <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
-                    Add new studySet
-                  </button>
+                    href={{
+                      pathname: "/set/add",
+
+                    }}
+                  >
+                    <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
+                      Add new studySet
+                    </button>
                   </Link>
                   <br></br>
                   <div className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow">
@@ -629,6 +664,18 @@ const Folder = () => {
             </div>
           ) : null}
         </div>
+        <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
       </AppLayout>
     </div>
   );
