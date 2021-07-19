@@ -19,6 +19,13 @@ import { postAPI } from "../../utils/FetchData";
 import { getAPI } from "../../utils/FetchData";
 import InputGroup from "../input/InputGroup";
 import React from "react";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 interface Props {
   children: React.ReactNode;
@@ -75,7 +82,9 @@ const LibraryLayout = (props: Props) => {
     'not found'
   );
 
-
+  const [isToastOpen, setIsToastOpen] = React.useState(false);
+  const [typeToast, setTypeToast] = React.useState("success");
+  const [messageToast, setMessageToast] = React.useState("");
   React.useEffect(() => {
 
     // call api folder color
@@ -142,6 +151,9 @@ const LibraryLayout = (props: Props) => {
 
           const res = await postAPI('http://localhost:8080/createFolder', data);
           setLoading(false);
+          setMessageToast("create folder successfully");
+          setTypeToast("success");
+          setIsToastOpen(true);
 
         } catch (err) {
           setLoading(false);
@@ -162,6 +174,9 @@ const LibraryLayout = (props: Props) => {
 
           const res = await postAPI('http://localhost:8080/createRoom', data);
           setLoading(false);
+          setMessageToast("create room successfully");
+          setTypeToast("success");
+          setIsToastOpen(true);
         } catch (err) {
           setLoading(false);
           setError(err);
@@ -172,6 +187,15 @@ const LibraryLayout = (props: Props) => {
       setShowModal(false);
     }
 
+  };
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
   };
 
   return (
@@ -474,6 +498,18 @@ const LibraryLayout = (props: Props) => {
           </div>
         </>
       ) : null}
+         <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
     </div>
   );
 };

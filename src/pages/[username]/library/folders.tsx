@@ -110,7 +110,7 @@ const folder = (props: Props) => {
   };
 
   //handel close toast
-const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
@@ -188,7 +188,7 @@ const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
             </div>
           </div>
         ) : null}
-             <Snackbar
+        <Snackbar
           open={isToastOpen}
           autoHideDuration={6000}
           onClose={handleClose}
