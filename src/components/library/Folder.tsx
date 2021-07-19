@@ -143,7 +143,7 @@ const Folder = () => {
   React.useEffect(() => {
     // list SS already in folder
     async function excute() {
-    
+
       try {
 
         const res = await getAPI(`http://localhost:8080/listStudySetsOfFolder/${id}`);
@@ -159,12 +159,12 @@ const Folder = () => {
     setIsSuccess(false);
     excute();
 
-  }, [id,isSuccess]);
+  }, [id, isSuccess]);
 
   // remove SS from folder
   const removeStudySet = async () => {
 
-  
+
     try {
 
       const res = await deleteAPI('http://localhost:8080/deleteStudySetFromFolder/' + id + "/" + idRemoveStudySet);
@@ -212,7 +212,7 @@ const Folder = () => {
     const data = { title, description, color, id };
 
     async function excute() {
-   
+
       try {
 
         const res = await putAPI(`http://localhost:8080/editFolder`, data);
@@ -237,6 +237,9 @@ const Folder = () => {
   // share link
   function shareLink() {
     navigator.clipboard.writeText(window.location.href);
+    setMessageToast("copied link");
+    setTypeToast("success");
+    setIsToastOpen(true);
   }
 
 
@@ -273,7 +276,7 @@ const Folder = () => {
   React.useEffect(() => {
     // load SS of user for adding to folder
     async function excute() {
-    
+
       try {
 
         const res = await getAPI(`http://localhost:8080/api/lib/ss/created?userId=${auth.userResponse?._id}`);
@@ -316,7 +319,7 @@ const Folder = () => {
       "studySet_id": studySetAdd_id
     }
 
-  
+
     try {
 
       const res = await putAPI(`http://localhost:8080/addStudySetToFolder`, data);
@@ -346,7 +349,7 @@ const Folder = () => {
 
   //handel close toast
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-    
+
     if (reason === "clickaway") {
       return;
     }
