@@ -9,6 +9,14 @@ import Grid from '@material-ui/core/Grid';
 import { deleteAPI } from '../../../utils/FetchData';
 import { getAPI } from '../../../utils/FetchData';
 import Link from "next/link";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 interface Props {
   username?: string;
@@ -42,6 +50,10 @@ const folder = (props: Props) => {
   const [idRemoveFolder, setIdRemoveFolder]: [number, (idRemoveFolder: number) => void]
     = React.useState<number>(0);
 
+  const [isToastOpen, setIsToastOpen] = React.useState(false);
+  const [typeToast, setTypeToast] = React.useState("success");
+  const [messageToast, setMessageToast] = React.useState("");
+
   React.useEffect(() => {
     // list all folders of user 
     async function excute() {
@@ -63,7 +75,7 @@ const folder = (props: Props) => {
 
   }, [username, user._id, folders]);
 
- 
+
   // remove folder from listFolder of user
   async function removeFolder() {
 
@@ -72,6 +84,9 @@ const folder = (props: Props) => {
 
       const res = await deleteAPI('http://localhost:8080/deleteFolder/' + idRemoveFolder);
       setLoading(false);
+      setMessageToast("remove folder successfully");
+      setTypeToast("success");
+      setIsToastOpen(true);
 
     } catch (err) {
       setError(err);
@@ -89,11 +104,19 @@ const folder = (props: Props) => {
     setIdRemoveFolder(folder_id);
 
   };
-  
+
   const closeRemoveFolderModal = () => {
     setIsShowRemoveModal(!isShowRemoveModal);
   };
 
+  //handel close toast
+const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
 
   return (
     <div>
@@ -165,6 +188,18 @@ const folder = (props: Props) => {
             </div>
           </div>
         ) : null}
+             <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
       </LibraryLayout>
 
     </div>
