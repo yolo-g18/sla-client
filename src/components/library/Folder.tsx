@@ -48,6 +48,7 @@ const defaultFolder: IFolder = {
 const defaultStudySets: IStudySet[] = [];
 
 const defaulAddSets: ISetAdd[] = [];
+
 const Folder = () => {
   // add SS to folder
   const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] = React.useState(
@@ -57,8 +58,6 @@ const Folder = () => {
   const [colors, setColors]: [String[], (colors: String[]) => void] = React.useState(
     colorFolderList
   );
-
-  const [isSuccess, setIsSuccess] = React.useState(false);
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
 
@@ -115,6 +114,8 @@ const Folder = () => {
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
+
+  const [isShowEmpty, setIsShowEmpty] = React.useState(false);
   React.useEffect(() => {
     // load detail data of folder
     async function excute() {
@@ -148,6 +149,12 @@ const Folder = () => {
 
         const res = await getAPI(`http://localhost:8080/listStudySetsOfFolder/${id}`);
         setStudySets(res.data);
+
+        if (studySets.length === 0)
+          setIsShowEmpty(true);
+        else
+        setIsShowEmpty(false);
+
         setLoading(false);
 
       } catch (err) {
@@ -156,10 +163,10 @@ const Folder = () => {
 
       }
     }
-    setIsSuccess(false);
+   
     excute();
 
-  }, [id, isSuccess]);
+  }, [id, studySets]);
 
   // remove SS from folder
   const removeStudySet = async () => {
@@ -169,15 +176,15 @@ const Folder = () => {
 
       const res = await deleteAPI('http://localhost:8080/deleteStudySetFromFolder/' + id + "/" + idRemoveStudySet);
       setLoading(false);
-      setIsSuccess(true);
+      
       setMessageToast("remove studySet from folder successfully");
       setTypeToast("success");
       setIsToastOpen(true);
 
     } catch (err) {
-      setError(err);
+      
       setLoading(false);
-      setIsSuccess(false);
+      setError(err);
 
     }
 
@@ -313,6 +320,7 @@ const Folder = () => {
   // add existing SS to Folder
   async function addStudySetToFolder(studySetAdd_id: number) {
 
+  
 
     const data = {
       "folder_id": id,
@@ -324,7 +332,7 @@ const Folder = () => {
 
       const res = await putAPI(`http://localhost:8080/addStudySetToFolder`, data);
       setLoading(false);
-      setIsSuccess(true);
+     
       console.log(res.data);
 
       if (res.data === "cancel adding") {
@@ -340,7 +348,7 @@ const Folder = () => {
 
     } catch (err) {
       setLoading(false);
-      setIsSuccess(false);
+  
       setError(err);
 
     }
@@ -422,6 +430,19 @@ const Folder = () => {
             </div>
 
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {isShowEmpty ? (
+
+                <div className="rounded-md flex items-center bg-white jusitfy-between px-5 py-4 mb-2 text-blue-500">
+                  <div className="w-full flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className=" w-6 h-6 mr-2" viewBox="0 0 1792 1792">
+                      <path d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z">
+                      </path>
+                    </svg>
+                    Empty
+                  </div>
+                </div>
+
+              ) : null}
               {studySets.map((set, index) => {
                 return (
                   <div className="col-span-1">
@@ -486,6 +507,7 @@ const Folder = () => {
                   </div>
                 );
               })}
+
             </div>
           </div>
           {isShowRemoveModal ? (
@@ -673,6 +695,7 @@ const Folder = () => {
             </div>
           ) : null}
         </div>
+
         <Snackbar
           open={isToastOpen}
           autoHideDuration={6000}
