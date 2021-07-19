@@ -58,6 +58,8 @@ const Folder = () => {
     colorFolderList
   );
 
+  const [isSuccess, setIsSuccess] = React.useState(false);
+
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
 
   const [isShowEditModal, setIsShowEditModal] = React.useState(false);
@@ -141,7 +143,7 @@ const Folder = () => {
   React.useEffect(() => {
     // list SS already in folder
     async function excute() {
-      setLoading(true);
+    
       try {
 
         const res = await getAPI(`http://localhost:8080/listStudySetsOfFolder/${id}`);
@@ -154,19 +156,20 @@ const Folder = () => {
 
       }
     }
-
+    setIsSuccess(false);
     excute();
 
-  }, [studySets, id]);
+  }, [id,isSuccess]);
 
   // remove SS from folder
   const removeStudySet = async () => {
 
-    setLoading(true);
+  
     try {
 
       const res = await deleteAPI('http://localhost:8080/deleteStudySetFromFolder/' + id + "/" + idRemoveStudySet);
       setLoading(false);
+      setIsSuccess(true);
       setMessageToast("remove studySet from folder successfully");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -174,6 +177,7 @@ const Folder = () => {
     } catch (err) {
       setError(err);
       setLoading(false);
+      setIsSuccess(false);
 
     }
 
@@ -208,7 +212,7 @@ const Folder = () => {
     const data = { title, description, color, id };
 
     async function excute() {
-      setLoading(true);
+   
       try {
 
         const res = await putAPI(`http://localhost:8080/editFolder`, data);
@@ -269,7 +273,7 @@ const Folder = () => {
   React.useEffect(() => {
     // load SS of user for adding to folder
     async function excute() {
-      setLoading(true);
+    
       try {
 
         const res = await getAPI(`http://localhost:8080/api/lib/ss/created?userId=${auth.userResponse?._id}`);
@@ -285,7 +289,7 @@ const Folder = () => {
 
     excute();
 
-  }, [auth.userResponse?._id, addSets]);
+  }, [auth.userResponse?._id]);
 
   // populate SS to li in ul
   const listSetAdd = addSets.map((set) =>
@@ -312,11 +316,12 @@ const Folder = () => {
       "studySet_id": studySetAdd_id
     }
 
-    setLoading(true);
+  
     try {
 
       const res = await putAPI(`http://localhost:8080/addStudySetToFolder`, data);
       setLoading(false);
+      setIsSuccess(true);
       console.log(res.data);
 
       if (res.data === "cancel adding") {
@@ -332,6 +337,7 @@ const Folder = () => {
 
     } catch (err) {
       setLoading(false);
+      setIsSuccess(false);
       setError(err);
 
     }
@@ -397,17 +403,17 @@ const Folder = () => {
                   <div>
                     <button onClick={() => setIsShowAddModal(!isShowAddModal)} className="mx-1 tooltip">
                       <AddIcon className="hover:text-gray-900 text-gray-700" />
-                      <span className="tooltiptext ">add study sets</span>
+                      <span className="tooltiptext w-32">add study sets</span>
                     </button>
                     <button onClick={() => setIsShowEditModal(!isShowEditModal)} className="mx-1 tooltip">
                       <EditIcon className="hover:text-gray-900 text-gray-700" />
-                      <span className="tooltiptext ">edit</span>
+                      <span className="tooltiptext w-16">edit</span>
                     </button>
                   </div>
                 ) : null}
                 <button onClick={shareLink} className="mx-1 tooltip">
                   <ShareIcon className="hover:text-gray-900 text-gray-700" />
-                  <span className="tooltiptext ">share</span>
+                  <span className="tooltiptext w-16">share</span>
                 </button>
               </div>
             </div>
