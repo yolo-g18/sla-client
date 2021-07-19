@@ -131,19 +131,20 @@ const index = () => {
         const studySetRes = await getAPI(
           `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
-        const cardRes = await getAPI(`${PARAMS.ENDPOINT}card/list?id=${id}`);
-        dispatch({ type: ALERT, payload: { loading: false } });
-        console.log("study set data is: " + JSON.stringify(studySetRes.data));
-        console.log("study set data is: " + JSON.stringify(cardRes.data));
-
-        setTitle(studySetRes.data.title);
-        setDesc(studySetRes.data.description);
-        setIsPublic(studySetRes.data.public);
-        setTags(studySetRes.data.tag);
-        setUsername(studySetRes.data.creatorName);
-        setCards(cardRes.data);
-        setNumberOfCard(studySetRes.data.numberOfCard);
-        setCreatorId(studySetRes.data.userId);
+        if (studySetRes.data) {
+          const cardRes = await getAPI(`${PARAMS.ENDPOINT}card/list?id=${id}`);
+          dispatch({ type: ALERT, payload: { loading: false } });
+          console.log("study set data is: " + JSON.stringify(studySetRes.data));
+          console.log("card data is: " + JSON.stringify(cardRes.data));
+          setTitle(studySetRes.data.title);
+          setDesc(studySetRes.data.description);
+          setIsPublic(studySetRes.data.public);
+          setTags(studySetRes.data.tag);
+          setUsername(studySetRes.data.creatorName);
+          setCards(cardRes.data);
+          setNumberOfCard(studySetRes.data.numberOfCard);
+          setCreatorId(studySetRes.data.userId);
+        } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log("error is: " + err);
       }
