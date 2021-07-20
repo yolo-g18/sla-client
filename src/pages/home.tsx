@@ -72,11 +72,11 @@ const home = () => {
   return (
     <div>
       <AppLayout2 title="home" desc="home">
-        <div className="overflow-auto pb-24 px-4 lg:w-5/6 w-full mx-auto h-full">
+        <div className=" pb-24 px-4 lg:w-5/6 w-full mx-auto">
           <h1 className="text-4xl font-semibold text-gray-800 dark:text-white mb-4 px-2">
             Home
           </h1>
-          <div className="grid lg:grid-cols-6 grid-cols-1  h-2/3">
+          <div className="grid lg:grid-cols-6 grid-cols-1">
             <div className="col-span-2 px-2 ">
               <div className="flex flex-col">
                 <p className="text-lg font-bold text-gray-800">Task today</p>{" "}

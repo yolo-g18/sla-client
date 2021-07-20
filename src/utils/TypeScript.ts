@@ -39,6 +39,8 @@ export interface IUser extends IUserLogin {
 
 export interface ISearch {
   keyword?:string
+  type?:number
+  searchBy?:number
 }
 
   export interface errorsApiRes  {
@@ -138,4 +140,19 @@ export interface ISearch {
     notes?:string
     id:number
     color?:string
+  }
+
+  export interface ICardLite {
+    front?:string
+    back?:string
+  }
+
+  export interface ISSResultSearch {
+    id:number
+    creator: string
+    title: string 
+    tag:string
+    numberOfCards:number
+    createdDate:Date
+    first4Cards: ICardLite[]
   }

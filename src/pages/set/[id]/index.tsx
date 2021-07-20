@@ -288,11 +288,11 @@ const index = () => {
             <hr />
             <br />
             <span className="text-sm text-gray-700">tags</span>
-            <div className="flex">
+            <div className="flex flex-wrap">
               {_.split(tags, ",").map((tag, index) => {
                 return (
-                  <div className="my-1 mr-2">
-                    <span className="px-4 py-1 rounded-xl text-gray-800  bg-gray-200   ">
+                  <div className="my-1 mr-2 flex ">
+                    <span className="px-4 py-1 rounded-xl text-gray-800 truncate  bg-gray-200   ">
                       {tag}
                     </span>
                   </div>
@@ -421,7 +421,7 @@ const index = () => {
                           readOnly={true}
                           theme="bubble"
                           value={card.front}
-                          className="w-72"
+                          className="w-64"
                         />
                       </div>
                       <div className="col-span-5 rounded-xl bg-white shadow-sm ">
@@ -429,7 +429,7 @@ const index = () => {
                           readOnly={true}
                           theme="bubble"
                           value={card.back}
-                          className="w-72"
+                          className="w-64"
                         />
                       </div>
                       <div className="col-span-1">

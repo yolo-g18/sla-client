@@ -15,6 +15,7 @@ interface Props {
   title: string;
   desc: string;
   children: React.ReactNode;
+  search?: string;
 }
 
 const AppLayout = (props: Props) => {
@@ -24,7 +25,9 @@ const AppLayout = (props: Props) => {
   const [isOpenSidebar, setOpenSidebar] = useState(true);
   const { auth, alert, search } = useSelector((state: RootStore) => state);
 
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState<string>(
+    props.search ? props.search : ""
+  );
 
   useEffect(() => {
     if (search.keyword) setSearchValue(search.keyword);
@@ -43,7 +46,7 @@ const AppLayout = (props: Props) => {
     e.preventDefault();
 
     console.log(searchValue);
-    dispatch(putSearchKeyword(searchValue));
+    if (searchValue.length > 0) dispatch(putSearchKeyword(searchValue, 0, 0));
   };
 
   return (
@@ -273,7 +276,7 @@ const AppLayout = (props: Props) => {
           )}
         </header>
         <div className="bg-gray-100 flex ">
-          <div className="container mx-auto flex flex-col justify-between pt-2 position:relative">
+          <div className="container mx-auto h-screen flex flex-col justify-between pt-2 position:relative">
             {props.children}
           </div>
         </div>
