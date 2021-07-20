@@ -37,6 +37,12 @@ export interface IUser extends IUserLogin {
   favourTimeTo?: Date
 }
 
+export interface ISearch {
+  keyword?:string
+  type?:number
+  searchBy?:number
+}
+
   export interface errorsApiRes  {
     status? : number | null
     message? : string | null 
@@ -85,6 +91,19 @@ export interface IUser extends IUserLogin {
     color?:string
   }
 
+  export interface IStudySetLearning {
+    userID:number
+    studySetId: number
+    userName: string
+    studySetName: string  
+    ssDescription: string 
+    progress: number
+    status: string
+    rating: number
+    color: string
+    numberOfCards: number
+  }
+
   export interface IStudySetInfo {
     _id?:number
     title?: string
@@ -93,6 +112,17 @@ export interface IUser extends IUserLogin {
     creatorName?:string
     isPublic?:false
     numberCard?: number
+  }
+
+  export interface IStudySetInfo2 {
+    id?:number
+    creator?:string
+    title?: string
+    description?: string
+    tag?:string 
+    creatorName?:string
+    isPublic?:false
+    numberOfCards?: number
   }
   
   export interface IEvent {
@@ -164,4 +194,17 @@ export interface IUser extends IUserLogin {
   export interface ISetAdd{
     id:number
     title?:string
+  export interface ICardLite {
+    front?:string
+    back?:string
+  }
+
+  export interface ISSResultSearch {
+    id:number
+    creator: string
+    title: string 
+    tag:string
+    numberOfCards:number
+    createdDate:Date
+    first4Cards: ICardLite[]
   }

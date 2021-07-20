@@ -97,6 +97,8 @@ const SetEditLayout = (props: Props) => {
 
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [severity, setSeverity] = useState("");
+  const [typeToast, setTypeToast] = useState("success");
+  const [messageToast, setMessageToast] = useState("");
 
   const router = useRouter();
 
@@ -243,22 +245,21 @@ const SetEditLayout = (props: Props) => {
       //add
       try {
         const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, addData);
+        dispatch({ type: ALERT, payload: { loading: false } });
 
-        dispatch({
-          type: ALERT,
-          payload: {
-            loading: false,
-            success: "😎 Nice! This set Ready to learn?",
-          },
-        });
         setIsToastOpen(true);
-        setSeverity("success");
+        setTypeToast("success");
+        setMessageToast("😎 Your study set updated!");
+
         router.push({
           pathname: "/set/[id]",
           query: { id: res.data },
         });
       } catch (err) {
         dispatch({ type: ALERT, payload: { errors: err.response.data } });
+        setIsToastOpen(true);
+        setTypeToast("error");
+        setMessageToast("An error occurred");
       }
     } else {
       const dataUpdate = {
@@ -283,19 +284,19 @@ const SetEditLayout = (props: Props) => {
           `${PARAMS.ENDPOINT}studySet/edit`,
           studySetData
         );
-        dispatch({
-          type: ALERT,
-          payload: { loading: false, success: "😎 Your study set updated!" },
-        });
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setIsToastOpen(true);
+        setTypeToast("success");
+        setMessageToast("😎 Your study set updated!");
         router.push({
           pathname: "/set/[id]",
           query: { id: props.id },
         });
       } catch (err) {
-        dispatch({
-          type: ALERT,
-          payload: { loading: false, errors: { message: "An error occurred" } },
-        });
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setIsToastOpen(true);
+        setTypeToast("error");
+        setMessageToast("An error occurred");
       }
     }
   };
@@ -521,8 +522,11 @@ const SetEditLayout = (props: Props) => {
           autoHideDuration={6000}
           onClose={handleClose}
         >
-          <Alert onClose={handleClose} severity="success">
-            This is a success message!
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
           </Alert>
         </Snackbar>
       </AppLayput2>

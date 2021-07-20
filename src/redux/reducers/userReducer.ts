@@ -1,4 +1,3 @@
-
 import { USER, IUserType } from '../types/userType';
 import { IUser } from '../../utils/TypeScript';
 

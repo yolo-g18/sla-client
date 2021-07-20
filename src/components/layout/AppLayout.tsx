@@ -3,17 +3,19 @@ import { useEffect, useState } from "react";
 import Ddm from "../ddm/DropDownMenu";
 import Meta from "../site/Meta";
 
-import { RootStore } from "../../utils/TypeScript";
+import { FormSubmit, RootStore } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getUserProfile } from "../../redux/actions/authAction";
 import { ddmItemsAdd, menuitem } from "../../common/listCommon";
 import link from "next/link";
+import { putSearchKeyword } from "../../redux/actions/searchAction";
 
 interface Props {
   title: string;
   desc: string;
   children: React.ReactNode;
+  search?: string;
 }
 
 const AppLayout = (props: Props) => {
@@ -21,9 +23,14 @@ const AppLayout = (props: Props) => {
   const dispatch = useDispatch();
 
   const [isOpenSidebar, setOpenSidebar] = useState(true);
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, search } = useSelector((state: RootStore) => state);
+
+  const [searchValue, setSearchValue] = useState<string>(
+    props.search ? props.search : ""
+  );
 
   useEffect(() => {
+    if (search.keyword) setSearchValue(search.keyword);
     if (localStorage.getItem("access-token")) {
       dispatch(getUserProfile());
     } else {
@@ -35,33 +42,45 @@ const AppLayout = (props: Props) => {
     setOpenSidebar(!isOpenSidebar);
   };
 
+  const handelSearchSubmit = (e: FormSubmit) => {
+    e.preventDefault();
+
+    console.log(searchValue);
+    if (searchValue.length > 0) dispatch(putSearchKeyword(searchValue, 0, 0));
+  };
+
   return (
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
-      <main className="dark:bg-gray-800 flex flex-col ">
-        <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center w-full shadow-sm border-b-2">
+      <main className="dark:bg-gray-800 flex flex-col">
+        <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center w-screen shadow-sm border-b-2">
           {auth.userResponse ? (
-            <div className="container mx-auto px-6 flex items-center justify-between">
+            <div className="container mx-auto px-4 flex items-center justify-between">
               <div className="  text-gray-700 dark:text-white  flex items-center">
                 <Link href="/home">
                   <a href="" className="text-2xl font-bold ml-3">
                     SLA
                   </a>
                 </Link>
-                <div className="relative text-gray-600 ml-6">
-                  <svg
-                    className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
-                  </svg>
-                  <input
-                    type="text"
-                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-2xl focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
-                    placeholder="Search"
-                  />
-                </div>
+                <form onSubmit={handelSearchSubmit}>
+                  <div className="relative text-gray-600 ml-6">
+                    <svg
+                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
+                    </svg>
+                    <input
+                      type="text"
+                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-2xl focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
+                      placeholder="Search"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                    />
+                  </div>
+                </form>
+
                 <div className="px-6 relative">
                   {/* create new drop down menu */}
                   <Ddm
@@ -256,8 +275,8 @@ const AppLayout = (props: Props) => {
             </div>
           )}
         </header>
-        <div className="bg-gray-100 flex  ">
-          <div className="container mx-auto flex flex-col justify-between pt-2 position:relative">
+        <div className="bg-gray-100 flex ">
+          <div className="container mx-auto h-screen flex flex-col justify-between pt-2 position:relative">
             {props.children}
           </div>
         </div>
