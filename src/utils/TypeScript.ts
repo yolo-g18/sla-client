@@ -54,6 +54,9 @@ export interface ISearch {
     username? : string,
     password?: string
     bio?: string
+    title?:string
+    description?:string
+    name?:string
   }
 
 
@@ -142,6 +145,55 @@ export interface ISearch {
     color?:string
   }
 
+  export interface IFolder {
+    folder_id: number;
+    title: string;
+    description: string;
+    color: string;
+    numberOfSets: number;
+    createdDate: string;
+    creatorUserName: string;
+  };
+
+  export interface INewFolder {
+ 
+    title: string;
+    color: string;
+    description: string;
+    creator_id: string;
+  };
+  
+  export interface IRoom {
+    room_id: number;
+    name: string;
+    numberOfMembers: number;
+    createdDate: string;
+  };
+  
+  export interface INewRoom {
+   
+    name: string;
+    description: string;
+    owner_id: string;
+  };
+  
+  
+
+  export interface IStudySet{
+    studySet_id:number
+    title: string
+    description: string
+    tags:string 
+    numberOfCards:number
+    creatorName:string
+    color:string
+    
+  }
+  
+
+  export interface ISetAdd{
+    id:number
+    title?:string
   export interface ICardLite {
     front?:string
     back?:string
