@@ -21,6 +21,7 @@ import InputGroup from "../input/InputGroup";
 import React from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { ALERT } from "../../redux/types/alertType";
 
 //alert
 function Alert(props: AlertProps) {
@@ -48,12 +49,9 @@ const LibraryLayout = (props: Props) => {
   }, [username]);
 
   function handleAddNew() {
-
-    if (router.pathname.includes("sets"))
-      return;
+    if (router.pathname.includes("sets")) return;
 
     setShowModal(true);
-
   }
 
   const { auth, alert } = useSelector((state: RootStore) => state);
@@ -69,56 +67,47 @@ const LibraryLayout = (props: Props) => {
   const [isNameTyping, setIsNameTyping] = useState(false);
 
   // set state for array color
-  const [colors, setColors]: [String[], (colors: String[]) => void] = React.useState(
-    colorFolderList
-  );
+  const [colors, setColors]: [String[], (colors: String[]) => void] =
+    React.useState(colorFolderList);
 
-  const [loading, setLoading]: [
-    boolean,
-    (loading: boolean) => void
-  ] = React.useState<boolean>(true);
+  const [loading, setLoading]: [boolean, (loading: boolean) => void] =
+    React.useState<boolean>(true);
 
-  const [error, setError]: [string, (error: string) => void] = React.useState(
-    'not found'
-  );
+  const [error, setError]: [string, (error: string) => void] =
+    React.useState("not found");
 
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
   React.useEffect(() => {
-
     // call api folder color
     async function excute() {
-
       try {
-
         const res = await getAPI(`http://localhost:8080/getColorFolder`);
         setColors(res.data);
         setLoading(false);
-
       } catch (err) {
         setLoading(false);
         setError(err);
-
       }
     }
 
     excute();
-
-
   }, []);
 
-
-  // load option for select of folder color 
-  const listColorItems = colors.map((item) =>
+  // load option for select of folder color
+  const listColorItems = colors.map((item) => (
     <option key={item.toString()}>{item}</option>
-  );
+  ));
 
   // get value of color in select
   const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
 
   const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
+    setStateColorFolder({
+      ...stateColorFolder,
+      [event.target.name]: event.target.value.trim(),
+    });
   };
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
@@ -146,23 +135,18 @@ const LibraryLayout = (props: Props) => {
         const color = "" + color_folder.current?.value;
         const creator_id = "" + user._id;
         const data = { title, description, color, creator_id };
-        setLoading(true);
         try {
-
-          const res = await postAPI('http://localhost:8080/createFolder', data);
-          setLoading(false);
-          setMessageToast("create folder successfully");
+          dispatch({ type: ALERT, payload: { loading: true } });
+          const res = await postAPI("http://localhost:8080/createFolder", data);
+          dispatch({ type: ALERT, payload: { loading: false } });
+          setMessageToast("Create folder successfully");
           setTypeToast("success");
           setIsToastOpen(true);
-
         } catch (err) {
-          setLoading(false);
+          dispatch({ type: ALERT, payload: { loading: false } });
           setError(err);
         }
-
-
       }
-
 
       if (router.pathname.includes("rooms")) {
         setIsNameTyping(false);
@@ -171,8 +155,7 @@ const LibraryLayout = (props: Props) => {
         const data = { owner_id, name, description };
         setLoading(true);
         try {
-
-          const res = await postAPI('http://localhost:8080/createRoom', data);
+          const res = await postAPI("http://localhost:8080/createRoom", data);
           setLoading(false);
           setMessageToast("create room successfully");
           setTypeToast("success");
@@ -181,12 +164,10 @@ const LibraryLayout = (props: Props) => {
           setLoading(false);
           setError(err);
         }
-
       }
 
       setShowModal(false);
     }
-
   };
 
   //handel close toast
@@ -292,10 +273,11 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${router.pathname.indexOf("/sets") !== -1
-                      ? "justify-start border-b-2 border-yellow-500"
-                      : ""
-                      }`}
+                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                      router.pathname.indexOf("/sets") !== -1
+                        ? "justify-start border-b-2 border-yellow-500"
+                        : ""
+                    }`}
                   >
                     Sets
                   </a>
@@ -307,10 +289,11 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${router.pathname.indexOf("/folders") !== -1
-                      ? "justify-start border-b-2 border-yellow-500"
-                      : ""
-                      }`}
+                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                      router.pathname.indexOf("/folders") !== -1
+                        ? "justify-start border-b-2 border-yellow-500"
+                        : ""
+                    }`}
                   >
                     Folders
                   </a>
@@ -322,10 +305,11 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${router.pathname.indexOf("/rooms") !== -1
-                      ? "justify-start border-b-2 border-yellow-500"
-                      : ""
-                      }`}
+                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                      router.pathname.indexOf("/rooms") !== -1
+                        ? "justify-start border-b-2 border-yellow-500"
+                        : ""
+                    }`}
                   >
                     Rooms
                   </a>
@@ -364,7 +348,9 @@ const LibraryLayout = (props: Props) => {
                   />
                 </div>
                 <div className="py-3 flex relative">
-                  <button id="btnAddNew" onClick={handleAddNew}
+                  <button
+                    id="btnAddNew"
+                    onClick={handleAddNew}
                     className="w-32 h-8 text-md flex items-center justify-center rounded-md px-4 
                    text-sm font-medium py-1 bg-green-500 hover:bg-green-600
                 text-white hover:bg-green-dark focus:outline-none"
@@ -382,13 +368,20 @@ const LibraryLayout = (props: Props) => {
 
       {showModal ? (
         <>
-          <div hidden className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12" >
+          <div
+            hidden
+            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12"
+          >
             <div className="relative w-auto my-6 max-w-3xl">
               {/*content*/}
               <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="justify-between px-4 py-6 rounded-t">
-                  <p>{router.pathname.includes("folders") ? "Create Folder" : "Create Room"}</p>
+                  <p>
+                    {router.pathname.includes("folders")
+                      ? "Create Folder"
+                      : "Create Room"}
+                  </p>
                 </div>
                 {/*body*/}
                 <form onSubmit={handleSubmit}>
@@ -399,30 +392,37 @@ const LibraryLayout = (props: Props) => {
                           type="text"
                           setValue={setTitle}
                           placeholder="Title"
-                          error={!isTitleTyping ? alert.errors?.errors?.title : ""}
+                          error={
+                            !isTitleTyping ? alert.errors?.errors?.title : ""
+                          }
                           required
                           label="Title"
                         />
-
-                      </>) :
+                      </>
+                    ) : (
                       <>
-
                         <InputGroup
                           type="text"
                           setValue={setName}
                           placeholder="Name"
-                          error={!isNameTyping ? alert.errors?.errors?.name : ""}
+                          error={
+                            !isNameTyping ? alert.errors?.errors?.name : ""
+                          }
                           required
                           label="Name"
                         />
-
-                      </>}
+                      </>
+                    )}
 
                     <InputGroup
                       type="text"
                       setValue={setDescription}
                       placeholder="Description"
-                      error={!isDescriptionTyping ? alert.errors?.errors?.description : ""}
+                      error={
+                        !isDescriptionTyping
+                          ? alert.errors?.errors?.description
+                          : ""
+                      }
                       required
                       label="Description"
                     />
@@ -435,12 +435,12 @@ const LibraryLayout = (props: Props) => {
                       <>
                         <div className="relative mb-4">
                           <div className="flex items-center justify-between">
-                            <label className="text-gray-700 text-sm font-bold mb-2" >
-
+                            <label className="text-gray-700 text-sm font-bold mb-2">
                               Colors
                             </label>
                           </div>
-                          <select id="color"
+                          <select
+                            id="color"
                             className="block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm"
                             ref={color_folder}
                             name="color"
@@ -449,11 +449,9 @@ const LibraryLayout = (props: Props) => {
                           >
                             {listColorItems}
                           </select>
-
                         </div>
-                      </>)
-                      : null}
-
+                      </>
+                    ) : null}
                   </div>
 
                   {/*footer*/}
@@ -461,7 +459,6 @@ const LibraryLayout = (props: Props) => {
                     <button
                       className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
                       type="submit"
-
                     >
                       {alert.loading ? (
                         <div className="flex justify-center items-center space-x-1">
@@ -490,7 +487,6 @@ const LibraryLayout = (props: Props) => {
                     >
                       Cancel
                     </button>
-
                   </div>
                 </form>
               </div>
@@ -498,18 +494,18 @@ const LibraryLayout = (props: Props) => {
           </div>
         </>
       ) : null}
-         <Snackbar
-          open={isToastOpen}
-          autoHideDuration={6000}
+      <Snackbar
+        open={isToastOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert
           onClose={handleClose}
+          severity={typeToast === "success" ? "success" : "error"}
         >
-          <Alert
-            onClose={handleClose}
-            severity={typeToast === "success" ? "success" : "error"}
-          >
-            {messageToast}
-          </Alert>
-        </Snackbar>
+          {messageToast}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

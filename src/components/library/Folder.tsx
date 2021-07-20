@@ -16,13 +16,13 @@ import ShareIcon from "@material-ui/icons/Share";
 import { IFolder } from "../../utils/TypeScript";
 import { IStudySet } from "../../utils/TypeScript";
 import _, { divide } from "lodash";
-import React from 'react';
+import React from "react";
 import { deleteAPI } from "../../utils/FetchData";
 import { getAPI } from "../../utils/FetchData";
 import InputGroup from "../input/InputGroup";
 import { FormSubmit } from "../../utils/TypeScript";
 import { putAPI } from "../../utils/FetchData";
-import Icon from '@material-ui/core/Icon';
+import Icon from "@material-ui/core/Icon";
 import { ISetAdd } from "../../utils/TypeScript";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
@@ -34,15 +34,13 @@ function Alert(props: AlertProps) {
 
 const colorFolderList: String[] = [];
 const defaultFolder: IFolder = {
-
   folder_id: 0,
   title: "",
   description: "",
   color: "",
   numberOfSets: 0,
   createdDate: "",
-  creatorUserName: ""
-
+  creatorUserName: "",
 };
 
 const defaultStudySets: IStudySet[] = [];
@@ -51,13 +49,11 @@ const defaulAddSets: ISetAdd[] = [];
 
 const Folder = () => {
   // add SS to folder
-  const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] = React.useState(
-    defaulAddSets
-  );
+  const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] =
+    React.useState(defaulAddSets);
   // set state for array color
-  const [colors, setColors]: [String[], (colors: String[]) => void] = React.useState(
-    colorFolderList
-  );
+  const [colors, setColors]: [String[], (colors: String[]) => void] =
+    React.useState(colorFolderList);
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
 
@@ -73,27 +69,24 @@ const Folder = () => {
     query: { id }, //id of folder get from path
   } = router;
 
+  const [folder, setFolder]: [IFolder, (folders: IFolder) => void] =
+    React.useState(defaultFolder);
 
-  const [folder, setFolder]: [IFolder, (folders: IFolder) => void] = React.useState(
-    defaultFolder
-  );
+  const [studySets, setStudySets]: [
+    IStudySet[],
+    (studySets: IStudySet[]) => void
+  ] = React.useState(defaultStudySets);
 
-  const [studySets, setStudySets]: [IStudySet[], (studySets: IStudySet[]) => void] = React.useState(
-    defaultStudySets
-  );
+  const [loading, setLoading]: [boolean, (loading: boolean) => void] =
+    React.useState<boolean>(true);
 
-  const [loading, setLoading]: [
-    boolean,
-    (loading: boolean) => void
-  ] = React.useState<boolean>(true);
+  const [error, setError]: [string, (error: string) => void] =
+    React.useState("not found");
 
-
-  const [error, setError]: [string, (error: string) => void] = React.useState(
-    'not found'
-  );
-
-  const [idRemoveStudySet, setIdRemoveStudySet]: [number, (idRemoveStudySet: number) => void]
-    = React.useState<number>(0);
+  const [idRemoveStudySet, setIdRemoveStudySet]: [
+    number,
+    (idRemoveStudySet: number) => void
+  ] = React.useState<number>(0);
 
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -103,13 +96,14 @@ const Folder = () => {
   // get value of color in select
   const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
 
-
   const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setStateColorFolder({ ...stateColorFolder, [event.target.name]: event.target.value.trim() });
+    setStateColorFolder({
+      ...stateColorFolder,
+      [event.target.name]: event.target.value.trim(),
+    });
   };
 
   const color_folder = React.useRef<HTMLSelectElement>(null);
-
 
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
@@ -119,77 +113,64 @@ const Folder = () => {
   React.useEffect(() => {
     // load detail data of folder
     async function excute() {
-
       try {
-
         const res = await getAPI(`http://localhost:8080/getFolder/${id}`);
         setFolder(res.data);
         setTitle(res.data.title);
         setDescription(res.data.description);
         setStateColorFolder({ color: res.data.color });
         setLoading(false);
-
       } catch (err) {
         setLoading(false);
         setError(err);
-
       }
     }
 
     excute();
-
   }, [id]);
-
 
   React.useEffect(() => {
     // list SS already in folder
     async function excute() {
-
       try {
-
-        const res = await getAPI(`http://localhost:8080/listStudySetsOfFolder/${id}`);
+        const res = await getAPI(
+          `http://localhost:8080/listStudySetsOfFolder/${id}`
+        );
         setStudySets(res.data);
 
-        if (studySets.length === 0)
-          setIsShowEmpty(true);
-        else
-        setIsShowEmpty(false);
+        if (studySets.length === 0) setIsShowEmpty(true);
+        else setIsShowEmpty(false);
 
         setLoading(false);
-
       } catch (err) {
         setLoading(false);
         setError(err);
-
       }
     }
-   
-    excute();
 
+    excute();
   }, [id, studySets]);
 
   // remove SS from folder
   const removeStudySet = async () => {
-
-
     try {
-
-      const res = await deleteAPI('http://localhost:8080/deleteStudySetFromFolder/' + id + "/" + idRemoveStudySet);
+      const res = await deleteAPI(
+        "http://localhost:8080/deleteStudySetFromFolder/" +
+          id +
+          "/" +
+          idRemoveStudySet
+      );
       setLoading(false);
-      
+
       setMessageToast("remove studySet from folder successfully");
       setTypeToast("success");
       setIsToastOpen(true);
-
     } catch (err) {
-      
       setLoading(false);
       setError(err);
-
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
-
   };
 
   const handleRemoveStudySet = (studySet_id: number) => {
@@ -203,7 +184,6 @@ const Folder = () => {
 
   // edit folder
   const editFolder = async (e: FormSubmit) => {
-
     setIsTitleTyping(false);
     setIsDescriptionTyping(false);
 
@@ -219,27 +199,22 @@ const Folder = () => {
     const data = { title, description, color, id };
 
     async function excute() {
-
       try {
-
         const res = await putAPI(`http://localhost:8080/editFolder`, data);
         setLoading(false);
         setMessageToast("edit folder successfully");
         setTypeToast("success");
         setIsToastOpen(true);
-
       } catch (err) {
         setLoading(false);
         setError(err);
-
       }
     }
 
     excute();
 
-
     setIsShowEditModal(!isShowEditModal);
-  }
+  };
 
   // share link
   function shareLink() {
@@ -249,115 +224,97 @@ const Folder = () => {
     setIsToastOpen(true);
   }
 
-
   React.useEffect(() => {
-
     // load folder color
     async function excute() {
-
       try {
-
         const res = await getAPI(`http://localhost:8080/getColorFolder`);
         setColors(res.data);
         setLoading(false);
-
       } catch (err) {
         setLoading(false);
         setError(err);
-
       }
     }
 
     excute();
-
-
   }, []);
 
-
-  // load option for select of folder color 
-  const listColorItems = colors.map((item) =>
+  // load option for select of folder color
+  const listColorItems = colors.map((item) => (
     <option key={item.toString()}>{item}</option>
-  );
-
+  ));
 
   React.useEffect(() => {
     // load SS of user for adding to folder
     async function excute() {
-
       try {
-
-        const res = await getAPI(`http://localhost:8080/api/lib/ss/created?userId=${auth.userResponse?._id}`);
+        const res = await getAPI(
+          `http://localhost:8080/api/lib/ss/created?userId=${auth.userResponse?._id}`
+        );
         setAddSets(res.data);
         setLoading(false);
-
       } catch (err) {
         setLoading(false);
         setError(err);
-
       }
     }
 
     excute();
-
   }, [auth.userResponse?._id]);
 
   // populate SS to li in ul
-  const listSetAdd = addSets.map((set) =>
-    <li key={set.title} className="flex flex-row" >
+  const listSetAdd = addSets.map((set) => (
+    <li key={set.title} className="flex flex-row">
       <div className="select-none cursor-pointer flex flex-1 items-center p-4">
         <div className="flex-1 pl-1 mr-16">
-          <div className="font-medium dark:text-white">
-            {set.title}
-          </div>
+          <div className="font-medium dark:text-white">{set.title}</div>
         </div>
-        <button onClick={() => addStudySetToFolder(set.id)} className="w-24 text-right flex justify-end" type="button">
+        <button
+          onClick={() => addStudySetToFolder(set.id)}
+          className="w-24 text-right flex justify-end"
+          type="button"
+        >
           <Icon>add_circle</Icon>
         </button>
       </div>
     </li>
-  )
+  ));
 
   // add existing SS to Folder
   async function addStudySetToFolder(studySetAdd_id: number) {
-
-  
-
     const data = {
-      "folder_id": id,
-      "studySet_id": studySetAdd_id
-    }
-
+      folder_id: id,
+      studySet_id: studySetAdd_id,
+    };
 
     try {
-
-      const res = await putAPI(`http://localhost:8080/addStudySetToFolder`, data);
+      const res = await putAPI(
+        `http://localhost:8080/addStudySetToFolder`,
+        data
+      );
       setLoading(false);
-     
+
       console.log(res.data);
 
       if (res.data === "cancel adding") {
         setMessageToast("studySet existed in folder");
         setTypeToast("error");
         setIsToastOpen(true);
-      }
-      else {
+      } else {
         setMessageToast("add studySet to folder successfully");
         setTypeToast("success");
         setIsToastOpen(true);
       }
-
     } catch (err) {
       setLoading(false);
-  
+
       setError(err);
-
     }
-
   }
 
   //handel close toast
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-
     if (reason === "clickaway") {
       return;
     }
@@ -404,7 +361,6 @@ const Folder = () => {
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
                 <a href={`/${folder.creatorUserName}/library/folders`}>
-                  <KeyboardBackspaceIcon className="hover:text-gray-600" />{" "}
                   <span>back to library folder</span>
                 </a>
               </div>
@@ -412,17 +368,23 @@ const Folder = () => {
               <div className="flex flex-row">
                 {folder.creatorUserName === auth.userResponse?.username ? (
                   <div>
-                    <button onClick={() => setIsShowAddModal(!isShowAddModal)} className="mx-1 tooltip">
+                    <button
+                      onClick={() => setIsShowAddModal(!isShowAddModal)}
+                      className="mx-2 tooltip"
+                    >
                       <AddIcon className="hover:text-gray-900 text-gray-700" />
                       <span className="tooltiptext w-32">add study sets</span>
                     </button>
-                    <button onClick={() => setIsShowEditModal(!isShowEditModal)} className="mx-1 tooltip">
+                    <button
+                      onClick={() => setIsShowEditModal(!isShowEditModal)}
+                      className="mx-2 tooltip"
+                    >
                       <EditIcon className="hover:text-gray-900 text-gray-700" />
                       <span className="tooltiptext w-16">edit</span>
                     </button>
                   </div>
                 ) : null}
-                <button onClick={shareLink} className="mx-1 tooltip">
+                <button onClick={shareLink} className="mx-2 tooltip">
                   <ShareIcon className="hover:text-gray-900 text-gray-700" />
                   <span className="tooltiptext w-16">share</span>
                 </button>
@@ -431,17 +393,21 @@ const Folder = () => {
 
             <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-4">
               {isShowEmpty ? (
-
                 <div className="rounded-md flex items-center bg-white jusitfy-between px-5 py-4 mb-2 text-blue-500">
                   <div className="w-full flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className=" w-6 h-6 mr-2" viewBox="0 0 1792 1792">
-                      <path d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z">
-                      </path>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      className=" w-6 h-6 mr-2"
+                      viewBox="0 0 1792 1792"
+                    >
+                      <path d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z"></path>
                     </svg>
                     Empty
                   </div>
                 </div>
-
               ) : null}
               {studySets.map((set, index) => {
                 return (
@@ -471,11 +437,12 @@ const Folder = () => {
                         </div>
                         <div>
                           <button
-                            onClick={() => handleRemoveStudySet(set.studySet_id)}
+                            onClick={() =>
+                              handleRemoveStudySet(set.studySet_id)
+                            }
                             className="tooltip flex items-center focus:outline-none"
                           >
                             <HighlightOffIcon className="hover:text-gray-900 text-gray-700" />
-
                           </button>
                         </div>
                       </div>
@@ -507,7 +474,6 @@ const Folder = () => {
                   </div>
                 );
               })}
-
             </div>
           </div>
           {isShowRemoveModal ? (
@@ -564,20 +530,18 @@ const Folder = () => {
                 <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
                   <div className="mb-4"></div>
                   <div className="mb-8">
-                    <p>
-                      Edit folder
-                    </p>
+                    <p>Edit folder</p>
                   </div>
                   <form onSubmit={editFolder}>
-
                     <div className="w-full px-4 flex-wrap">
-
                       <InputGroup
                         type="text"
                         value={title}
                         setValue={setTitle}
                         placeholder="Title"
-                        error={!isTitleTyping ? alert.errors?.errors?.title : ""}
+                        error={
+                          !isTitleTyping ? alert.errors?.errors?.title : ""
+                        }
                         required
                         label="Title"
                       />
@@ -586,18 +550,22 @@ const Folder = () => {
                         value={description}
                         setValue={setDescription}
                         placeholder="Description"
-                        error={!isDescriptionTyping ? alert.errors?.errors?.description : ""}
+                        error={
+                          !isDescriptionTyping
+                            ? alert.errors?.errors?.description
+                            : ""
+                        }
                         required
                         label="Description"
                       />
                       <div className="relative mb-4">
                         <div className="flex items-center justify-between">
-                          <label className="text-gray-700 text-sm font-bold mb-2" >
-
+                          <label className="text-gray-700 text-sm font-bold mb-2">
                             Colors
                           </label>
                         </div>
-                        <select id="color"
+                        <select
+                          id="color"
                           className="block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm"
                           ref={color_folder}
                           name="color"
@@ -606,17 +574,13 @@ const Folder = () => {
                         >
                           {listColorItems}
                         </select>
-
                       </div>
-
-
                     </div>
 
                     <div className="flex items-center justify-end px-12 py-6">
                       <button
                         className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
                         type="submit"
-
                       >
                         {alert.loading ? (
                           <div className="flex justify-center items-center space-x-1">
@@ -645,7 +609,6 @@ const Folder = () => {
                       >
                         Cancel
                       </button>
-
                     </div>
                   </form>
                 </div>
@@ -658,17 +621,17 @@ const Folder = () => {
                 <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
                   <div className="mb-4"></div>
                   <div className="mb-8">
-                    <p>
-                      Add StudySet To Folder
-                    </p>
+                    <p>Add StudySet To Folder</p>
                   </div>
                   <Link
                     href={{
                       pathname: "/set/add",
-
                     }}
                   >
-                    <button type="button" className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2">
+                    <button
+                      type="button"
+                      className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-2"
+                    >
                       Add new studySet
                     </button>
                   </Link>
@@ -679,7 +642,6 @@ const Folder = () => {
                     </ul>
                   </div>
                   <div className="flex items-center justify-center px-6 py-6">
-
                     <button
                       className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
                       type="button"
@@ -687,9 +649,7 @@ const Folder = () => {
                     >
                       Close
                     </button>
-
                   </div>
-
                 </div>
               </div>
             </div>

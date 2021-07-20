@@ -194,6 +194,7 @@ export interface ISearch {
   export interface ISetAdd{
     id:number
     title?:string
+  }
   export interface ICardLite {
     front?:string
     back?:string
