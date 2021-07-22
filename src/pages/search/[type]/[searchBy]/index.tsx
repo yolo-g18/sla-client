@@ -83,7 +83,7 @@ const index = () => {
                   <div className="flex flex-row">
                     <p>{set.numberOfCards} cards</p>
                   </div>
-                  <div className="grid grid-cols-4 gap-4">{/* {d} */}</div>
+                  <div className="grid grid-cols-4 gap-4">{}</div>
                 </div>
               );
             })}

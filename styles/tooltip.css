@@ -29,3 +29,8 @@
   visibility: visible;
   opacity: 1;
 }
+
+.editor {
+  width: 550px;
+  height: 250px;
+}

@@ -64,17 +64,18 @@ export const getUserProfile = () => async (dispatch: Dispatch<IAuthType | IAlert
     if (token) {
       dispatch({ type: ALERT, payload: { loading: true } })
       const res = await getAPI(`${PARAMS.ENDPOINT}me/about`);
+      dispatch({ type: ALERT, payload: { loading: false } })
 
       dispatch({ type: AUTH,payload: res.data })
       dispatch({ type: ALERT, payload: { success: res.data } })
-  
     }
   }catch (err: any) {
     if(err.response) {
-      dispatch({ type: ALERT, payload: { errors: err.response.data } })
+      dispatch({ type: ALERT, payload: { errors: err.response.data },loading:false })
     } else {
-      dispatch({ type: ALERT, payload: { errors: {message: "The Server has problem"} } })
+      dispatch({ type: ALERT, payload: { errors: {message: "The Server has problem"}, loading:false } })
     }
+    
     
   }
 }

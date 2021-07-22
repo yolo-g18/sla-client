@@ -58,13 +58,14 @@ const profile = () => {
     };
     console.log(data);
 
-    dispatch({ type: ALERT, payload: { loading: true } });
     try {
+      dispatch({ type: ALERT, payload: { loading: true } });
       const res = await putAPI(`${PARAMS.ENDPOINT}me`, data);
       dispatch({ type: ALERT, payload: { loading: false } });
       dispatch(getUserProfile());
     } catch (err: any) {
       dispatch({ type: ALERT, payload: { errors: err.response.data } });
+      dispatch({ type: ALERT, payload: { loading: false } });
     }
   };
 

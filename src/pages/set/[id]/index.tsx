@@ -48,17 +48,10 @@ const QuillNoSSRWrapper = dynamic(import("react-quill"), {
 
 const modules = {
   toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ size: [] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
+    [{ header: "2" }],
+    ["bold", "italic", "underline", "blockquote"],
+    [{ color: [] }, { background: [] }],
     ["link", "image", "video"],
-    ["clean"],
   ],
   clipboard: {
     matchVisual: false,
@@ -67,16 +60,12 @@ const modules = {
 
 const formats = [
   "header",
-  "font",
-  "size",
   "bold",
   "italic",
+  "color",
+  "background",
   "underline",
-  "strike",
   "blockquote",
-  "list",
-  "bullet",
-  "indent",
   "link",
   "image",
   "video",
@@ -91,7 +80,7 @@ const index = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState();
   const [cards, setCards] = useState<ICard[]>([]);
-  const [username, setUsername] = useState("");
+  const [creatorName, setCreatorName] = useState("");
   const [numberOfCard, setNumberOfCard] = useState();
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
   const [currentCard, setCurrentCard] = useState(0);
@@ -140,10 +129,9 @@ const index = () => {
           setDesc(studySetRes.data.description);
           setIsPublic(studySetRes.data.public);
           setTags(studySetRes.data.tag);
-          setUsername(studySetRes.data.creatorName);
+          setCreatorName(studySetRes.data.creatorName);
           setCards(cardRes.data);
           setNumberOfCard(studySetRes.data.numberOfCard);
-          setCreatorId(studySetRes.data.userId);
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log("error is: " + err);
@@ -269,7 +257,11 @@ const index = () => {
               </div>
               <div className="px-3 mr-auto">
                 <small className="text-sm">create by </small>
-                <h4 className="font-bold text-md">{username}</h4>
+                <a href={`/${creatorName}/library/sets`}>
+                  <h4 className="font-bold text-md hover:underline">
+                    {creatorName}
+                  </h4>
+                </a>
               </div>
             </div>
             <p>
@@ -309,33 +301,28 @@ const index = () => {
                     query: { username: auth.userResponse?.username },
                   }}
                 >
-                  <button
-                    className="w-40 h-8 text-md flex items-center justify-center rounded-md px-4 
-                   text-sm font-medium py-1 bg-white hover:text-gray-900 border-gray-300 border-2
-                text-gray-600 hover:bg-green-dark focus:outline-none"
-                  >
+                  <p className="hover:underline cursor-pointer">
                     back to library
-                  </button>
+                  </p>
                 </Link>
               </div>
               {/* toolbar */}
               <div className="flex h-8">
-                {creatorId === auth.userResponse?._id ? (
-                  <div className="flex">
-                    <Link href={`/set/${id}/learn`}>
-                      <button
-                        className="w-24 text-md rounded-md px-4 mx-2
+                <Link href={`/set/${id}/learn`}>
+                  <button
+                    className="w-24 text-md rounded-md px-4 mx-2
                    text-sm font-medium bg-green-500 hover:bg-green-600 
                 text-white focus:outline-none"
-                      >
-                        learn
-                      </button>
-                    </Link>
-
+                  >
+                    learn
+                  </button>
+                </Link>
+                {creatorName === auth.userResponse?.username ? (
+                  <div className="flex">
                     <button className="mx-2 tooltip focus:outline-none">
                       <AddIcon
-                        fontSize="small"
-                        className="hover:text-gray-4 text-gray-700"
+                        fontSize="default"
+                        className="hover:text-gray-400 text-gray-700"
                       />
                       <span className="tooltiptext -mt-2 w-40">
                         add card to sets
@@ -350,7 +337,7 @@ const index = () => {
                       <button className="mx-2 tooltip focus:outline-none">
                         <EditIcon
                           fontSize="small"
-                          className="hover:text-gray-4 text-gray-700"
+                          className="hover:text-gray-400 text-gray-700"
                         />
                         <span className="tooltiptext -mt-2 w-16">edit</span>
                       </button>
@@ -360,7 +347,7 @@ const index = () => {
                 <button className="mx-2 tooltip focus:outline-none">
                   <ShareIcon
                     fontSize="small"
-                    className="hover:text-gray-4 text-gray-700"
+                    className="hover:text-gray-400 text-gray-700"
                   />
                   <span className="tooltiptext -mt-2 w-16">share</span>
                 </button>
@@ -390,12 +377,12 @@ const index = () => {
                             </span>
                           </a>
                           <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500
-                             hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                            className="block px-4 py-1 font-medium text-sm text-yellow-500 hover:bg-blue-500
+                             hover:text-white  dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                             role="menuitem"
                             onClick={() => setShowModalDelete(true)}
                           >
-                            <span className="flex flex-col">
+                            <span className="flex flex-col ">
                               <span>delete</span>
                             </span>
                           </a>
@@ -460,8 +447,9 @@ const index = () => {
                     modules={modules}
                     formats={formats}
                     theme="snow"
-                    className="h-80 relative mb-12 "
+                    className="h-64 editor relative mb-12 border-white"
                     onChange={setFront}
+                    placeholder="front side content"
                     value={front}
                   />
                 </div>
@@ -470,7 +458,8 @@ const index = () => {
                     modules={modules}
                     formats={formats}
                     theme="snow"
-                    className="h-80 relative mb-12"
+                    className="h-64 editor relative mb-12"
+                    placeholder="back side content"
                     onChange={setBack}
                     value={back}
                   />

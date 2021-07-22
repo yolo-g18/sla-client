@@ -53,7 +53,7 @@ const AppLayout = (props: Props) => {
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
       <main className="dark:bg-gray-800 flex flex-col">
-        <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center w-screen shadow-sm border-b-2">
+        <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center shadow-sm border-b-2">
           {auth.userResponse ? (
             <div className="container mx-auto px-4 flex items-center justify-between">
               <div className="  text-gray-700 dark:text-white  flex items-center">
@@ -280,6 +280,7 @@ const AppLayout = (props: Props) => {
             {props.children}
           </div>
         </div>
+        <div className="h-32 "></div>
       </main>
     </div>
   );

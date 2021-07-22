@@ -8,6 +8,8 @@ import { RootStore } from "../../utils/TypeScript";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
 import ShareIcon from "@material-ui/icons/Share";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import FolderOutlinedIcon from "@material-ui/icons/FolderOutlined";
 
 interface Props {
   children: React.ReactNode;
@@ -111,15 +113,31 @@ const RoomLayout = (props: Props) => {
                       //   onClick={() => setIsShowAddModal(!isShowAddModal)}
                       className="mx-2 tooltip"
                     >
-                      <AddIcon className="hover:text-gray-900 text-gray-700" />
+                      <AddIcon
+                        fontSize="default"
+                        className="hover:text-gray-400 text-gray-700"
+                      />
                       <span className="tooltiptext w-32">add study sets</span>
                     </button>
                     <button
                       //   onClick={() => setIsShowEditModal(!isShowEditModal)}
                       className="mx-2 tooltip"
                     >
-                      <EditIcon className="hover:text-gray-900 text-gray-700" />
-                      <span className="tooltiptext w-16">edit</span>
+                      <FolderOutlinedIcon
+                        fontSize="default"
+                        className="hover:text-gray-400 text-gray-700"
+                      />
+                      <span className="tooltiptext w-24">add folder</span>
+                    </button>
+                    <button
+                      // onClick={shareLink}
+                      className="mx-2 tooltip"
+                    >
+                      <GroupAddIcon
+                        fontSize="default"
+                        className="hover:text-gray-400 text-gray-700"
+                      />
+                      <span className="tooltiptext w-28">invite user</span>
                     </button>
                   </div>
                 ) : null}
@@ -127,7 +145,10 @@ const RoomLayout = (props: Props) => {
                   // onClick={shareLink}
                   className="mx-2 tooltip"
                 >
-                  <ShareIcon className="hover:text-gray-900 text-gray-700" />
+                  <ShareIcon
+                    fontSize="small"
+                    className="hover:text-gray-400 text-gray-700"
+                  />
                   <span className="tooltiptext w-16">share</span>
                 </button>
               </div>
@@ -172,6 +193,7 @@ const RoomLayout = (props: Props) => {
                 </nav>
               </div>
             </div>
+            <div>{props.children}</div>
           </div>
         </div>
       </AppLayout>

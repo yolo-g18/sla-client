@@ -12,6 +12,8 @@ import Link from "next/link";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../../redux/types/alertType";
+import { PARAMS } from "../../../common/params";
+import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
 
 //alert
 function Alert(props: AlertProps) {
@@ -41,6 +43,8 @@ const folder = () => {
 
   const [isShowEmpty, setIsShowEmpty] = React.useState(false);
 
+  console.log("id: " + user._id);
+
   React.useEffect(() => {
     setIsSuccess(false);
     // list all folders of user
@@ -48,7 +52,7 @@ const folder = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
-          `http://localhost:8080/getFolderListOfUser/${user._id}`
+          `${PARAMS.ENDPOINT}folder/getFolderListOfUser/${user._id}`
         );
 
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -60,24 +64,26 @@ const folder = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
-
     excute();
-  }, [username, isSuccess]);
+  }, [user._id, isSuccess, alert.success]);
 
   // remove folder from listFolder of user
   async function removeFolder() {
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
       const res = await deleteAPI(
-        "http://localhost:8080/deleteFolder/" + idRemoveFolder
+        `${PARAMS.ENDPOINT}folder/deleteFolder/${idRemoveFolder}`
       );
-      setIsSuccess(true);
       dispatch({ type: ALERT, payload: { loading: false } });
+      setIsSuccess(true);
       setMessageToast("remove folder successfully");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
       setIsSuccess(false);
     }
 
@@ -105,54 +111,72 @@ const folder = () => {
   return (
     <div>
       <LibraryLayout>
-        {folders.map((item) => (
-          <div
-            className="container flex flex-col mx-auto w-full bg-white dark:bg-gray-800 rounded-lg shadow"
-            key={item.folder_id}
-          >
-            <ul className="flex flex-col divide divide-y">
-              <li className="flex flex-row">
-                <div className="select-none cursor-pointer flex flex-1 items-center p-4">
-                  <div className="flex-1 pl-1 mr-16">
-                    <Link
-                      href={{
-                        pathname: "/folder/[id]",
-                        query: { id: item.folder_id },
-                      }}
-                    >
-                      <div className="font-medium dark:text-white">
-                        {item.title}
+        {folders.length === 0 ? (
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-3xl font-semibold text-gray-700">
+              This folder has no sets yet
+            </p>
+            <p className="text-md text-gray-600">
+              Organize all your study sets with folders.
+            </p>
+          </div>
+        ) : (
+          folders.map((item) => (
+            <div
+              className=" bg-white dark:bg-gray-800 mt-6 border-b-2  
+             hover:border-gray-300 hover:shadow-lg rounded-lg shadow-md flex justify-between"
+              key={item.folder_id}
+            >
+              <div className="w-full">
+                <Link
+                  href={{
+                    pathname: "/folder/[id]",
+                    query: { id: item.folder_id },
+                  }}
+                >
+                  <div className="cursor-pointer flex flex-1 items-center p-4">
+                    <div className="flex-1 pl-1 mr-16">
+                      <div className="font-medium dark:text-white flex">
+                        <FolderOpenRoundedIcon
+                          className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
+                        />
+                        <p>{item.title}</p>
                       </div>
-                    </Link>
-                    <div className="text-gray-600 dark:text-gray-200 text-sm">
-                      {item.numberOfSets <= 1
-                        ? item.numberOfSets + " set"
-                        : item.numberOfSets + " set"}
+                      <div className="text-gray-600 dark:text-gray-200 text-sm">
+                        {item.numberOfSets <= 1
+                          ? item.numberOfSets + " set"
+                          : item.numberOfSets + " set"}
+                      </div>
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-200 text-xs">
+                      {item.createdDate}
                     </div>
                   </div>
-                  <div className="text-gray-600 dark:text-gray-200 text-xs">
-                    {item.createdDate}
-                  </div>
-                  <button
-                    onClick={() => handleRemoveFolder(item.folder_id)}
-                    className="w-24 text-right flex justify-end focus:outline-none"
-                  >
-                    <Grid item xs={8}>
-                      <DeleteOutlinedIcon />
-                    </Grid>
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
-        ))}
+                </Link>
+              </div>
+              <div className="my-auto px-4">
+                <button
+                  onClick={() => handleRemoveFolder(item.folder_id)}
+                  className="text-right flex justify-end focus:outline-none"
+                >
+                  <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+        {}
         {isShowRemoveModal ? (
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12">
-            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className=" w-full absolute flex items-center justify-center bg-modal">
               <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
-                <div className="mb-4"></div>
                 <div className="mb-8">
-                  <p>Are you sure want to remove this folder?</p>
+                  <p className="text-xl font-semibold">
+                    Are you sure want to delete this folder?
+                  </p>
+                  <small>
+                    All sets in this folder will not be remove from the library
+                  </small>
                 </div>
 
                 <div className="flex justify-center">
@@ -160,7 +184,7 @@ const folder = () => {
                     onClick={removeFolder}
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                    Remove
+                    Delete
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}
@@ -170,23 +194,6 @@ const folder = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        ) : null}
-        {isShowEmpty ? (
-          <div className="rounded-md flex items-center bg-white jusitfy-between px-5 py-4 mb-2 text-blue-500">
-            <div className="w-full flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                fill="currentColor"
-                className=" w-6 h-6 mr-2"
-                viewBox="0 0 1792 1792"
-              >
-                <path d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z"></path>
-              </svg>
-              Empty
             </div>
           </div>
         ) : null}

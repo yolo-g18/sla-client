@@ -22,6 +22,7 @@ import React from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../redux/types/alertType";
+import { PARAMS } from "../../common/params";
 
 //alert
 function Alert(props: AlertProps) {
@@ -59,22 +60,21 @@ const LibraryLayout = (props: Props) => {
   const [showModal, setShowModal] = useState(false);
 
   // state in form add folder/room
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("a");
   const [description, setDescription] = useState("");
   const [isTitleTyping, setIsTitleTyping] = useState(false);
   const [isDescriptionTyping, setIsDescriptionTyping] = useState(false);
   const [name, setName] = useState("");
   const [isNameTyping, setIsNameTyping] = useState(false);
 
+  //state of error input form
+  const [titleErr, setTitleErr] = useState("");
+  const [descErr, setDescErr] = useState("");
+  const [nameErr, setNameErr] = useState("");
+
   // set state for array color
   const [colors, setColors]: [String[], (colors: String[]) => void] =
     React.useState(colorFolderList);
-
-  const [loading, setLoading]: [boolean, (loading: boolean) => void] =
-    React.useState<boolean>(true);
-
-  const [error, setError]: [string, (error: string) => void] =
-    React.useState("not found");
 
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
@@ -83,17 +83,20 @@ const LibraryLayout = (props: Props) => {
     // call api folder color
     async function excute() {
       try {
-        const res = await getAPI(`http://localhost:8080/getColorFolder`);
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
         setColors(res.data);
-        setLoading(false);
+        dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
-        setLoading(false);
-        setError(err);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
       }
     }
 
     excute();
-  }, []);
+  }, [username]);
 
   // load option for select of folder color
   const listColorItems = colors.map((item) => (
@@ -126,25 +129,31 @@ const LibraryLayout = (props: Props) => {
   const handleSubmit = async (e: FormSubmit) => {
     {
       // create new folder and create new room
-
       setIsDescriptionTyping(false);
 
       if (router.pathname.includes("folders")) {
-        setIsTitleTyping(false);
         e.preventDefault();
         const color = "" + color_folder.current?.value;
         const creator_id = "" + user._id;
         const data = { title, description, color, creator_id };
         try {
           dispatch({ type: ALERT, payload: { loading: true } });
-          const res = await postAPI("http://localhost:8080/createFolder", data);
-          dispatch({ type: ALERT, payload: { loading: false } });
+          const res = await postAPI(
+            `${PARAMS.ENDPOINT}folder/createFolder`,
+            data
+          );
+          dispatch({
+            type: ALERT,
+            payload: { loading: false, success: "ss" },
+          });
           setMessageToast("Create folder successfully");
           setTypeToast("success");
           setIsToastOpen(true);
         } catch (err) {
           dispatch({ type: ALERT, payload: { loading: false } });
-          setError(err);
+          setMessageToast("An error occurred");
+          setTypeToast("error");
+          setIsToastOpen(true);
         }
       }
 
@@ -153,16 +162,18 @@ const LibraryLayout = (props: Props) => {
         e.preventDefault();
         const owner_id = "" + user._id;
         const data = { owner_id, name, description };
-        setLoading(true);
         try {
-          const res = await postAPI("http://localhost:8080/createRoom", data);
-          setLoading(false);
+          dispatch({ type: ALERT, payload: { loading: true } });
+          const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
+          dispatch({ type: ALERT, payload: { loading: false } });
           setMessageToast("create room successfully");
           setTypeToast("success");
           setIsToastOpen(true);
         } catch (err) {
-          setLoading(false);
-          setError(err);
+          dispatch({ type: ALERT, payload: { loading: false } });
+          setMessageToast("An error occurred");
+          setTypeToast("error");
+          setIsToastOpen(true);
         }
       }
 
@@ -178,14 +189,39 @@ const LibraryLayout = (props: Props) => {
 
     setIsToastOpen(false);
   };
+  //valid form add
+  useEffect(() => {
+    if (title.length <= 0) {
+      setTitleErr("Title is required.");
+    } else if (title.length > 20) {
+      setTitleErr("Title cannot exceed 20 character.");
+    } else {
+      setTitleErr("");
+    }
+
+    if (name.length <= 0) {
+      setNameErr("Name is required.");
+    } else if (title.length > 20) {
+      setNameErr("Name cannot exceed 20 character.");
+    } else {
+      setNameErr("");
+    }
+
+    if (description.length > 150) {
+      setDescErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescErr("");
+    }
+  }, [title, description, name]);
+
+  if (!username) {
+    return <></>;
+  }
 
   return (
     <div>
       <AppLayout title={`${username} | SLA`} desc="library">
-        {/* <h1 className="text-4xl pl-12 pt-6 font-semibold text-gray-800 dark:text-white">
-          Library
-        </h1> */}
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8 overflow-auto h-screen mt-8">
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-3 mt-8 lg:w-11/12 w-full mx-auto">
           <div className=" col-span-1">
             <div className="flex flex-col justify-between items-center pt-10">
               <svg
@@ -263,7 +299,7 @@ const LibraryLayout = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className=" col-span-3 ">
+          <div className=" col-span-2 px-4">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 border-b border-gray-200">
               <div className="col-span-1 grid grid-cols-3 gap-2 mt-4 justify-around text-md text-gray-600 cursor-pointe">
                 <Link
@@ -273,13 +309,13 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                    className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/sets") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
                     }`}
                   >
-                    Sets
+                    <p className="font-bold">Sets</p>
                   </a>
                 </Link>
                 <Link
@@ -289,13 +325,13 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                    className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/folders") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
                     }`}
                   >
-                    Folders
+                    <p className="font-bold">Folders</p>
                   </a>
                 </Link>
                 <Link
@@ -305,17 +341,19 @@ const LibraryLayout = (props: Props) => {
                   }}
                 >
                   <a
-                    className={`col-span-1 py-3 flex flex-grow justify-center hover:text-gray-900 ${
+                    className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/rooms") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
+                        ? "justify-start border-b-2 border-yellow-500 "
                         : ""
                     }`}
                   >
-                    Rooms
+                    <p className="font-bold">Rooms</p>
                   </a>
                 </Link>
               </div>
-              <div className="col-span-2 mt-4 flex justify-around text-md text-gray-600  cursor-pointer">
+            </div>
+            <div className="flex justify-between mt-4">
+              <div className="col-span-2 flex justify-around text-md text-gray-600  cursor-pointer">
                 <div className="text-gray-900 py-3 flex flex-grow">
                   {router.pathname.indexOf("/sets") !== -1 ? (
                     <SelectBox
@@ -332,7 +370,9 @@ const LibraryLayout = (props: Props) => {
                     />
                   ) : null}
                 </div>
-                <div className="text-gray-900 py-3 flex relative">
+              </div>
+              <div className="flex flex-wrap right-2 ">
+                <div className="text-gray-900 py-3 flex relative ">
                   <svg
                     className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
                     xmlns="http://www.w3.org/2000/svg"
@@ -351,8 +391,8 @@ const LibraryLayout = (props: Props) => {
                   <button
                     id="btnAddNew"
                     onClick={handleAddNew}
-                    className="w-32 h-8 text-md flex items-center justify-center rounded-md px-4 
-                   text-sm font-medium py-1 bg-green-500 hover:bg-green-600
+                    className="w-24 h-8 text-md flex items-center justify-center rounded-md px-4 
+                   text-sm font-medium py-1 bg-green-500 hover:bg-green-600 ml-4
                 text-white hover:bg-green-dark focus:outline-none"
                   >
                     add new
@@ -360,7 +400,8 @@ const LibraryLayout = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div className="bg-yellow-50">{props.children}</div>
+
+            <div>{props.children}</div>
           </div>
         </div>
       </AppLayout>
@@ -370,14 +411,14 @@ const LibraryLayout = (props: Props) => {
         <>
           <div
             hidden
-            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12"
+            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12"
           >
             <div className="relative w-auto my-6 max-w-3xl">
               {/*content*/}
-              <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="border-0 rounded-xl shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
-                <div className="justify-between px-4 py-6 rounded-t">
-                  <p>
+                <div className="justify-between px-4 pb-6 pt-8 rounded-t">
+                  <p className="text-gray-700 font-semibold text-lg text-center">
                     {router.pathname.includes("folders")
                       ? "Create Folder"
                       : "Create Room"}
@@ -392,9 +433,7 @@ const LibraryLayout = (props: Props) => {
                           type="text"
                           setValue={setTitle}
                           placeholder="Title"
-                          error={
-                            !isTitleTyping ? alert.errors?.errors?.title : ""
-                          }
+                          error={titleErr}
                           required
                           label="Title"
                         />
@@ -405,9 +444,7 @@ const LibraryLayout = (props: Props) => {
                           type="text"
                           setValue={setName}
                           placeholder="Name"
-                          error={
-                            !isNameTyping ? alert.errors?.errors?.name : ""
-                          }
+                          error={nameErr}
                           required
                           label="Name"
                         />
@@ -418,12 +455,7 @@ const LibraryLayout = (props: Props) => {
                       type="text"
                       setValue={setDescription}
                       placeholder="Description"
-                      error={
-                        !isDescriptionTyping
-                          ? alert.errors?.errors?.description
-                          : ""
-                      }
-                      required
+                      error={descErr}
                       label="Description"
                     />
                     <div className="my-2">
@@ -457,7 +489,7 @@ const LibraryLayout = (props: Props) => {
                   {/*footer*/}
                   <div className="flex items-center justify-end px-12 py-6">
                     <button
-                      className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
+                      className=" bg-green-500 text-white w-28 py-1 mx-2 rounded-md text-sm font-medium hover:bg-green-600"
                       type="submit"
                     >
                       {alert.loading ? (
@@ -481,7 +513,7 @@ const LibraryLayout = (props: Props) => {
                       )}
                     </button>
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-md text-sm font-medium hover:bg-gray-300"
                       type="button"
                       onClick={() => setShowModal(false)}
                     >
