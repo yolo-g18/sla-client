@@ -108,6 +108,10 @@ const folder = () => {
     setIsToastOpen(false);
   };
 
+  // if () {
+  //   return <div>Loading...</div>;
+  // }
+
   return (
     <div>
       <LibraryLayout>
@@ -137,9 +141,18 @@ const folder = () => {
                   <div className="cursor-pointer flex flex-1 items-center p-4">
                     <div className="flex-1 pl-1 mr-16">
                       <div className="font-medium dark:text-white flex">
-                        <FolderOpenRoundedIcon
-                          className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
-                        />
+                        {username === auth.userResponse?.username ? (
+                          item.color ? (
+                            <FolderOpenRoundedIcon
+                              className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
+                            />
+                          ) : (
+                            <FolderOpenRoundedIcon className={`mr-2`} />
+                          )
+                        ) : (
+                          <FolderOpenRoundedIcon className={`mr-2`} />
+                        )}
+
                         <p>{item.title}</p>
                       </div>
                       <div className="text-gray-600 dark:text-gray-200 text-sm">
@@ -154,14 +167,16 @@ const folder = () => {
                   </div>
                 </Link>
               </div>
-              <div className="my-auto px-4">
-                <button
-                  onClick={() => handleRemoveFolder(item.folder_id)}
-                  className="text-right flex justify-end focus:outline-none"
-                >
-                  <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
-                </button>
-              </div>
+              {username === auth.userResponse?.username ? (
+                <div className="my-auto px-4">
+                  <button
+                    onClick={() => handleRemoveFolder(item.folder_id)}
+                    className="text-right flex justify-end focus:outline-none"
+                  >
+                    <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
+                  </button>
+                </div>
+              ) : null}
             </div>
           ))
         )}

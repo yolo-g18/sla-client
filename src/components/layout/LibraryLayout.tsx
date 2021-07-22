@@ -64,7 +64,7 @@ const LibraryLayout = (props: Props) => {
   const [description, setDescription] = useState("");
   const [isTitleTyping, setIsTitleTyping] = useState(false);
   const [isDescriptionTyping, setIsDescriptionTyping] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState("a");
   const [isNameTyping, setIsNameTyping] = useState(false);
 
   //state of error input form
@@ -388,15 +388,17 @@ const LibraryLayout = (props: Props) => {
                   />
                 </div>
                 <div className="py-3 flex relative">
-                  <button
-                    id="btnAddNew"
-                    onClick={handleAddNew}
-                    className="w-24 h-8 text-md flex items-center justify-center rounded-md px-4 
+                  {user.username === auth.userResponse?.username ? (
+                    <button
+                      id="btnAddNew"
+                      onClick={handleAddNew}
+                      className="w-24 h-8 text-md flex items-center justify-center rounded-md px-4 
                    text-sm font-medium py-1 bg-green-500 hover:bg-green-600 ml-4
                 text-white hover:bg-green-dark focus:outline-none"
-                  >
-                    add new
-                  </button>
+                    >
+                      add new
+                    </button>
+                  ) : null}
                 </div>
               </div>
             </div>

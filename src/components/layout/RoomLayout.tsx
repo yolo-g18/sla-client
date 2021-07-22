@@ -10,19 +10,49 @@ import EditIcon from "@material-ui/icons/Edit";
 import ShareIcon from "@material-ui/icons/Share";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import FolderOutlinedIcon from "@material-ui/icons/FolderOutlined";
+import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
+import { useEffect, useRef, useState } from "react";
+import _ from "lodash";
 
 interface Props {
   children: React.ReactNode;
 }
 
+let useClickOutside = (handler: any) => {
+  let domNode: any = useRef();
+
+  useEffect(() => {
+    let maybeHandler = (event: any) => {
+      if (!domNode.current.contains(event.target)) {
+        handler();
+      }
+    };
+
+    document.addEventListener("mousedown", maybeHandler);
+
+    return () => {
+      document.removeEventListener("mousedown", maybeHandler);
+    };
+  });
+
+  return domNode;
+};
+
 const RoomLayout = (props: Props) => {
   const router = useRouter();
+
+  let domNode = useClickOutside(() => {
+    setIsMenuOpen(false);
+  });
 
   const {
     query: { id },
   } = router;
 
   const { auth, alert, search } = useSelector((state: RootStore) => state);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const room = {
     id: 1,
@@ -35,46 +65,14 @@ const RoomLayout = (props: Props) => {
       { username: "Nguyen Van A", avatar: "andas" },
       { username: "Nguyen Van A", avatar: "andas" },
     ],
-    sets: [
-      {
-        set_id: 1,
-        title: "MAD101",
-        desc: "dadas",
-        numberOfCard: 34,
-      },
-      {
-        set_id: 1,
-        title: "MAD101",
-        desc: "dadas",
-        numberOfCard: 34,
-      },
-      {
-        set_id: 1,
-        title: "MAD101",
-        desc: "dadas",
-        numberOfCard: 34,
-      },
-      {
-        set_id: 1,
-        title: "MAD101",
-        desc: "dadas",
-        numberOfCard: 34,
-      },
-    ],
-    folders: [
-      { title: "folder1", desc: "dasdas" },
-      { title: "folder1", desc: "dasdas" },
-      { title: "folder1", desc: "dasdas" },
-      { title: "folder1", desc: "dasdas" },
-    ],
   };
 
   return (
     <div>
-      <AppLayout title="room" desc="room">
+      <AppLayout title={`Room | ${room.name}`} desc="room">
         <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-4/5 w-full px-2 mt-4">
           {/* left side */}
-          <div className="col-span-1 px-2 border-r-2 border-gray-200  ">
+          <div className="col-span-1 px-2">
             <div className=" w-full px-2">
               <div className="w-full flex items-center">
                 <div>
@@ -84,9 +82,9 @@ const RoomLayout = (props: Props) => {
                   <h4 className="font-bold text-xl">{room.name}</h4>
                   <small className="text-md">
                     create by{" "}
-                    <a href={`${room.owner_name}/library/sets`}>
+                    <Link href={`${room.owner_name}/library/sets`}>
                       {room.owner_name}
-                    </a>
+                    </Link>
                   </small>
                 </div>
               </div>
@@ -101,7 +99,7 @@ const RoomLayout = (props: Props) => {
               <div className="fex flex-col">
                 <a href={`/${room.owner_name}/library/folders`}>
                   <span className="hover:underline hover:text-gray-700">
-                    back to library folder
+                    back to library
                   </span>
                 </a>
               </div>
@@ -110,8 +108,18 @@ const RoomLayout = (props: Props) => {
                 {room.owner_name === auth.userResponse?.username ? (
                   <div>
                     <button
+                      // onClick={() => setIsShowEditModal(!isShowEditModal)}
+                      className="mx-2 tooltip focus:outline-none"
+                    >
+                      <EditIcon
+                        fontSize="small"
+                        className="hover:text-gray-400 text-gray-700"
+                      />
+                      <span className="tooltiptext w-16">edit</span>
+                    </button>
+                    <button
                       //   onClick={() => setIsShowAddModal(!isShowAddModal)}
-                      className="mx-2 tooltip"
+                      className="mx-2 tooltip focus:outline-none"
                     >
                       <AddIcon
                         fontSize="default"
@@ -123,7 +131,7 @@ const RoomLayout = (props: Props) => {
                       //   onClick={() => setIsShowEditModal(!isShowEditModal)}
                       className="mx-2 tooltip"
                     >
-                      <FolderOutlinedIcon
+                      <CreateNewFolderOutlinedIcon
                         fontSize="default"
                         className="hover:text-gray-400 text-gray-700"
                       />
@@ -131,7 +139,7 @@ const RoomLayout = (props: Props) => {
                     </button>
                     <button
                       // onClick={shareLink}
-                      className="mx-2 tooltip"
+                      className="mx-2 tooltip focus:outline-none"
                     >
                       <GroupAddIcon
                         fontSize="default"
@@ -140,10 +148,20 @@ const RoomLayout = (props: Props) => {
                       <span className="tooltiptext w-28">invite user</span>
                     </button>
                   </div>
-                ) : null}
+                ) : (
+                  // sau phai check member hay ko de hien btn join
+                  <button
+                    className="w-32 text-md rounded-md px-4 py-1 mx-2
+                  text-sm font-medium bg-green-500 hover:bg-green-600 
+               text-white focus:outline-none"
+                  >
+                    <p className="text-md">Request to join</p>
+                  </button>
+                )}
+
                 <button
                   // onClick={shareLink}
-                  className="mx-2 tooltip"
+                  className="mx-2 tooltip focus:outline-none"
                 >
                   <ShareIcon
                     fontSize="small"
@@ -151,6 +169,53 @@ const RoomLayout = (props: Props) => {
                   />
                   <span className="tooltiptext w-16">share</span>
                 </button>
+
+                {/* menu button */}
+                <div className="flex mx-2" ref={domNode}>
+                  {room.owner_name === auth.userResponse?.username ? (
+                    <div>
+                      <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="px-1 focus:outline-none"
+                      >
+                        <ExpandMoreIcon />
+                      </button>
+                      {isMenuOpen ? (
+                        <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                          <div
+                            className={`py-1`}
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="options-menu"
+                          >
+                            <div>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                            hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                                role="menuitem"
+                              >
+                                <span className="flex flex-col">
+                                  <span>remove all members</span>
+                                </span>
+                              </a>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-500 hover:bg-yellow-500
+                             hover:text-white  dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                                role="menuitem"
+                                // onClick={() => setShowModalDelete(true)}
+                              >
+                                <span className="flex flex-col ">
+                                  <span>delete</span>
+                                </span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+                {/* end menu btn */}
               </div>
             </div>
             <div className="mt-4">
@@ -194,6 +259,7 @@ const RoomLayout = (props: Props) => {
               </div>
             </div>
             <div>{props.children}</div>
+            <div className="h-40 "></div>
           </div>
         </div>
       </AppLayout>

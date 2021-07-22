@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../utils/TypeScript";
 import { useRouter } from "next/router";
 
-import _, { divide } from "lodash";
+import _ from "lodash";
 import { ICard, IErrors } from "../../utils/TypeScript";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.bubble.css";

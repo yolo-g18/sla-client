@@ -387,7 +387,7 @@ const Folder = () => {
 
   return (
     <div>
-      <AppLayout title="Folder" desc="folder">
+      <AppLayout title={`Folder | ${folder.title}`} desc="folder">
         <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-5/6 w-full px-2 mt-4">
           {/* left side */}
           <div className="col-span-1 px-2 ">
@@ -403,12 +403,12 @@ const Folder = () => {
                   <h4 className="font-bold text-xl">{folder.title}</h4>
                   <small className="text-md">
                     create by{" "}
-                    <a
-                      href={`/${folder.creatorUserName}/library/sets`}
-                      className="hover:underline"
-                    >
-                      {folder.creatorUserName}
-                    </a>
+                    <Link href={`/${folder.creatorUserName}/library/sets`}>
+                      <span className="hover:underline cursor-pointer">
+                        {" "}
+                        {folder.creatorUserName}
+                      </span>
+                    </Link>
                   </small>
                 </div>
               </div>
@@ -522,15 +522,25 @@ const Folder = () => {
                                   ? set.title
                                   : set.title.substring(0, 15) + "..."}{" "}
                               </a>
-                              {set.color ? (
-                                <FiberManualRecordIcon
-                                  className={`text-${set.color?.toLowerCase()}-400`}
-                                />
+
+                              {/* TH nguoi dung dang dang nhap truy cap vao folder cua chinh minh se hien color cua sets */}
+                              {folder.creatorUserName ===
+                              auth.userResponse?.username ? (
+                                set.color ? (
+                                  <FiberManualRecordIcon
+                                    className={`text-${set.color?.toLowerCase()}-400`}
+                                  />
+                                ) : (
+                                  <FiberManualRecordIcon
+                                    className={`text-white`}
+                                  />
+                                )
                               ) : (
                                 <FiberManualRecordIcon
                                   className={`text-white`}
                                 />
                               )}
+                              {}
                               {"  "}
                               <a href={`/${set.creatorName}/library/sets`}>
                                 <span className="text-gray-500 text-sm hover:underline">
