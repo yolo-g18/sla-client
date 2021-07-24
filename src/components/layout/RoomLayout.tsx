@@ -83,6 +83,7 @@ const RoomLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
         setRoom(res.data);
+        console.log(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
        
         

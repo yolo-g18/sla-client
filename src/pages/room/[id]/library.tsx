@@ -1,6 +1,5 @@
 import RoomLayout from "../../../components/layout/RoomLayout";
 import Link from "next/link";
-
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { useSelector, useDispatch } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
@@ -10,14 +9,25 @@ import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
 import folder from "../../[username]/library/folders";
 import { FolderShared } from "@material-ui/icons";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
+import { useRouter } from "next/router";
+import React from "react";
+import { getAPI } from "../../../utils/FetchData";
+import { ALERT } from "../../../redux/types/alertType";
+import { PARAMS } from "../../../common/params";
+import { INewRoom } from "../../../utils/TypeScript";
 
 //cai fake nay call nhieu api
+const defaultRoom = {
+  room_id: 0,
+  name: "",
+  description: "",
+  createdDate: "",
+  ownerName: "",
+  setNumbers: 0
+}
+
 const data = {
-  id: 1,
-  name: "G18",
-  desc: "Lớp Đồ Án This example uses a typographic feature called ligatures, which allows rendering of an icon glyph simply by using its textual name.",
-  owner_name: "_testuser2",
-  setNumber: 6,
+
   sets: [
     {
       set_id: 1,
@@ -92,23 +102,52 @@ const data = {
   ],
 };
 const library = () => {
-  // const {
-  //   query: { id },
-  // } = router;
+  const router = useRouter();
+
+  const {
+    query: { id },
+  } = router;
 
   const dispatch = useDispatch();
   const { auth, alert, user } = useSelector((state: RootStore) => state);
 
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [error, setError]: [string, (error: string) => void] =
+  React.useState("not found");
+  
+  const [room, setRoom] = React.useState<INewRoom>(defaultRoom);
+ 
+  React.useEffect(() => {
+    // load detail data of room
+    setIsSuccess(false);
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
+        setRoom(res.data);
+        console.log("room in library");
+        console.log(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+       
+        
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+
+    excute();
+  }, [id, isSuccess]);
   return (
     <RoomLayout>
       <div className="mt-6">
-        {data.setNumber === 0 ? (
+        {room.setNumbers === 0 ? (
           <div className="col-span-2 text-center mx-auto">
             <p className="text-3xl font-semibold text-gray-700">
               This room doesn't have any sets yet
             </p>
 
-            {auth.userResponse?.username === data.owner_name ? (
+            {auth.userResponse?.username === room.ownerName ? (
               <>
                 <p className="text-md text-gray-600">
                   Add an existing set or create a new one to share.
@@ -175,7 +214,7 @@ const library = () => {
                             </a>
                           </p>
                         </div>
-                        {data.owner_name === auth.userResponse?.username ? (
+                        {room.ownerName === auth.userResponse?.username ? (
                           <div>
                             <button
                               // onClick={() => handleRemoveStudySet(set.studySet_id)}
@@ -231,8 +270,8 @@ const library = () => {
                         <div className="cursor-pointer flex flex-1 items-center p-4">
                           <div className="flex-1 pl-1 mr-16">
                             <div className="font-medium dark:text-white flex">
-                              {data.owner_name ===
-                              auth.userResponse?.username ? (
+                              {room.ownerName ===
+                                auth.userResponse?.username ? (
                                 item.color ? (
                                   <FolderOpenRoundedIcon
                                     className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
@@ -259,7 +298,7 @@ const library = () => {
                       </Link>
                     </div>
 
-                    {data.owner_name === auth.userResponse?.username ? (
+                    {room.ownerName === auth.userResponse?.username ? (
                       <div className="my-auto px-4">
                         <button
                           // onClick={() => handleRemoveFolder(item.folder_id)}
