@@ -57,7 +57,7 @@ const Folder = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // add SS to folder
+  // populate form add SS to folder
   const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] =
     React.useState(defaulAddSets);
   // set state for array color

@@ -3,11 +3,8 @@ import Link from "next/link";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { useSelector, useDispatch } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
-import router from "next/router";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
-import folder from "../../[username]/library/folders";
-import { FolderShared } from "@material-ui/icons";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import { useRouter } from "next/router";
 import React from "react";
@@ -18,6 +15,9 @@ import { INewRoom } from "../../../utils/TypeScript";
 import { IFolder } from "../../../utils/TypeScript";
 import { IStudySet } from "../../../utils/TypeScript";
 import { deleteAPI } from "../../../utils/FetchData";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
 //cai fake nay call nhieu api
 const defaultRoom = {
   room_id: 0,
@@ -27,6 +27,11 @@ const defaultRoom = {
   ownerName: "",
   setNumbers: 0,
   folderNumbers: 0
+}
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const defaultStudySets: IStudySet[] = [];
@@ -56,6 +61,11 @@ const library = () => {
 
   const [isShowRemoveSetModal, setIsShowRemoveSetModal] = React.useState(false);
   const [idRemoveSet, setIdRemoveSet] = React.useState<number>(0);
+
+  const [isToastOpen, setIsToastOpen] = React.useState(false);
+  const [typeToast, setTypeToast] = React.useState("success");
+  const [messageToast, setMessageToast] = React.useState("");
+ 
   React.useEffect(() => {
     // load detail data of room
     setIsSuccess(false);
@@ -75,7 +85,7 @@ const library = () => {
     }
 
     excute();
-  }, [id, isSuccess]);
+  }, [id, isSuccess,alert.success]);
 
   React.useEffect(() => {
     setIsSuccess(false);
@@ -96,7 +106,7 @@ const library = () => {
       }
     }
     excute();
-  }, [id, isSuccess, alert.success]);
+  }, [id, isSuccess,alert.success]);
 
   React.useEffect(() => {
     // list all SS  in room
@@ -117,7 +127,7 @@ const library = () => {
     }
 
     excute();
-  }, [id, isSuccess]);
+  }, [id, isSuccess,alert.success]);
 
   // remove folder from room
   async function removeFolder() {
@@ -126,9 +136,12 @@ const library = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}room/deleteFolderFromRoom/${id}/${idRemoveFolder}`
       );
-     
+
       dispatch({ type: ALERT, payload: { loading: false } });
       setIsSuccess(true);
+      setMessageToast("folder removed");
+      setTypeToast("success");
+      setIsToastOpen(true);
 
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
@@ -148,25 +161,28 @@ const library = () => {
     setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
   };
 
- // remove set from room
- async function removeSet() {
-  dispatch({ type: ALERT, payload: { loading: true } });
-  try {
-    const res = await deleteAPI(
-      `${PARAMS.ENDPOINT}room/deleteStudySetFromRoom/${id}/${idRemoveSet}`
-    );
-    console.log(res.data);
-    dispatch({ type: ALERT, payload: { loading: false } });
-    setIsSuccess(true);
+  // remove set from room
+  async function removeSet() {
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteStudySetFromRoom/${id}/${idRemoveSet}`
+      );
+      
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setIsSuccess(true);
+      setMessageToast("set added");
+      setTypeToast("success");
+      setIsToastOpen(true);
 
-  } catch (err) {
-    dispatch({ type: ALERT, payload: { loading: false } });
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
 
-    setIsSuccess(false);
+      setIsSuccess(false);
+    }
+
+    setIsShowRemoveSetModal(!isShowRemoveSetModal);
   }
-
-  setIsShowRemoveSetModal(!isShowRemoveSetModal);
-}
 
   const handleRemoveSet = (set_id: number) => {
     setIsShowRemoveSetModal(!isShowRemoveSetModal);
@@ -175,6 +191,15 @@ const library = () => {
 
   const closeRemoveSetModal = () => {
     setIsShowRemoveSetModal(!isShowRemoveSetModal);
+  };
+
+   //handel close toast
+   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
   };
   return (
     <RoomLayout>
@@ -255,7 +280,7 @@ const library = () => {
                         {room.ownerName === auth.userResponse?.username ? (
                           <div>
                             <button
-                               onClick={() => handleRemoveSet(set.studySet_id)}
+                              onClick={() => handleRemoveSet(set.studySet_id)}
                               className="tooltip flex items-center focus:outline-none"
                             >
                               <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
@@ -361,7 +386,7 @@ const library = () => {
                     Are you sure want to delete this folder?
                   </p>
                   <small>
-                
+
                   </small>
                 </div>
 
@@ -383,7 +408,7 @@ const library = () => {
             </div>
           </div>
         ) : null}
-         {isShowRemoveSetModal ? (
+        {isShowRemoveSetModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className=" w-full absolute flex items-center justify-center bg-modal">
               <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
@@ -392,7 +417,7 @@ const library = () => {
                     Are you sure want to delete this set?
                   </p>
                   <small>
-                   
+
                   </small>
                 </div>
 
@@ -414,7 +439,20 @@ const library = () => {
             </div>
           </div>
         ) : null}
+      
       </div>
+      <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
     </RoomLayout>
   );
 };
