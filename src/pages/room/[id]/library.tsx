@@ -53,6 +53,9 @@ const library = () => {
 
   const [isShowRemoveFolderModal, setIsShowRemoveFolderModal] = React.useState(false);
   const [idRemoveFolder, setIdRemoveFolder] = React.useState<number>(0);
+
+  const [isShowRemoveSetModal, setIsShowRemoveSetModal] = React.useState(false);
+  const [idRemoveSet, setIdRemoveSet] = React.useState<number>(0);
   React.useEffect(() => {
     // load detail data of room
     setIsSuccess(false);
@@ -96,7 +99,7 @@ const library = () => {
   }, [id, isSuccess, alert.success]);
 
   React.useEffect(() => {
-    // list SS already in folder
+    // list all SS  in room
     setIsSuccess(false);
     async function excute() {
       try {
@@ -143,6 +146,35 @@ const library = () => {
 
   const closeRemoveFolderModal = () => {
     setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
+  };
+
+ // remove set from room
+ async function removeSet() {
+  dispatch({ type: ALERT, payload: { loading: true } });
+  try {
+    const res = await deleteAPI(
+      `${PARAMS.ENDPOINT}room/deleteStudySetFromRoom/${id}/${idRemoveSet}`
+    );
+    console.log(res.data);
+    dispatch({ type: ALERT, payload: { loading: false } });
+    setIsSuccess(true);
+
+  } catch (err) {
+    dispatch({ type: ALERT, payload: { loading: false } });
+
+    setIsSuccess(false);
+  }
+
+  setIsShowRemoveSetModal(!isShowRemoveSetModal);
+}
+
+  const handleRemoveSet = (set_id: number) => {
+    setIsShowRemoveSetModal(!isShowRemoveSetModal);
+    setIdRemoveSet(set_id);
+  };
+
+  const closeRemoveSetModal = () => {
+    setIsShowRemoveSetModal(!isShowRemoveSetModal);
   };
   return (
     <RoomLayout>
@@ -223,7 +255,7 @@ const library = () => {
                         {room.ownerName === auth.userResponse?.username ? (
                           <div>
                             <button
-                              // onClick={() => handleRemoveStudySet(set.studySet_id)}
+                               onClick={() => handleRemoveSet(set.studySet_id)}
                               className="tooltip flex items-center focus:outline-none"
                             >
                               <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
@@ -329,7 +361,7 @@ const library = () => {
                     Are you sure want to delete this folder?
                   </p>
                   <small>
-                    All sets in this folder will not be remove from the library
+                
                   </small>
                 </div>
 
@@ -342,6 +374,37 @@ const library = () => {
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}
+                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+         {isShowRemoveSetModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className=" w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want to delete this set?
+                  </p>
+                  <small>
+                   
+                  </small>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={removeSet}
+                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={closeRemoveSetModal}
                     className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
                   >
                     Cancel
