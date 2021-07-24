@@ -181,6 +181,7 @@ export interface ISearch {
     createdDate: string;
     ownerName:string;
     setNumbers:number;
+    folderNumbers:number;
   };
   
   

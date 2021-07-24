@@ -15,7 +15,9 @@ import { getAPI } from "../../../utils/FetchData";
 import { ALERT } from "../../../redux/types/alertType";
 import { PARAMS } from "../../../common/params";
 import { INewRoom } from "../../../utils/TypeScript";
-
+import { IFolder } from "../../../utils/TypeScript";
+import { IStudySet } from "../../../utils/TypeScript";
+import { deleteAPI } from "../../../utils/FetchData";
 //cai fake nay call nhieu api
 const defaultRoom = {
   room_id: 0,
@@ -23,84 +25,11 @@ const defaultRoom = {
   description: "",
   createdDate: "",
   ownerName: "",
-  setNumbers: 0
+  setNumbers: 0,
+  folderNumbers: 0
 }
 
-const data = {
-
-  sets: [
-    {
-      set_id: 1,
-      title: "MAD101",
-      description: "dlapw da",
-      numberOfCard: 34,
-      color: "GREEN",
-      creatorName: "user1",
-    },
-    {
-      set_id: 2,
-      title: "MAD101",
-      description: "dadas",
-      numberOfCard: 34,
-      color: "BLUE",
-      creatorName: "_testuser0",
-    },
-    {
-      set_id: 3,
-      title: "MAD101",
-      description: "dadas",
-      numberOfCard: 34,
-      color: "YELLOW",
-      creatorName: "tran",
-    },
-    {
-      set_id: 4,
-      title: "MAD101",
-      description: "dadas",
-      numberOfCard: 34,
-      color: "GREEN",
-      creatorName: "Ngo",
-    },
-  ],
-  folders: [
-    {
-      folder_id: 1,
-      creatorName: "_testuser2",
-      title: "folder1",
-      description: "dasdas",
-      color: "GREEN",
-      numberOfSets: 2,
-      createdDate: "12/03/2021",
-    },
-    {
-      folder_id: 2,
-      creatorName: "_testuser2",
-      title: "folder1",
-      description: "dasdas",
-      color: "YELLOW",
-      numberOfSets: 3,
-      createdDate: "12/03/2021",
-    },
-    {
-      folder_id: 2,
-      creatorName: "_testuser2",
-      title: "folder1",
-      description: "dasdas",
-      color: "GREEN",
-      numberOfSets: 6,
-      createdDate: "12/03/2021",
-    },
-    {
-      folder_id: 4,
-      creatorName: "_testuser2",
-      title: "folder1",
-      description: "dasdas",
-      color: "GREEN",
-      numberOfSets: 6,
-      createdDate: "12/03/2021",
-    },
-  ],
-};
+const defaultStudySets: IStudySet[] = [];
 const library = () => {
   const router = useRouter();
 
@@ -113,10 +42,17 @@ const library = () => {
 
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [error, setError]: [string, (error: string) => void] =
-  React.useState("not found");
-  
+    React.useState("not found");
+
   const [room, setRoom] = React.useState<INewRoom>(defaultRoom);
- 
+  const [folders, setFolders] = React.useState<IFolder[]>([]);
+  const [sets, setSets]: [
+    IStudySet[],
+    (sets: IStudySet[]) => void
+  ] = React.useState(defaultStudySets);
+
+  const [isShowRemoveFolderModal, setIsShowRemoveFolderModal] = React.useState(false);
+  const [idRemoveFolder, setIdRemoveFolder] = React.useState<number>(0);
   React.useEffect(() => {
     // load detail data of room
     setIsSuccess(false);
@@ -125,11 +61,10 @@ const library = () => {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
         setRoom(res.data);
-        console.log("room in library");
-        console.log(res.data);
+
         dispatch({ type: ALERT, payload: { loading: false } });
-       
-        
+
+
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
@@ -138,6 +73,77 @@ const library = () => {
 
     excute();
   }, [id, isSuccess]);
+
+  React.useEffect(() => {
+    setIsSuccess(false);
+    // list all folders in room
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}room/listFoldersOfRoom/${id}`
+        );
+
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setFolders(res.data);
+
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    }
+    excute();
+  }, [id, isSuccess, alert.success]);
+
+  React.useEffect(() => {
+    // list SS already in folder
+    setIsSuccess(false);
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}room/listStudySetsOfRoom/${id}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setSets(res.data);
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+
+    excute();
+  }, [id, isSuccess]);
+
+  // remove folder from room
+  async function removeFolder() {
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteFolderFromRoom/${id}/${idRemoveFolder}`
+      );
+     
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setIsSuccess(true);
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+      setIsSuccess(false);
+    }
+
+    setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
+  }
+
+  const handleRemoveFolder = (folder_id: number) => {
+    setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
+    setIdRemoveFolder(folder_id);
+  };
+
+  const closeRemoveFolderModal = () => {
+    setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
+  };
   return (
     <RoomLayout>
       <div className="mt-6">
@@ -175,11 +181,11 @@ const library = () => {
           <div>
             {/* sets */}
             <div className="mb-4">
-              <p className="text-lg font-bold text-gray-500">Sets</p>
+              <p className="text-lg font-bold text-gray-500">{room.setNumbers} Sets</p>
               <hr />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {data.sets.map((set, index) => {
+              {sets.map((set, index) => {
                 return (
                   <div className="col-span-1">
                     <div
@@ -190,7 +196,7 @@ const library = () => {
                         <div className="w-full">
                           <p className="text-gray-800 dark:text-white text-xl flex flex-wrap font-medium leading-non">
                             <a
-                              href={`/set/${set.set_id}`}
+                              href={`/set/${set.studySet_id}`}
                               className="hover:underline"
                             >
                               {set.title.length <= 15
@@ -239,7 +245,7 @@ const library = () => {
                       </div>
 
                       <div className="row-span-1 mt-2">
-                        <p>{set.numberOfCard} cards</p>
+                        <p>{set.numberOfCards} cards</p>
                       </div>
                     </div>
                   </div>
@@ -249,11 +255,11 @@ const library = () => {
 
             {/* folders */}
             <div className="mt-8 mb-4">
-              <p className="text-lg font-bold text-gray-500">Folders</p>
+              <p className="text-lg font-bold text-gray-500">{room.folderNumbers} Folders</p>
               <hr />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {data.folders.map((item) => {
+              {folders.map((item) => {
                 return (
                   <div
                     className="col-span-2 bg-white dark:bg-gray-800 mt-6 border-b-2  
@@ -301,7 +307,7 @@ const library = () => {
                     {room.ownerName === auth.userResponse?.username ? (
                       <div className="my-auto px-4">
                         <button
-                          // onClick={() => handleRemoveFolder(item.folder_id)}
+                          onClick={() => handleRemoveFolder(item.folder_id)}
                           className="text-right flex justify-end focus:outline-none"
                         >
                           <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
@@ -314,6 +320,37 @@ const library = () => {
             </div>
           </div>
         )}
+        {isShowRemoveFolderModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className=" w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want to delete this folder?
+                  </p>
+                  <small>
+                    All sets in this folder will not be remove from the library
+                  </small>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={removeFolder}
+                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={closeRemoveFolderModal}
+                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </RoomLayout>
   );
