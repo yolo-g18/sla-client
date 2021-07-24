@@ -175,10 +175,12 @@ export interface ISearch {
   };
   
   export interface INewRoom {
-   
+    room_id: number;
     name: string;
     description: string;
-    owner_id: string;
+    createdDate: string;
+    ownerName:string;
+    setNumbers:number;
   };
   
   

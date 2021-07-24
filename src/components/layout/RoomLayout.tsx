@@ -4,7 +4,7 @@ import AppLayout from "./AppLayout";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import { useSelector } from "react-redux";
 import { RootStore } from "../../utils/TypeScript";
-
+import React from "react";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
 import ShareIcon from "@material-ui/icons/Share";
@@ -12,9 +12,14 @@ import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import FolderOutlinedIcon from "@material-ui/icons/FolderOutlined";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
+import { INewRoom } from "../../utils/TypeScript";
+import { getAPI } from "../../utils/FetchData";
+import { useDispatch } from "react-redux";
+import { ALERT } from "../../redux/types/alertType";
+import { PARAMS } from "../../common/params";
+
 
 interface Props {
   children: React.ReactNode;
@@ -40,6 +45,15 @@ let useClickOutside = (handler: any) => {
   return domNode;
 };
 
+const defaultRoom = {
+  room_id: 0,
+  name: "",
+  description: "",
+  createdDate: "",
+  ownerName:"",
+  setNumbers:0
+}
+
 const RoomLayout = (props: Props) => {
   const router = useRouter();
 
@@ -51,21 +65,35 @@ const RoomLayout = (props: Props) => {
     query: { id },
   } = router;
 
+  const dispatch = useDispatch();
   const { auth, alert, search } = useSelector((state: RootStore) => state);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const room = {
-    id: 1,
-    name: "G18",
-    desc: "Lớp Đồ Án This example uses a typographic feature called ligatures, which allows rendering of an icon glyph simply by using its textual name.",
-    owner_name: "_testuser2",
-    member: [
-      { username: "Nguyen Van A", avatar: "andas" },
-      { username: "Nguyen Van A", avatar: "andas" },
-      { username: "Nguyen Van A", avatar: "andas" },
-      { username: "Nguyen Van A", avatar: "andas" },
-    ],
-  };
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [error, setError]: [string, (error: string) => void] =
+  React.useState("not found");
+  
+  const [room, setRoom] = React.useState<INewRoom>(defaultRoom);
+ 
+  React.useEffect(() => {
+    // load detail data of room
+    setIsSuccess(false);
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
+        setRoom(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+       
+        
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+
+    excute();
+  }, [id, isSuccess]);
 
   return (
     <div>
@@ -82,14 +110,14 @@ const RoomLayout = (props: Props) => {
                   <h4 className="font-bold text-xl">{room.name}</h4>
                   <small className="text-md">
                     create by{" "}
-                    <Link href={`${room.owner_name}/library/sets`}>
-                      {room.owner_name}
+                    <Link href={`${room.ownerName}/library/sets`}>
+                      {room.ownerName}
                     </Link>
                   </small>
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-sm font-light text-gray-800">{room.desc}</p>
+                <p className="text-sm font-light text-gray-800">{room.description}</p>
               </div>
             </div>
           </div>
@@ -97,7 +125,7 @@ const RoomLayout = (props: Props) => {
           <div className="col-span-3 h-screen">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
-                <a href={`/${room.owner_name}/library/folders`}>
+                <a href={`/${room.ownerName}/library/folders`}>
                   <span className="hover:underline hover:text-gray-700">
                     back to library
                   </span>
@@ -105,7 +133,7 @@ const RoomLayout = (props: Props) => {
               </div>
               {/* toolbar */}
               <div className="flex flex-row">
-                {room.owner_name === auth.userResponse?.username ? (
+                {room.ownerName === auth.userResponse?.username ? (
                   <div>
                     <button
                       // onClick={() => setIsShowEditModal(!isShowEditModal)}
@@ -172,7 +200,7 @@ const RoomLayout = (props: Props) => {
 
                 {/* menu button */}
                 <div className="flex mx-2" ref={domNode}>
-                  {room.owner_name === auth.userResponse?.username ? (
+                  {room.ownerName === auth.userResponse?.username ? (
                     <div>
                       <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -222,7 +250,7 @@ const RoomLayout = (props: Props) => {
               <div className="flex items-center font-semibold border-b border-gray-200">
                 <nav className=" text-gray-700 dark:text-white text-sm lg:flex items-center hidden">
                   {/* default */}
-                  <Link href={`/room/${room.id}/library`}>
+                  <Link href={`/room/${room.room_id}/library`}>
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/library") !== -1
@@ -233,7 +261,7 @@ const RoomLayout = (props: Props) => {
                       Library
                     </a>
                   </Link>
-                  <Link href={`/room/${room.id}/members`}>
+                  <Link href={`/room/${room.room_id}/members`}>
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/members") !== -1
@@ -244,7 +272,7 @@ const RoomLayout = (props: Props) => {
                       Members
                     </a>
                   </Link>
-                  <Link href={`/room/${room.id}/requests`}>
+                  <Link href={`/room/${room.room_id}/requests`}>
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
                         router.pathname.indexOf("/requests") !== -1
