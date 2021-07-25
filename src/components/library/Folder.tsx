@@ -135,7 +135,7 @@ const Folder = () => {
     }
 
     excute();
-  }, [id, isSuccess]);
+  }, [id, isSuccess, alert.success]);
 
   React.useEffect(() => {
     // list SS already in folder
@@ -196,12 +196,6 @@ const Folder = () => {
 
     e.preventDefault();
 
-    // update static data
-    folder.title = title;
-    folder.description = description;
-    folder.color = "" + color_folder.current?.value;
-
-    // update dynamic data
     const color = "" + color_folder.current?.value;
     const data = { title, description, color, id };
 
@@ -209,7 +203,7 @@ const Folder = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await putAPI(`${PARAMS.ENDPOINT}folder/editFolder`, data);
-        dispatch({ type: ALERT, payload: { loading: false } });
+        dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
         setMessageToast("Folder updated");
         setTypeToast("success");
         setIsToastOpen(true);
@@ -784,7 +778,25 @@ const Folder = () => {
                       onClick={deleteFolder}
                       className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                     >
-                      Delete
+                       {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Delete"
+                        )}
                     </button>
                     <button
                       onClick={() => setIsShowDeleteModal(false)}

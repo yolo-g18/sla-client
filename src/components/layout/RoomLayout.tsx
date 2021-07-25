@@ -79,7 +79,7 @@ const RoomLayout = (props: Props) => {
   const { auth, alert, search } = useSelector((state: RootStore) => state);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
- 
+
   const [error, setError]: [string, (error: string) => void] =
     React.useState("not found");
 
@@ -106,7 +106,7 @@ const RoomLayout = (props: Props) => {
   const [descErr, setDescErr] = useState("");
 
   const [isShowRemoveRoomModal, setIsShowRemoveRoomModal] = React.useState(false);
- 
+
   const [idRemoveRoom, setIdRemoveRoom]: [
     number,
     (idRemoveRoom: number) => void
@@ -153,11 +153,11 @@ const RoomLayout = (props: Props) => {
     }
 
     excute();
-  }, [id,  alert.success]);
+  }, [id, alert.success]);
 
 
   React.useEffect(() => {
-   
+
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -213,19 +213,17 @@ const RoomLayout = (props: Props) => {
       );
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
 
-      if(res.data === "cancel adding")
-      {
+      if (res.data === "cancel adding") {
         setMessageToast("set existed");
         setTypeToast("error");
         setIsToastOpen(true);
       }
-      else
-      {
+      else {
         setMessageToast("set added");
         setTypeToast("success");
         setIsToastOpen(true);
       }
-      
+
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -265,34 +263,32 @@ const RoomLayout = (props: Props) => {
         `${PARAMS.ENDPOINT}room/addFolderToRoom`,
         data
       );
-      
+
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-      
-      if(res.data === "cancel adding")
-      {
+
+      if (res.data === "cancel adding") {
         setMessageToast("folder existed");
         setTypeToast("error");
         setIsToastOpen(true);
       }
-      else
-      {
+      else {
         setMessageToast("folder added");
         setTypeToast("success");
         setIsToastOpen(true);
       }
 
-   
+
 
     } catch (err) {
 
-     dispatch({ type: ALERT, payload: { loading: false } });
-     
+      dispatch({ type: ALERT, payload: { loading: false } });
+
 
     }
   }
 
-   // share link
-   function shareLink() {
+  // share link
+  function shareLink() {
     navigator.clipboard.writeText(window.location.href);
     setMessageToast("copied link");
     setTypeToast("success");
@@ -314,33 +310,34 @@ const RoomLayout = (props: Props) => {
     }
   }, [title, description]);
 
-   // edit room
-   const editRoom = async (e: FormSubmit) => {
+  // edit room
+  const editRoom = async (e: FormSubmit) => {
     setIsTitleTyping(false);
     setIsDescriptionTyping(false);
 
     e.preventDefault();
 
-   
+
     const data = {
-      "id":id,
-      "name": title, 
-      "description":description}
+      "id": id,
+      "name": title,
+      "description": description
+    }
       ;
 
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await putAPI(`${PARAMS.ENDPOINT}room/editRoom`, data);
-        dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+        dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
         setMessageToast("room updated");
         setTypeToast("success");
         setIsToastOpen(true);
-       
+
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
-       
+
       }
     }
 
@@ -349,47 +346,47 @@ const RoomLayout = (props: Props) => {
     setIsShowEditModal(!isShowEditModal);
   };
 
-    //handel close toast
-    const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-      if (reason === "clickaway") {
-        return;
-      }
-  
-      setIsToastOpen(false);
-    };
-
-    async function removeRoom() {
-   
-      try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await deleteAPI(
-          `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
-        );
-        dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
-        setMessageToast("remove room successfully");
-        setTypeToast("success");
-        setIsToastOpen(true);
-        router.push({
-          pathname: "/[username]/library/rooms",
-          query: { username: room.ownerName },
-        });
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      
-      }
-  
-      setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
     }
-  
-  
-    const handleRemoveRoom = (room_id: number) => {
-      setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
-      setIdRemoveRoom(room_id);
-    };
-  
-    const closeRemoveRoomModal = () => {
-      setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
-    };
+
+    setIsToastOpen(false);
+  };
+
+  async function removeRoom() {
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
+      );
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+      setMessageToast("remove room successfully");
+      setTypeToast("success");
+      setIsToastOpen(true);
+      router.push({
+        pathname: "/[username]/library/rooms",
+        query: { username: room.ownerName },
+      });
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+    }
+
+    setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
+  }
+
+
+  const handleRemoveRoom = (room_id: number) => {
+    setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
+    setIdRemoveRoom(room_id);
+  };
+
+  const closeRemoveRoomModal = () => {
+    setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
+  };
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -483,7 +480,7 @@ const RoomLayout = (props: Props) => {
                 )}
 
                 <button
-                   onClick={shareLink}
+                  onClick={shareLink}
                   className="mx-2 tooltip focus:outline-none"
                 >
                   <ShareIcon
@@ -525,7 +522,7 @@ const RoomLayout = (props: Props) => {
                                 className="block px-4 py-1 font-medium text-sm text-gray-500 hover:bg-yellow-500
                              hover:text-white  dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                                 role="menuitem"
-                              onClick={() => handleRemoveRoom(room.room_id)}
+                                onClick={() => handleRemoveRoom(room.room_id)}
                               >
                                 <span className="flex flex-col ">
                                   <span>delete</span>
@@ -548,8 +545,8 @@ const RoomLayout = (props: Props) => {
                   <Link href={`/room/${room.room_id}/library`}>
                     <a
                       className={`py-2 px-4 flex hover:text-black ${router.pathname.indexOf("/library") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                        ? "justify-start border-b-2 border-yellow-500"
+                        : ""
                         }`}
                     >
                       Library
@@ -558,8 +555,8 @@ const RoomLayout = (props: Props) => {
                   <Link href={`/room/${room.room_id}/members`}>
                     <a
                       className={`py-2 px-4 flex hover:text-black ${router.pathname.indexOf("/members") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                        ? "justify-start border-b-2 border-yellow-500"
+                        : ""
                         }`}
                     >
                       Members
@@ -568,8 +565,8 @@ const RoomLayout = (props: Props) => {
                   <Link href={`/room/${room.room_id}/requests`}>
                     <a
                       className={`py-2 px-4 flex hover:text-black ${router.pathname.indexOf("/requests") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                        ? "justify-start border-b-2 border-yellow-500"
+                        : ""
                         }`}
                     >
                       Requests
@@ -682,75 +679,75 @@ const RoomLayout = (props: Props) => {
             </div>
           </div>
         ) : null}
-          {isShowEditModal ? (
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-              <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-                <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
-                  <div className="px-4 pb-6 pt-8 rounded-t">
-                    <p className="text-gray-700 font-semibold text-lg text-center">
-                      Edit room
-                    </p>
-                  </div>
-                  <form onSubmit={editRoom}>
-                    <div className="w-full px-4 mb-8 flex-wrap">
-                      <InputGroup
-                        type="text"
-                        value={title}
-                        setValue={setTitle}
-                        placeholder="Title"
-                        error={titleErr}
-                        required
-                        label="Title"
-                      />
-                      <InputGroup
-                        type="text"
-                        value={description}
-                        setValue={setDescription}
-                        placeholder="Description"
-                        error={descErr}
-                        label="Description"
-                      />
-                     
-                    </div>
-                    <div className="flex items-center justify-end px-4">
-                      <button
-                        className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
-                        type="submit"
-                      >
-                        {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Save"
-                        )}
-                      </button>
-                      <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
-                        type="button"
-                        onClick={() => setIsShowEditModal(!isShowEditModal)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
+        {isShowEditModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
+                <div className="px-4 pb-6 pt-8 rounded-t">
+                  <p className="text-gray-700 font-semibold text-lg text-center">
+                    Edit room
+                  </p>
                 </div>
+                <form onSubmit={editRoom}>
+                  <div className="w-full px-4 mb-8 flex-wrap">
+                    <InputGroup
+                      type="text"
+                      value={title}
+                      setValue={setTitle}
+                      placeholder="Title"
+                      error={titleErr}
+                      required
+                      label="Title"
+                    />
+                    <InputGroup
+                      type="text"
+                      value={description}
+                      setValue={setDescription}
+                      placeholder="Description"
+                      error={descErr}
+                      label="Description"
+                    />
+
+                  </div>
+                  <div className="flex items-center justify-end px-4">
+                    <button
+                      className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
+                      type="submit"
+                    >
+                      {alert.loading ? (
+                        <div className="flex justify-center items-center space-x-1">
+                          <svg
+                            fill="none"
+                            className="w-6 h-6 animate-spin"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                              fill="currentColor"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        "Save"
+                      )}
+                    </button>
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                      onClick={() => setIsShowEditModal(!isShowEditModal)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
-          ) : null}
-           {isShowRemoveRoomModal ? (
+          </div>
+        ) : null}
+        {isShowRemoveRoomModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
               <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
@@ -769,7 +766,25 @@ const RoomLayout = (props: Props) => {
                     onClick={removeRoom}
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                    Remove
+                    {alert.loading ? (
+                      <div className="flex justify-center items-center space-x-1">
+                        <svg
+                          fill="none"
+                          className="w-6 h-6 animate-spin"
+                          viewBox="0 0 32 32"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    ) : (
+                      "Remove"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}
