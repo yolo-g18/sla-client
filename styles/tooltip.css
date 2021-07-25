@@ -34,3 +34,12 @@
   width: 550px;
   height: 250px;
 }
+
+.hide {
+  display: none;
+}
+
+.cellDay:hover + .hide,
+.hide:hover {
+  display: inline-block;
+}

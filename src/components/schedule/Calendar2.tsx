@@ -308,17 +308,17 @@ const Index = () => (
 
     <style>
       {`
-      @media screen and (min-width: 375px) {
-          .custom-width {
-              width: 40rem;
-          }
-      }
+        @media screen and (min-width: 375px) {
+            .custom-width {
+                width: 40rem;
+            }
+        }
 
-      @media screen and (min-width: 1300px) {
-          .custom-width {
-              width: 50%;
-          }
-      }`}
+        @media screen and (min-width: 1300px) {
+            .custom-width {
+                width: 50%;
+            }
+        }`}
     </style>
   </div>
 );

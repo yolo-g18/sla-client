@@ -213,3 +213,27 @@ export interface ISearch {
     createdDate:Date
     first4Cards: ICardLite[]
   }
+
+  export interface IEventReq {
+    color: string
+    name: string
+    description: string
+    fromTime: Date
+    toTime: Date
+    isLearnEvent: boolean
+  }
+  export interface IEventRes {
+    id: number
+        userId: number
+        name: string
+        description?: string
+        isLearnEvent: true
+        fromTime: number
+        toTime: number
+        color?: string | null
+        createdTime: number
+        updateTime: number
+        learnEvent: boolean
+        
+  }
+
