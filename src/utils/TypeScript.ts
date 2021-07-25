@@ -216,3 +216,9 @@ export interface ISearch {
     createdDate:Date
     first4Cards: ICardLite[]
   }
+
+  export interface IMember{
+    member_id:number
+    userName?:string
+
+  }

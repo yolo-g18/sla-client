@@ -45,7 +45,7 @@ const library = () => {
   const dispatch = useDispatch();
   const { auth, alert, user } = useSelector((state: RootStore) => state);
 
-  const [isSuccess, setIsSuccess] = React.useState(false);
+
   const [error, setError]: [string, (error: string) => void] =
     React.useState("not found");
 
@@ -68,7 +68,7 @@ const library = () => {
  
   React.useEffect(() => {
     // load detail data of room
-    setIsSuccess(false);
+  
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -85,10 +85,10 @@ const library = () => {
     }
 
     excute();
-  }, [id, isSuccess,alert.success]);
+  }, [id, alert.success]);
 
   React.useEffect(() => {
-    setIsSuccess(false);
+   
     // list all folders in room
     async function excute() {
       try {
@@ -106,11 +106,11 @@ const library = () => {
       }
     }
     excute();
-  }, [id, isSuccess,alert.success]);
+  }, [id, alert.success]);
 
   React.useEffect(() => {
     // list all SS  in room
-    setIsSuccess(false);
+  
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -127,7 +127,7 @@ const library = () => {
     }
 
     excute();
-  }, [id, isSuccess,alert.success]);
+  }, [id, alert.success]);
 
   // remove folder from room
   async function removeFolder() {
@@ -137,8 +137,8 @@ const library = () => {
         `${PARAMS.ENDPOINT}room/deleteFolderFromRoom/${id}/${idRemoveFolder}`
       );
 
-      dispatch({ type: ALERT, payload: { loading: false } });
-      setIsSuccess(true);
+      dispatch({ type: ALERT, payload: { loading: false ,success:"ss"} });
+  
       setMessageToast("folder removed");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -146,7 +146,7 @@ const library = () => {
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
-      setIsSuccess(false);
+ 
     }
 
     setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
@@ -169,16 +169,16 @@ const library = () => {
         `${PARAMS.ENDPOINT}room/deleteStudySetFromRoom/${id}/${idRemoveSet}`
       );
       
-      dispatch({ type: ALERT, payload: { loading: false } });
-      setIsSuccess(true);
-      setMessageToast("set added");
+      dispatch({ type: ALERT, payload: { loading: false, success:"ss" } });
+    
+      setMessageToast("set removed");
       setTypeToast("success");
       setIsToastOpen(true);
 
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
-      setIsSuccess(false);
+     
     }
 
     setIsShowRemoveSetModal(!isShowRemoveSetModal);

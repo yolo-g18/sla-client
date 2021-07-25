@@ -77,7 +77,7 @@ const RoomLayout = (props: Props) => {
   const { auth, alert, search } = useSelector((state: RootStore) => state);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const [isSuccess, setIsSuccess] = React.useState(false);
+ 
   const [error, setError]: [string, (error: string) => void] =
     React.useState("not found");
 
@@ -95,7 +95,7 @@ const RoomLayout = (props: Props) => {
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
   React.useEffect(() => {
-    setIsSuccess(false);
+
     // list all folders of user
     async function excute() {
       try {
@@ -112,11 +112,11 @@ const RoomLayout = (props: Props) => {
       }
     }
     excute();
-  }, [auth.userResponse?._id, isSuccess, alert.success]);
+  }, [auth.userResponse?._id, alert.success]);
 
   React.useEffect(() => {
     // load detail data of room
-    setIsSuccess(false);
+
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -134,11 +134,11 @@ const RoomLayout = (props: Props) => {
     }
 
     excute();
-  }, [id, isSuccess, alert.success]);
+  }, [id,  alert.success]);
 
 
   React.useEffect(() => {
-    setIsSuccess(false);
+   
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -155,7 +155,7 @@ const RoomLayout = (props: Props) => {
     }
 
     excute();
-  }, [auth.userResponse?._id, isSuccess]);
+  }, [auth.userResponse?._id, alert.success]);
 
   // populate SS to li in ul
   const listSetAdd = addSets.map((set) => (
@@ -310,7 +310,7 @@ const RoomLayout = (props: Props) => {
           <div className="col-span-3 h-screen">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
-                <a href={`/${room.ownerName}/library/folders`}>
+                <a href={`/${room.ownerName}/library/rooms`}>
                   <span className="hover:underline hover:text-gray-700">
                     back to library
                   </span>
