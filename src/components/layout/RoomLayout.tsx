@@ -105,6 +105,13 @@ const RoomLayout = (props: Props) => {
   const [titleErr, setTitleErr] = useState("");
   const [descErr, setDescErr] = useState("");
 
+  const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
+ 
+  const [idRemoveRoom, setIdRemoveRoom]: [
+    number,
+    (idRemoveRoom: number) => void
+  ] = React.useState<number>(0);
+
   React.useEffect(() => {
 
     // list all folders of user
@@ -349,6 +356,17 @@ const RoomLayout = (props: Props) => {
       }
   
       setIsToastOpen(false);
+    };
+
+ 
+  
+    const handleRemoveRoom = (room_id: number) => {
+      setIsShowRemoveModal(!isShowRemoveModal);
+      setIdRemoveRoom(room_id);
+    };
+  
+    const closeRemoveRoomModal = () => {
+      setIsShowRemoveModal(!isShowRemoveModal);
     };
   return (
     <div>
@@ -710,6 +728,38 @@ const RoomLayout = (props: Props) => {
               </div>
             </div>
           ) : null}
+           {isShowRemoveModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-4"></div>
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want to delete this room?
+                  </p>
+                  <small>
+                    No one will be able to access this class ever again.
+                  </small>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={removeRoom}
+                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    Remove
+                  </button>
+                  <button
+                    onClick={closeRemoveRoomModal}
+                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
         <Snackbar
           open={isToastOpen}
           autoHideDuration={6000}

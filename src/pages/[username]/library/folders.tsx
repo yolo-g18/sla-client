@@ -23,7 +23,7 @@ function Alert(props: AlertProps) {
 const folder = () => {
   
   const [folders, setFolders] = React.useState<IFolder[]>([]);
-  const [isSuccess, setIsSuccess] = useState(false);
+ 
 
   const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ const folder = () => {
   console.log("id: " + user._id);
 
   React.useEffect(() => {
-    setIsSuccess(false);
+  
     // list all folders of user
     async function excute() {
       try {
@@ -66,7 +66,7 @@ const folder = () => {
       }
     }
     excute();
-  }, [user._id, isSuccess, alert.success]);
+  }, [user._id, alert.success]);
 
   // remove folder from listFolder of user
   async function removeFolder() {
@@ -75,8 +75,8 @@ const folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteFolder/${idRemoveFolder}`
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
-      setIsSuccess(true);
+      dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+      
       setMessageToast("remove folder successfully");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -85,7 +85,7 @@ const folder = () => {
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
-      setIsSuccess(false);
+   
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);

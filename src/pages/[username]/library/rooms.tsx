@@ -13,6 +13,9 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { IRoom } from "../../../utils/TypeScript";
 import { PARAMS } from "../../../common/params";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { ALERT } from "../../../redux/types/alertType";
+
 
 //alert
 function Alert(props: AlertProps) {
@@ -30,11 +33,7 @@ const rooms = (props: any) => {
     query: { username },
   } = router;
 
-  const [loading, setLoading]: [boolean, (loading: boolean) => void] =
-    React.useState<boolean>(true);
-
-  const [error, setError]: [string, (error: string) => void] =
-    React.useState("not found");
+  const dispatch = useDispatch();
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
   const [isShowEmpty, setIsShowEmpty] = React.useState(false);
@@ -49,38 +48,40 @@ const rooms = (props: any) => {
   React.useEffect(() => {
     async function excute() {
       try {
+        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
           `${PARAMS.ENDPOINT}room/getRoomListOfUser/${user._id}`
         );
+        dispatch({ type: ALERT, payload: { loading: false } });
         setRooms(res.data);
 
         if (rooms.length === 0) setIsShowEmpty(true);
         else setIsShowEmpty(false);
 
-        setLoading(false);
+        
       } catch (err: any) {
-        setLoading(false);
-        setError(err);
+        dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
 
     excute();
-  }, [user._id, user.username, rooms]);
+  }, [user._id, alert.success]);
 
   // remove room from listRoom of user
   async function removeRoom() {
-    setLoading(true);
+   
     try {
+      dispatch({ type: ALERT, payload: { loading: true } });
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
       );
-      setLoading(false);
+      dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
       setMessageToast("remove room successfully");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
-      setError(err);
-      setLoading(false);
+      dispatch({ type: ALERT, payload: { loading: false } });
+    
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);

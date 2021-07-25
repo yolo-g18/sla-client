@@ -165,7 +165,7 @@ const LibraryLayout = (props: Props) => {
         try {
           dispatch({ type: ALERT, payload: { loading: true } });
           const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
-          dispatch({ type: ALERT, payload: { loading: false } });
+          dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
           setMessageToast("create room successfully");
           setTypeToast("success");
           setIsToastOpen(true);
