@@ -14,7 +14,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
 import { INewRoom, ISetAdd, IFolder, FormSubmit } from "../../utils/TypeScript";
-import { getAPI, putAPI } from "../../utils/FetchData";
+import { getAPI, putAPI, deleteAPI } from "../../utils/FetchData";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
@@ -105,7 +105,7 @@ const RoomLayout = (props: Props) => {
   const [titleErr, setTitleErr] = useState("");
   const [descErr, setDescErr] = useState("");
 
-  const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
+  const [isShowRemoveRoomModal, setIsShowRemoveRoomModal] = React.useState(false);
  
   const [idRemoveRoom, setIdRemoveRoom]: [
     number,
@@ -358,15 +358,37 @@ const RoomLayout = (props: Props) => {
       setIsToastOpen(false);
     };
 
- 
+    async function removeRoom() {
+   
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await deleteAPI(
+          `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
+        );
+        dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+        setMessageToast("remove room successfully");
+        setTypeToast("success");
+        setIsToastOpen(true);
+        router.push({
+          pathname: "/[username]/library/rooms",
+          query: { username: room.ownerName },
+        });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      
+      }
+  
+      setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
+    }
+  
   
     const handleRemoveRoom = (room_id: number) => {
-      setIsShowRemoveModal(!isShowRemoveModal);
+      setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
       setIdRemoveRoom(room_id);
     };
   
     const closeRemoveRoomModal = () => {
-      setIsShowRemoveModal(!isShowRemoveModal);
+      setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
     };
   return (
     <div>
@@ -503,7 +525,7 @@ const RoomLayout = (props: Props) => {
                                 className="block px-4 py-1 font-medium text-sm text-gray-500 hover:bg-yellow-500
                              hover:text-white  dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                                 role="menuitem"
-                              // onClick={() => setShowModalDelete(true)}
+                              onClick={() => handleRemoveRoom(room.room_id)}
                               >
                                 <span className="flex flex-col ">
                                   <span>delete</span>
@@ -728,7 +750,7 @@ const RoomLayout = (props: Props) => {
               </div>
             </div>
           ) : null}
-           {isShowRemoveModal ? (
+           {isShowRemoveRoomModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
               <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
