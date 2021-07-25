@@ -272,6 +272,14 @@ const RoomLayout = (props: Props) => {
     }
   }
 
+   // share link
+   function shareLink() {
+    navigator.clipboard.writeText(window.location.href);
+    setMessageToast("copied link");
+    setTypeToast("success");
+    setIsToastOpen(true);
+  }
+
     //handel close toast
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
       if (reason === "clickaway") {
@@ -373,7 +381,7 @@ const RoomLayout = (props: Props) => {
                 )}
 
                 <button
-                  // onClick={shareLink}
+                   onClick={shareLink}
                   className="mx-2 tooltip focus:outline-none"
                 >
                   <ShareIcon
