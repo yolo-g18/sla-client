@@ -14,7 +14,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
 import { INewRoom, ISetAdd, IFolder, FormSubmit } from "../../utils/TypeScript";
-import { getAPI, putAPI, deleteAPI } from "../../utils/FetchData";
+import { getAPI, putAPI, deleteAPI, postAPI } from "../../utils/FetchData";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
@@ -64,6 +64,8 @@ const defaultRoom = {
 }
 
 const defaulAddSets: ISetAdd[] = [];
+
+const colorFolderList: String[] = [];
 const RoomLayout = (props: Props) => {
   const router = useRouter();
 
@@ -114,6 +116,44 @@ const RoomLayout = (props: Props) => {
     (idRemoveRoom: number) => void
   ] = React.useState<number>(0);
 
+  const [isShowCreateFolderModal, setIsShowCreateFolderModal] = React.useState(false);
+
+  // set state for array color
+  const [colors, setColors]: [String[], (colors: String[]) => void] =
+    React.useState(colorFolderList);
+
+  // get value of color in select
+  const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
+
+  const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStateColorFolder({
+      ...stateColorFolder,
+      [event.target.name]: event.target.value.trim(),
+    });
+  };
+
+  const color_folder = React.useRef<HTMLSelectElement>(null);
+
+  React.useEffect(() => {
+    // load folder color
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setColors(res.data);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+    excute();
+  }, []);
+
+  // load option for select of folder color
+  const listColorItems = colors.map((item) => (
+    <option key={item.toString()}>{item}</option>
+  ));
   React.useEffect(() => {
 
     // list all folders of user
@@ -401,7 +441,7 @@ const RoomLayout = (props: Props) => {
       setMessageToast("all members removed");
       setTypeToast("success");
       setIsToastOpen(true);
-    
+
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -419,6 +459,65 @@ const RoomLayout = (props: Props) => {
   const closeRemoveAllMemberModal = () => {
     setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
   };
+
+  function openCreateFolderModal(){
+    setIsShowCreateFolderModal(true);
+    setIsShowAddFolderModal(false);
+  }
+
+  const createNewFolder = async (e: FormSubmit) => {
+    {
+      // create new folder 
+      setIsDescriptionTyping(false);
+      setIsTitleTyping(false);
+
+      e.preventDefault();
+      const color = "" + color_folder.current?.value;
+      const creator_id = "" + auth.userResponse?._id;
+      const data = { title, description, color, creator_id };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(
+          `${PARAMS.ENDPOINT}folder/createFolder`,
+          data
+        );
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "ss" },
+        });
+      
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+       
+      }
+
+      // get id of folder just created
+      let justFolderId = 0;
+
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}folder/getMaxIdOfFolder`
+        );
+        justFolderId = res.data;
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "ss" },
+        });
+       
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+       
+      }
+      
+      // add this folder to room
+      addFolderToRoom(justFolderId);
+      
+      setIsShowCreateFolderModal(false);
+    }
+  };
+
+
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -671,20 +770,17 @@ const RoomLayout = (props: Props) => {
                     <p className="text-xl font-semibold">Add a folder</p>
                   </div>
                   <div className="mt-4 text-center">
-                    <Link
-                      href={{
-                        pathname: "/set/add",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        className="w-40 text-md rounded-md px-4 mx-2 py-2
+
+                    <button
+                      type="button"
+                      className="w-40 text-md rounded-md px-4 mx-2 py-2
                           text-md font-bold bg-green-500 hover:bg-green-600 
                        text-white focus:outline-none"
-                      >
-                        Create a new folder
-                      </button>
-                    </Link>
+                       onClick={() => openCreateFolderModal()}
+                    >
+                      Create a new folder
+                    </button>
+
                   </div>
 
                   <div
@@ -780,6 +876,90 @@ const RoomLayout = (props: Props) => {
             </div>
           </div>
         ) : null}
+        {isShowCreateFolderModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
+                <div className="px-4 pb-6 pt-8 rounded-t">
+                  <p className="text-gray-700 font-semibold text-lg text-center">
+                    Create New Folder
+                  </p>
+                </div>
+                <form onSubmit={createNewFolder}>
+                  <div className="w-full px-4 mb-8 flex-wrap">
+                    <InputGroup
+                      type="text"
+
+                      setValue={setTitle}
+                      placeholder="Title"
+                      error={titleErr}
+                      required
+                      label="Title"
+                    />
+                    <InputGroup
+                      type="text"
+
+                      setValue={setDescription}
+                      placeholder="Description"
+                      error={descErr}
+                      label="Description"
+                    />
+                    <div className="relative mb-4">
+                      <div className="flex items-center justify-between">
+                        <label className="text-gray-700 text-sm font-bold mb-2">
+                          Colors
+                        </label>
+                      </div>
+                      <select
+                        id="color"
+                        className="block border border-grey-light w-full p-2 rounded-md mb-1 focus:outline-none text-sm"
+                        ref={color_folder}
+                        name="color"
+                        onChange={formValue}
+                        value={stateColorFolder.color}
+                      >
+                        {listColorItems}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end px-4">
+                    <button
+                      className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
+                      type="submit"
+                    >
+                      {alert.loading ? (
+                        <div className="flex justify-center items-center space-x-1">
+                          <svg
+                            fill="none"
+                            className="w-6 h-6 animate-spin"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                              fill="currentColor"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        "Save"
+                      )}
+                    </button>
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                      onClick={() => setIsShowCreateFolderModal(!isShowCreateFolderModal)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        ) : null}
         {isShowRemoveRoomModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
@@ -830,7 +1010,7 @@ const RoomLayout = (props: Props) => {
             </div>
           </div>
         ) : null}
-          {isShowRemoveAllMemberModal ? (
+        {isShowRemoveAllMemberModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
               <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
@@ -840,7 +1020,7 @@ const RoomLayout = (props: Props) => {
                     Are you sure want to remove all members this room?
                   </p>
                   <small>
-                   
+
                   </small>
                 </div>
 
