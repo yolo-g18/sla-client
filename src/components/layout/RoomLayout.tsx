@@ -13,7 +13,7 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
-import { INewRoom, ISetAdd, IFolder } from "../../utils/TypeScript";
+import { INewRoom, ISetAdd, IFolder, FormSubmit } from "../../utils/TypeScript";
 import { getAPI, putAPI } from "../../utils/FetchData";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
@@ -21,6 +21,8 @@ import { PARAMS } from "../../common/params";
 import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import InputGroup from "../input/InputGroup";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -94,6 +96,15 @@ const RoomLayout = (props: Props) => {
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
+
+  const [isShowEditModal, setIsShowEditModal] = React.useState(false);
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [isTitleTyping, setIsTitleTyping] = React.useState(false);
+  const [isDescriptionTyping, setIsDescriptionTyping] = React.useState(false);
+  const [titleErr, setTitleErr] = useState("");
+  const [descErr, setDescErr] = useState("");
+
   React.useEffect(() => {
 
     // list all folders of user
@@ -122,7 +133,8 @@ const RoomLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
         setRoom(res.data);
-        console.log("set: " + room.setNumbers);
+        setTitle(res.data.name);
+        setDescription(res.data.description);
 
         dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -279,6 +291,56 @@ const RoomLayout = (props: Props) => {
     setTypeToast("success");
     setIsToastOpen(true);
   }
+  useEffect(() => {
+    if (title.length <= 0) {
+      setTitleErr("Title is required.");
+    } else if (title.length > 20) {
+      setTitleErr("Title cannot exceed 20 character.");
+    } else {
+      setTitleErr("");
+    }
+
+    if (description.length > 150) {
+      setDescErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescErr("");
+    }
+  }, [title, description]);
+
+   // edit room
+   const editRoom = async (e: FormSubmit) => {
+    setIsTitleTyping(false);
+    setIsDescriptionTyping(false);
+
+    e.preventDefault();
+
+   
+    const data = {
+      "id":id,
+      "name": title, 
+      "description":description}
+      ;
+
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await putAPI(`${PARAMS.ENDPOINT}room/editRoom`, data);
+        dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+        setMessageToast("room updated");
+        setTypeToast("success");
+        setIsToastOpen(true);
+       
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+       
+      }
+    }
+
+    excute();
+
+    setIsShowEditModal(!isShowEditModal);
+  };
 
     //handel close toast
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -329,7 +391,7 @@ const RoomLayout = (props: Props) => {
                 {room.ownerName === auth.userResponse?.username ? (
                   <div>
                     <button
-                      // onClick={() => setIsShowEditModal(!isShowEditModal)}
+                      onClick={() => setIsShowEditModal(!isShowEditModal)}
                       className="mx-2 tooltip focus:outline-none"
                     >
                       <EditIcon
@@ -580,6 +642,74 @@ const RoomLayout = (props: Props) => {
             </div>
           </div>
         ) : null}
+          {isShowEditModal ? (
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+              <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+                <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
+                  <div className="px-4 pb-6 pt-8 rounded-t">
+                    <p className="text-gray-700 font-semibold text-lg text-center">
+                      Edit room
+                    </p>
+                  </div>
+                  <form onSubmit={editRoom}>
+                    <div className="w-full px-4 mb-8 flex-wrap">
+                      <InputGroup
+                        type="text"
+                        value={title}
+                        setValue={setTitle}
+                        placeholder="Title"
+                        error={titleErr}
+                        required
+                        label="Title"
+                      />
+                      <InputGroup
+                        type="text"
+                        value={description}
+                        setValue={setDescription}
+                        placeholder="Description"
+                        error={descErr}
+                        label="Description"
+                      />
+                     
+                    </div>
+                    <div className="flex items-center justify-end px-4">
+                      <button
+                        className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
+                        type="submit"
+                      >
+                        {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Save"
+                        )}
+                      </button>
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                        type="button"
+                        onClick={() => setIsShowEditModal(!isShowEditModal)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          ) : null}
         <Snackbar
           open={isToastOpen}
           autoHideDuration={6000}
