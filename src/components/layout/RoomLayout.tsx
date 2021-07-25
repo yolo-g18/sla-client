@@ -107,6 +107,8 @@ const RoomLayout = (props: Props) => {
 
   const [isShowRemoveRoomModal, setIsShowRemoveRoomModal] = React.useState(false);
 
+  const [isShowRemoveAllMemberModal, setIsShowRemoveAllMemberModal] = React.useState(false);
+
   const [idRemoveRoom, setIdRemoveRoom]: [
     number,
     (idRemoveRoom: number) => void
@@ -387,6 +389,36 @@ const RoomLayout = (props: Props) => {
   const closeRemoveRoomModal = () => {
     setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
   };
+
+  async function removeAllMember() {
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/removeAllMemberOfRoom/` + idRemoveRoom
+      );
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+      setMessageToast("all members removed");
+      setTypeToast("success");
+      setIsToastOpen(true);
+    
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+    }
+
+    setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
+  }
+
+
+  const handleRemoveAllMember = (room_id: number) => {
+    setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
+    setIdRemoveRoom(room_id);
+  };
+
+  const closeRemoveAllMemberModal = () => {
+    setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
+  };
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -513,6 +545,7 @@ const RoomLayout = (props: Props) => {
                                 className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
                             hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                                 role="menuitem"
+                                onClick={() => handleRemoveAllMember(room.room_id)}
                               >
                                 <span className="flex flex-col">
                                   <span>remove all members</span>
@@ -783,11 +816,61 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                      "Remove"
+                      "Delete"
                     )}
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}
+                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+          {isShowRemoveAllMemberModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-4"></div>
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want to remove all members this room?
+                  </p>
+                  <small>
+                   
+                  </small>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={removeAllMember}
+                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    {alert.loading ? (
+                      <div className="flex justify-center items-center space-x-1">
+                        <svg
+                          fill="none"
+                          className="w-6 h-6 animate-spin"
+                          viewBox="0 0 32 32"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    ) : (
+                      "Remove"
+                    )}
+                  </button>
+                  <button
+                    onClick={closeRemoveAllMemberModal}
                     className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
                   >
                     Cancel
