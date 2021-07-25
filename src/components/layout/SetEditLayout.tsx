@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import AppLayput2 from "./AppLayout";
 import InputGroup from "../../components/input/InputGroup";
@@ -21,6 +22,7 @@ import "react-quill/dist/quill.bubble.css";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import { id } from "date-fns/locale";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -99,6 +101,9 @@ const SetEditLayout = (props: Props) => {
   const [severity, setSeverity] = useState("");
   const [typeToast, setTypeToast] = useState("success");
   const [messageToast, setMessageToast] = useState("");
+
+  const [titleErr, setTitleErr] = useState("");
+  const [descErr, setDescErr] = useState("");
 
   const router = useRouter();
 
@@ -201,32 +206,30 @@ const SetEditLayout = (props: Props) => {
     }
   }, [limit]);
 
+  useEffect(() => {
+    if (title.length <= 0) {
+      setTitleErr("Title is required.");
+    } else if (title.length > 20) {
+      setTitleErr("Title cannot exceed 20 character.");
+    } else {
+      setTitleErr("");
+    }
+
+    if (desc.length > 150) {
+      setDescErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescErr("");
+    }
+  }, [title, desc]);
+
   //handel submit form
   const handleSubmit = async (e: any) => {
-    setErrors({
-      ...errors,
-      limit: "",
-      title: "",
-    });
-
-    //check limit valid
-
-    //check title valid
-    if (!title) {
-      setErrors({
-        ...errors,
-        title: "Title is required",
-      });
-    }
-
-    if (title.length > 20) {
-      setErrors({
-        ...errors,
-        title: "Title cannot exceed 20 characters",
-      });
-    }
+    console.log(
+      "tt: " + titleErr + " desc: " + descErr + " limit: " + errors.limit
+    );
 
     e.preventDefault();
+    if (titleErr || descErr || errors.limit) return;
 
     //========create null card by limit input
     const addData = {
@@ -317,7 +320,7 @@ const SetEditLayout = (props: Props) => {
       >
         <div className="lg:w-3/4 mx-auto h-full mt-4 px-4">
           <form onSubmit={handleSubmit}>
-            <div className="flex justify-around">
+            <div className="flex justify-between">
               <div className="flex flex-grow">
                 <h1 className="text-3xl font-semibold">
                   {router.pathname.indexOf("/set/add") !== -1
@@ -326,10 +329,18 @@ const SetEditLayout = (props: Props) => {
                 </h1>
               </div>
               <div className="flex relative">
-                <button
-                  className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600"
-                  // onClick={handleSubmit}
-                >
+                {router.pathname.indexOf("/set/add") === -1 ? (
+                  <Link href={`/set/${props.id}`}>
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                    >
+                      Back to set
+                    </button>
+                  </Link>
+                ) : null}
+
+                <button className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600">
                   {alert.loading
                     ? "Saving..."
                     : router.pathname.indexOf("/set/add") !== -1
@@ -351,7 +362,7 @@ const SetEditLayout = (props: Props) => {
                           placeholder={`enter a title like "Math01-Chap3"`}
                           value={title}
                           label="Title"
-                          error={errors.title}
+                          error={titleErr}
                           required
                         />
                       </div>
@@ -364,7 +375,6 @@ const SetEditLayout = (props: Props) => {
                             value={limit}
                             label="Limit"
                             error={errors.limit}
-                            // disabled={!isHide}
                           />
                           <p className="text-gray-600 text-xs px-1 -mt-3 mb-2">
                             Limit number of card in your set, you can add more
@@ -380,6 +390,7 @@ const SetEditLayout = (props: Props) => {
                         placeholder="study set de"
                         // error={alert.errors?.errors?.bio}
                         value={desc}
+                        error={descErr}
                         label="Description"
                       />
                     </div>

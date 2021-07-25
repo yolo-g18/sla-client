@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AppLayout from "../../../components/layout/AppLayout";
-import { deleteAPI, getAPI, putAPI } from "../../../utils/FetchData";
+import { deleteAPI, getAPI, postAPI, putAPI } from "../../../utils/FetchData";
 import { ICard, RootStore } from "../../../utils/TypeScript";
 import { PARAMS } from "../../../common/params";
 import { ALERT } from "../../../redux/types/alertType";
@@ -83,6 +83,7 @@ const index = () => {
   const [creatorName, setCreatorName] = useState("");
   const [numberOfCard, setNumberOfCard] = useState();
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false);
   const [currentCard, setCurrentCard] = useState(0);
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
@@ -162,39 +163,83 @@ const index = () => {
     setIsModalEditOpen(true);
     console.log(currentCard);
   };
+  const handelAddOnclick = () => {
+    setFront("");
+    setBack("");
+    setIsModalAddOpen(true);
+  };
+
+  const closeModaAddAndEdit = () => {
+    setIsModalAddOpen(false);
+    setIsModalEditOpen(false);
+  };
 
   const handleCardSave = async () => {
-    const cardDataUpdate = [
-      {
-        id: cards[currentCard].id,
-        studySet: id,
-        front: front,
-        back: back,
-      },
-    ];
-    try {
-      dispatch({ type: ALERT, payload: { loading: true } });
-      const res = await putAPI(`${PARAMS.ENDPOINT}card/edit`, cardDataUpdate);
-      dispatch({
-        type: ALERT,
-        payload: { loading: false, success: "😎 Your card updated!" },
-      });
-      setIsSuc(true);
-      setTypeToast("success");
-      setMessageToast("😎 Your card updated!");
-      setIsToastOpen(true);
-      setIsModalEditOpen(false);
-    } catch (err) {
-      dispatch({
-        type: ALERT,
-        payload: {
-          loading: false,
-          errors: { message: "An error occurred" },
+    if (isModalAddOpen) {
+      const cardDataAdd = [
+        {
+          studySet: id,
+          front: front,
+          back: back,
         },
-      });
-      setMessageToast("An error occurred");
-      setTypeToast("error");
-      setIsToastOpen(true);
+      ];
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(`${PARAMS.ENDPOINT}card/create`, cardDataAdd);
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Your card updated!" },
+        });
+        setIsSuc(true);
+        setTypeToast("success");
+        setMessageToast("😎 Your card updated!");
+        setIsToastOpen(true);
+        setIsModalAddOpen(false);
+      } catch (err) {
+        dispatch({
+          type: ALERT,
+          payload: {
+            loading: false,
+            errors: { message: "An error occurred" },
+          },
+        });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
+    } else {
+      const cardDataUpdate = [
+        {
+          id: cards[currentCard].id,
+          studySet: id,
+          front: front,
+          back: back,
+        },
+      ];
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await putAPI(`${PARAMS.ENDPOINT}card/edit`, cardDataUpdate);
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Your card updated!" },
+        });
+        setIsSuc(true);
+        setTypeToast("success");
+        setMessageToast("😎 Your card updated!");
+        setIsToastOpen(true);
+        setIsModalEditOpen(false);
+      } catch (err) {
+        dispatch({
+          type: ALERT,
+          payload: {
+            loading: false,
+            errors: { message: "An error occurred" },
+          },
+        });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
     }
   };
 
@@ -283,11 +328,13 @@ const index = () => {
             <div className="flex flex-wrap">
               {_.split(tags, ",").map((tag, index) => {
                 return (
-                  <div className="my-1 mr-2 flex ">
-                    <span className="px-4 py-1 rounded-xl text-gray-800 truncate  bg-gray-200   ">
-                      {tag}
-                    </span>
-                  </div>
+                  <Link href="">
+                    <div className="my-1 mr-2 flex ">
+                      <span className="px-4 py-1 rounded-xl truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer text-sm font-bold ">
+                        {tag}
+                      </span>
+                    </div>
+                  </Link>
                 );
               })}
             </div>
@@ -319,7 +366,10 @@ const index = () => {
                 </Link>
                 {creatorName === auth.userResponse?.username ? (
                   <div className="flex">
-                    <button className="mx-2 tooltip focus:outline-none">
+                    <button
+                      onClick={handelAddOnclick}
+                      className="mx-2 tooltip focus:outline-none"
+                    >
                       <AddIcon
                         fontSize="default"
                         className="hover:text-gray-400 text-gray-700"
@@ -377,8 +427,8 @@ const index = () => {
                             </span>
                           </a>
                           <a
-                            className="block px-4 py-1 font-medium text-sm text-yellow-500 hover:bg-blue-500
-                             hover:text-white  dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                            className="block px-4 py-1 font-medium text-sm text-gray-700 hover:text-white hover:bg-yellow-500
+                               dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                             role="menuitem"
                             onClick={() => setShowModalDelete(true)}
                           >
@@ -438,10 +488,10 @@ const index = () => {
             </div>
           </div>
         </div>
-        {isModalEditOpen ? (
-          <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12 ">
-            <div className="lg:h-1/2 py-6 rounded-xl px-4 bg-white">
-              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4">
+        {isModalEditOpen || isModalAddOpen ? (
+          <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
+            <div className="mx-2 py-2 rounded-xl bg-white">
+              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 ">
                 <div className="col-span-1 flex lg:my-2 my-4">
                   <QuillNoSSRWrapper
                     modules={modules}
@@ -453,7 +503,7 @@ const index = () => {
                     value={front}
                   />
                 </div>
-                <div className="col-span-1 flex  lg:my-2 my-4">
+                <div className="col-span-1 flex  lg:my-2 my-4 ">
                   <QuillNoSSRWrapper
                     modules={modules}
                     formats={formats}
@@ -469,7 +519,7 @@ const index = () => {
                 <button
                   className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
                   type="button"
-                  onClick={() => setIsModalEditOpen(false)}
+                  onClick={closeModaAddAndEdit}
                 >
                   Cancel
                 </button>
@@ -485,9 +535,9 @@ const index = () => {
           </div>
         ) : null}
         {showModalDelete ? (
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12">
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p>Are you sure want to delete this study set</p>
@@ -518,7 +568,7 @@ const index = () => {
         ) : null}
         <Snackbar
           open={isToastOpen}
-          autoHideDuration={6000}
+          autoHideDuration={3000}
           onClose={handleClose}
         >
           <Alert

@@ -146,7 +146,13 @@ const home = () => {
                               </p>
                             )}
                           </div>
-                          <div className="row-span-1 mt-2">
+                          <div className="relative w-full h-2 bg-gray-200 rounded">
+                            <div
+                              className="absolute top-0 h-2 left-0 rounded bg-green-500"
+                              style={{ width: `${set.progress * 100}%` }}
+                            />
+                          </div>
+                          <div className="row-span-1 mt-1">
                             <p>{set.numberOfCards} cards</p>
                           </div>
                         </div>
