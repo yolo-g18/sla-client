@@ -386,8 +386,7 @@ const library = () => {
                     Are you sure want to remove this folder?
                   </p>
                   <small>
-                  All folders in this room will not be deleted from the
-                      library
+            
                   </small>
                 </div>
 
@@ -436,8 +435,7 @@ const library = () => {
                     Are you sure want to remove this set?
                   </p>
                   <small>
-                  All sets in this room will not be deleted from the
-                      library
+                
                   </small>
                 </div>
 

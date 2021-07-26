@@ -647,7 +647,7 @@ const RoomLayout = (props: Props) => {
                                 onClick={() => handleRemoveAllMember(room.room_id)}
                               >
                                 <span className="flex flex-col">
-                                  <span>remove all members</span>
+                                  <span>delete all members</span>
                                 </span>
                               </a>
                               <a
