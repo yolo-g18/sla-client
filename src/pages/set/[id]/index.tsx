@@ -15,6 +15,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 
 //alert
 function Alert(props: AlertProps) {
@@ -85,6 +86,7 @@ const index = () => {
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
   const [isModalAddOpen, setIsModalAddOpen] = useState(false);
   const [currentCard, setCurrentCard] = useState(0);
+  const [showDeleteCardModal, setShowDeleteCardModal] = useState(false);
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
   const [showModalDelete, setShowModalDelete] = useState(false);
@@ -243,9 +245,10 @@ const index = () => {
     }
   };
 
-  //handel delete set
-  const displayModalDelete = () => {
-    setShowModalDelete(true);
+  //handel delete card
+  const handelDeleteOnclick = (index: number) => {
+    setCurrentCard(index);
+    setShowDeleteCardModal(true);
   };
 
   const handelDeleteStudySet = async () => {
@@ -280,7 +283,27 @@ const index = () => {
     }
   };
 
-  console.log("tags is: " + tags);
+  const deleteCard = async () => {
+    let id = cards[currentCard].id;
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(`${PARAMS.ENDPOINT}card/delete?id=${id}`);
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setIsSuc(true);
+      setMessageToast("delete card successfully");
+      setTypeToast("success");
+      setIsToastOpen(true);
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+      setIsSuc(false);
+    }
+
+    setShowDeleteCardModal(false);
+  };
+
   return (
     <div>
       <AppLayout title={title} desc={desc}>
@@ -426,16 +449,18 @@ const index = () => {
                               <span>fork</span>
                             </span>
                           </a>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 hover:text-white hover:bg-yellow-500
+                          {auth.userResponse?.username === creatorName ? (
+                            <a
+                              className="block px-4 py-1 font-medium text-sm text-gray-700 hover:text-white hover:bg-yellow-500
                                dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
-                            role="menuitem"
-                            onClick={() => setShowModalDelete(true)}
-                          >
-                            <span className="flex flex-col ">
-                              <span>delete</span>
-                            </span>
-                          </a>
+                              role="menuitem"
+                              onClick={() => setShowModalDelete(true)}
+                            >
+                              <span className="flex flex-col ">
+                                <span>delete</span>
+                              </span>
+                            </a>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -469,18 +494,33 @@ const index = () => {
                           className="w-64"
                         />
                       </div>
-                      <div className="col-span-1">
-                        <button
-                          onClick={(event) => handelEditOnclick(index)}
-                          className="mx-2 tooltip focus:outline-none"
-                        >
-                          <EditIcon
-                            fontSize="small"
-                            className="hover:text-gray-400 text-gray-700"
-                          />
-                          <span className="tooltiptext -mt-2 w-16">edit</span>
-                        </button>
-                      </div>
+                      {auth.userResponse?.username === creatorName ? (
+                        <div className="col-span-1">
+                          <button
+                            onClick={(event) => handelEditOnclick(index)}
+                            className="mx-2 tooltip focus:outline-none"
+                          >
+                            <EditIcon
+                              fontSize="small"
+                              className="hover:text-gray-400 text-gray-700"
+                            />
+                            <span className="tooltiptext mt-2 w-16">edit</span>
+                          </button>
+
+                          <button
+                            onClick={(event) => handelDeleteOnclick(index)}
+                            className="mx-2 tooltip focus:outline-none"
+                          >
+                            <DeleteOutlineIcon
+                              fontSize="small"
+                              className="hover:text-yellow-400 text-gray-700"
+                            />
+                            <span className="tooltiptext mt-2 w-20">
+                              delete
+                            </span>
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
@@ -488,10 +528,38 @@ const index = () => {
             </div>
           </div>
         </div>
+        {showDeleteCardModal ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className=" w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want to delete this card?
+                  </p>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={deleteCard}
+                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600 focus:outline-none"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteCardModal(false)}
+                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600 focus:outline-none"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
         {isModalEditOpen || isModalAddOpen ? (
           <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
             <div className="mx-2 py-2 rounded-xl bg-white">
-              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 ">
+              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-2">
                 <div className="col-span-1 flex lg:my-2 my-4">
                   <QuillNoSSRWrapper
                     modules={modules}

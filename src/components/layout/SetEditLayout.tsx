@@ -85,12 +85,11 @@ const SetEditLayout = (props: Props) => {
   //   const id: number;
 
   const [title, setTitle] = useState("");
+  const [creatorName, setCreatorName] = useState("");
   const [desc, setDesc] = useState("");
-  const [limit, setLimit] = useState("2");
   const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [cards, setCards] = useState<ICard[]>([]);
-  const [errors, setErrors] = useState<any>({});
   const [isFront, setIsFront] = useState(true);
 
   const [text, setText] = useState("");
@@ -98,12 +97,12 @@ const SetEditLayout = (props: Props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [isToastOpen, setIsToastOpen] = useState(false);
-  const [severity, setSeverity] = useState("");
   const [typeToast, setTypeToast] = useState("success");
   const [messageToast, setMessageToast] = useState("");
 
   const [titleErr, setTitleErr] = useState("");
   const [descErr, setDescErr] = useState("");
+  const [showModalRemoveAll, setShowModalRemoveAll] = useState(false);
 
   const router = useRouter();
 
@@ -115,6 +114,14 @@ const SetEditLayout = (props: Props) => {
 
     setIsToastOpen(false);
   };
+
+  useEffect(() => {
+    let tempCards: ICard[] = [];
+    for (let i = 0; i < 2; i++) {
+      tempCards.push({ front: "", back: "" });
+      setCards(tempCards);
+    }
+  }, []);
 
   // ======================================
   //when user edit studyset
@@ -137,6 +144,7 @@ const SetEditLayout = (props: Props) => {
           dispatch({ type: ALERT, payload: { loading: false } });
           setTitle(studySetRes.data.title);
           setDesc(studySetRes.data.description);
+          setCreatorName(studySetRes.data.creatorName);
           setIsPublic(studySetRes.data.public);
           studySetRes.data.tag
             ? setTags(_.split(studySetRes.data.tag, ", "))
@@ -187,26 +195,6 @@ const SetEditLayout = (props: Props) => {
   };
 
   useEffect(() => {
-    let size = _.toNumber(limit);
-    if (isNaN(size) || size < 2) {
-      setErrors({
-        ...errors,
-        limit: "You need two cards to create a set",
-      });
-    } else {
-      setErrors({
-        ...errors,
-        limit: "",
-      });
-      let tempCards = [];
-      for (let i = 0; i < size; i++) {
-        tempCards.push({ front: "", back: "" });
-        setCards(tempCards);
-      }
-    }
-  }, [limit]);
-
-  useEffect(() => {
     if (title.length <= 0) {
       setTitleErr("Title is required.");
     } else if (title.length > 20) {
@@ -222,14 +210,14 @@ const SetEditLayout = (props: Props) => {
     }
   }, [title, desc]);
 
+  console.log(cards);
+
   //handel submit form
   const handleSubmit = async (e: any) => {
-    console.log(
-      "tt: " + titleErr + " desc: " + descErr + " limit: " + errors.limit
-    );
+    console.log("tt: " + titleErr + " desc: " + descErr);
 
     e.preventDefault();
-    if (titleErr || descErr || errors.limit) return;
+    if (titleErr || descErr) return;
 
     //========create null card by limit input
     const addData = {
@@ -305,10 +293,68 @@ const SetEditLayout = (props: Props) => {
   };
 
   //handel delete card
-  const handelDeleteCard = (index: number) => {};
+  const handelDeleteCard = (index: number) => {
+    let cardsTemp: ICard[] = [...cards];
+    console.log("cards : " + JSON.stringify(cards));
+    if (cardsTemp.length <= 2) {
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("You need least two cards");
+      return;
+    }
+    console.log("index: " + index);
 
-  console.log("tags is: " + tags);
-  console.log("status: " + alert.success);
+    cardsTemp.splice(index, 1);
+    console.log("temp2: " + JSON.stringify(cardsTemp));
+
+    setCards(cardsTemp);
+  };
+
+  const deleteAll = () => {
+    let tempCards: ICard[] = [];
+    for (let i = 0; i < 2; i++) {
+      tempCards.push({ front: "", back: "" });
+      setCards(tempCards);
+      setShowModalRemoveAll(false);
+    }
+  };
+
+  const addMoreCard = () => {
+    let cardstemp: ICard[] = [...cards];
+    cardstemp.push({ front: "", back: "" });
+    setCards(cardstemp);
+  };
+
+  // if (alert.loading === true) {
+  //   return (
+  //     <AppLayput2
+  //       title={`${
+  //         router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
+  //       }`}
+  //       desc="create set"
+  //     >
+  //       Loading...
+  //     </AppLayput2>
+  //   );
+  // }
+
+  if (
+    auth.userResponse?.username !== creatorName &&
+    router.pathname.indexOf("/set/add") === -1
+  ) {
+    return (
+      <AppLayput2
+        title={`${
+          router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
+        }`}
+        desc="create set"
+      >
+        <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
+          Not permitted
+        </h1>
+      </AppLayput2>
+    );
+  }
 
   return (
     <div>
@@ -318,216 +364,277 @@ const SetEditLayout = (props: Props) => {
         }`}
         desc="create set"
       >
-        <div className="lg:w-3/4 mx-auto h-full mt-4 px-4">
-          <form onSubmit={handleSubmit}>
-            <div className="flex justify-between">
-              <div className="flex flex-grow">
-                <h1 className="text-3xl font-semibold">
-                  {router.pathname.indexOf("/set/add") !== -1
-                    ? "Create Study Set"
-                    : "Edit Your Set"}
-                </h1>
-              </div>
-              <div className="flex relative">
-                {router.pathname.indexOf("/set/add") === -1 ? (
-                  <Link href={`/set/${props.id}`}>
-                    <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
-                      type="button"
-                    >
-                      Back to set
-                    </button>
-                  </Link>
-                ) : null}
+        {alert.loading === true ? (
+          <div>
+            <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
+              Loading...
+            </h1>
+          </div>
+        ) : auth.userResponse?.username !== creatorName &&
+          router.pathname.indexOf("/set/add") === -1 ? (
+          <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
+            Not permitted
+          </h1>
+        ) : (
+          <div className="lg:w-3/4 mx-auto h-full mt-4 px-4">
+            <form onSubmit={handleSubmit}>
+              <div className="flex justify-between">
+                <div className="flex flex-grow">
+                  <h1 className="text-3xl font-semibold">
+                    {router.pathname.indexOf("/set/add") !== -1
+                      ? "Create Study Set"
+                      : "Edit Your Set"}
+                  </h1>
+                </div>
+                <div className="flex relative">
+                  {router.pathname.indexOf("/set/add") === -1 ? (
+                    <Link href={`/set/${props.id}`}>
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                        type="button"
+                      >
+                        Back to set
+                      </button>
+                    </Link>
+                  ) : null}
 
-                <button className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600">
-                  {alert.loading
-                    ? "Saving..."
-                    : router.pathname.indexOf("/set/add") !== -1
-                    ? "Create"
-                    : "Update"}
-                </button>
+                  <button className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600">
+                    {alert.loading
+                      ? "Saving..."
+                      : router.pathname.indexOf("/set/add") !== -1
+                      ? "Create"
+                      : "Update"}
+                  </button>
+                </div>
               </div>
-            </div>
-            <div>
-              <h1 className="text-md mt-4 mb-2">Study set Information</h1>
-              <div className="grid lg:grid-cols-2 gap-4 grid-cols-1 h-1/3 mt-4">
-                <div className="col-span-1 justify-around">
-                  <div className="flex flex-wrap my-1">
-                    <div className="grid lg:grid-cols-3 gap-2 w-full">
-                      <div className="lg:col-span-2 col-span-1">
-                        <InputGroup
-                          type="text"
-                          setValue={setTitle}
-                          placeholder={`enter a title like "Math01-Chap3"`}
-                          value={title}
-                          label="Title"
-                          error={titleErr}
-                          required
-                        />
-                      </div>
-                      {router.pathname.indexOf("/set/add") !== -1 ? (
-                        <div className="lg:col-span-1 col-span-1">
+              <div>
+                <h1 className="text-md mt-4 mb-2">Study set Information</h1>
+                <div className="grid lg:grid-cols-2 gap-4 grid-cols-1 h-1/3 mt-4">
+                  <div className="col-span-1 justify-around">
+                    <div className="flex flex-wrap my-1">
+                      <div className="grid lg:grid-cols-3 gap-2 w-full">
+                        <div className="lg:col-span-2 col-span-1">
                           <InputGroup
                             type="text"
-                            setValue={setLimit}
-                            placeholder="your last name"
-                            value={limit}
-                            label="Limit"
-                            error={errors.limit}
+                            setValue={setTitle}
+                            placeholder={`enter a title like "Math01-Chap3"`}
+                            value={title}
+                            label="Title"
+                            error={titleErr}
+                            required
                           />
-                          <p className="text-gray-600 text-xs px-1 -mt-3 mb-2">
-                            Limit number of card in your set, you can add more
-                            card later
-                          </p>
                         </div>
-                      ) : null}
-                    </div>
-
-                    <div className=" w-full">
-                      <InputArea
-                        setValue={setDesc}
-                        placeholder="study set de"
-                        // error={alert.errors?.errors?.bio}
-                        value={desc}
-                        error={descErr}
-                        label="Description"
-                      />
-                    </div>
-                  </div>
-                  <div className="px-1">
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={isPublic}
-                          onChange={handleChange}
-                          name="isPublic"
-                          color="default"
-                        />
-                      }
-                      label="Public"
-                    />
-                  </div>
-                </div>
-                <div className="col-span-1">
-                  <div className="w-2/3">
-                    <label className="text-gray-700 text-sm font-bold mb-2">
-                      Tags
-                    </label>
-                    <div className="mt-1 py-1">
-                      <ReactTagInput
-                        tags={tags}
-                        onChange={(newTags) => setTags(newTags)}
-                        placeholder="Please enter to add tag"
-                        maxTags={10}
-                      />
-                      <p className="text-gray-600 text-xs pt-1 mb-2">
-                        Tag make your study set easier to search by other
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-          {true ? (
-            <div className="h-full mt-4">
-              <h1 className="text-md mt-4 mb-2">Add cards</h1>
-              <hr />
-              <div className=" w-full">
-                {cards.map((card, index) => {
-                  return (
-                    <div className="rounded-xl grid grid-cols-11 gap-4 my-4">
-                      <div
-                        className="col-span-5 rounded-xl bg-gray-200"
-                        onClick={() => {
-                          setIsFront(true);
-                          handelCardOnClick(card.front, index);
-                        }}
-                      >
-                        <QuillNoSSRWrapper
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.front}
+                      </div>
+                      <div className=" w-full">
+                        <InputArea
+                          setValue={setDesc}
+                          placeholder="study set de"
+                          // error={alert.errors?.errors?.bio}
+                          value={desc}
+                          error={descErr}
+                          label="Description"
                         />
                       </div>
-                      <div
-                        className="col-span-5 rounded-xl bg-gray-200"
-                        onClick={() => {
-                          setIsFront(false);
-                          handelCardOnClick(card.back, index);
-                        }}
-                      >
-                        <QuillNoSSRWrapper
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.back}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <button
-                          onClick={(event) => handelDeleteCard(index)}
-                          className="mx-2 tooltip focus:outline-none"
-                        >
-                          <DeleteOutlineIcon
-                            fontSize="small"
-                            className="hover:text-gray-400 text-gray-700"
+                    </div>
+                    <div className="px-1">
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={isPublic}
+                            onChange={handleChange}
+                            color="primary"
+                            name="isPublic"
                           />
-                          <span className="tooltiptext -mt-2 w-16">delete</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-
-          {/* popup editor */}
-          {showModal ? (
-            <>
-              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12">
-                <div className="relative w-auto my-6 max-w-3xl">
-                  {/*content*/}
-                  <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                    {/*header*/}
-                    <div className="justify-between px-4 py-6 rounded-t">
-                      <p>Card Content</p>
-                    </div>
-                    {/*body*/}
-                    <div className="relative h-full px-4 flex flex-wrap">
-                      <QuillNoSSRWrapper
-                        modules={modules}
-                        formats={formats}
-                        theme="snow"
-                        value={text}
-                        onChange={setText}
-                        className="h-96"
+                        }
+                        label="Public"
                       />
                     </div>
-                    {/*footer*/}
-                    <div className="flex items-center justify-end px-4 py-6 mt-12">
+                  </div>
+                  <div className="col-span-1">
+                    <div className="w-2/3">
+                      <label className="text-gray-700 text-sm font-bold mb-2">
+                        Tags
+                      </label>
+                      <div className="mt-1 py-1">
+                        <ReactTagInput
+                          tags={tags}
+                          onChange={(newTags) => setTags(newTags)}
+                          placeholder="Please enter to add tag"
+                          maxTags={10}
+                        />
+                        <p className="text-gray-600 text-xs pt-1 mb-2">
+                          Tag make your study set easier to search by other
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            {true ? (
+              <div className="h-full mt-4">
+                <div className="flex justify-between">
+                  <div className="mb-2">
+                    <h1 className="text-md mt-4 ">Add cards</h1>
+                    <small className="text-gray-500">
+                      * Click into card to edit
+                    </small>
+                  </div>
+
+                  <div className="flex my-auto">
+                    <div className="mx-4 text-center my-auto py-1">
+                      <p>{cards.length} cards</p>
+                    </div>
+                    {router.pathname.indexOf("/set/add") !== -1 ? (
                       <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
-                        type="button"
-                        onClick={() => setShowModal(false)}
+                        onClick={() => setShowModalRemoveAll(true)}
+                        className={`bg-yellow-500 
+            text-white w-24 py-1 rounded-md text-sm font-medium hover:bg-yellow-600 focus:outline-none
+             ${cards.length <= 2 ? "bg-yellow-300" : ""}`}
+                        disabled={cards.length <= 2}
+                      >
+                        {alert.loading ? "Saving..." : "Remove all"}
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+                <hr />
+                <div className=" w-full">
+                  {cards.map((card, index) => {
+                    return (
+                      <div className="rounded-xl grid grid-cols-11 gap-4 my-4">
+                        <div
+                          className="col-span-5 rounded-xl bg-white shadow-lg hover:bg-indigo-50"
+                          onClick={() => {
+                            setIsFront(true);
+                            handelCardOnClick(card.front, index);
+                          }}
+                        >
+                          <QuillNoSSRWrapper
+                            readOnly={true}
+                            theme="bubble"
+                            value={card.front}
+                            className="w-64"
+                          />
+                        </div>
+                        <div
+                          className="col-span-5 rounded-xl bg-white shadow-lg hover:bg-indigo-50"
+                          onClick={() => {
+                            setIsFront(false);
+                            handelCardOnClick(card.back, index);
+                          }}
+                        >
+                          <QuillNoSSRWrapper
+                            readOnly={true}
+                            theme="bubble"
+                            value={card.back}
+                            className="w-64"
+                          />
+                        </div>
+                        <div className="col-span-1">
+                          <button
+                            onClick={(event) => handelDeleteCard(index)}
+                            className="mx-2 tooltip focus:outline-none"
+                          >
+                            <DeleteOutlineIcon
+                              fontSize="small"
+                              className="hover:text-yellow-500 text-gray-700"
+                            />
+                            <span className="tooltiptext mt-2 w-20">
+                              remove
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={addMoreCard}
+                  className="text-white w-32 py-2 mx-auto rounded-md text-sm font-medium bg-green-500 hover:bg-green-600 mt-4 focus:outline-none"
+                  type="button"
+                >
+                  Add more card
+                </button>
+              </div>
+            ) : null}
+            {/* show modal cf remove all */}
+            {showModalRemoveAll ? (
+              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+                <div className=" w-full absolute flex items-center justify-center bg-modal">
+                  <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
+                    <div className="mb-8">
+                      <p className="text-xl font-semibold">
+                        Are you sure want to remove all all card of set?
+                      </p>
+                      <small>Your edits will not be saved!</small>
+                    </div>
+
+                    <div className="flex justify-center">
+                      <button
+                        onClick={deleteAll}
+                        className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600 focus:outline-none"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        onClick={() => setShowModalRemoveAll(false)}
+                        className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600 focus:outline-none"
                       >
                         Cancel
                       </button>
-                      <button
-                        className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
-                        type="button"
-                        onClick={handleCardSave}
-                      >
-                        Save Changes
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </>
-          ) : null}
-        </div>
+            ) : null}
+
+            {/* popup editor */}
+            {showModal ? (
+              <>
+                <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+                  <div className="relative w-auto my-6 max-w-3xl">
+                    {/*content*/}
+                    <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                      {/*header*/}
+                      <div className="justify-between px-4 py-6 rounded-t">
+                        <p>Card Content</p>
+                      </div>
+                      {/*body*/}
+                      <div className="relative h-full px-4 flex flex-wrap">
+                        <QuillNoSSRWrapper
+                          modules={modules}
+                          formats={formats}
+                          theme="snow"
+                          value={text}
+                          onChange={setText}
+                          className="h-96"
+                        />
+                      </div>
+                      {/*footer*/}
+                      <div className="flex items-center justify-end px-4 py-6 mt-12">
+                        <button
+                          className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                          type="button"
+                          onClick={() => setShowModal(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                          type="button"
+                          onClick={handleCardSave}
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </div>
+        )}
         <Snackbar
           open={isToastOpen}
           autoHideDuration={6000}
@@ -535,7 +642,13 @@ const SetEditLayout = (props: Props) => {
         >
           <Alert
             onClose={handleClose}
-            severity={typeToast === "success" ? "success" : "error"}
+            severity={
+              typeToast === "success"
+                ? "success"
+                : typeToast === "error"
+                ? "error"
+                : "warning"
+            }
           >
             {messageToast}
           </Alert>

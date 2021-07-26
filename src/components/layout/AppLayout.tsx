@@ -279,7 +279,6 @@ const AppLayout = (props: Props) => {
           <div className="container mx-auto h-screen flex flex-col justify-between pt-2 position:relative">
             {props.children}
           </div>
-          <div className="h-96 "></div>
         </div>
       </main>
     </div>
