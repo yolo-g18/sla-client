@@ -405,7 +405,7 @@ const RoomLayout = (props: Props) => {
         `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
       );
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-      setMessageToast("remove room successfully");
+      setMessageToast("room deleted");
       setTypeToast("success");
       setIsToastOpen(true);
       router.push({
@@ -438,7 +438,7 @@ const RoomLayout = (props: Props) => {
         `${PARAMS.ENDPOINT}room/removeAllMemberOfRoom/` + idRemoveRoom
       );
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-      setMessageToast("all members removed");
+      setMessageToast("all members deleted");
       setTypeToast("success");
       setIsToastOpen(true);
 
@@ -1017,10 +1017,10 @@ const RoomLayout = (props: Props) => {
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p className="text-xl font-semibold">
-                    Are you sure want to remove all members this room?
+                    Are you sure want to delete all members this room?
                   </p>
                   <small>
-
+                    There is no one in room
                   </small>
                 </div>
 
@@ -1046,7 +1046,7 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                      "Remove"
+                      "Delete"
                     )}
                   </button>
                   <button

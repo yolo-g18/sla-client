@@ -146,7 +146,7 @@ const LibraryLayout = (props: Props) => {
             type: ALERT,
             payload: { loading: false, success: "ss" },
           });
-          setMessageToast("Create folder successfully");
+          setMessageToast("folder created");
           setTypeToast("success");
           setIsToastOpen(true);
         } catch (err) {
@@ -166,7 +166,7 @@ const LibraryLayout = (props: Props) => {
           dispatch({ type: ALERT, payload: { loading: true } });
           const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
           dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
-          setMessageToast("create room successfully");
+          setMessageToast("room created");
           setTypeToast("success");
           setIsToastOpen(true);
         } catch (err) {

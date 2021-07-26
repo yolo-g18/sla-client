@@ -103,7 +103,7 @@ const members = () => {
 
       dispatch({ type: ALERT, payload: { loading: false ,success:"ss"} });
       
-      setMessageToast("member removed");
+      setMessageToast("member deleted");
       setTypeToast("success");
       setIsToastOpen(true);
   
@@ -218,7 +218,7 @@ const members = () => {
                     Are you sure want to delete this member?
                   </p>
                   <small>
-
+                    This member will be kicked out of room
                   </small>
                 </div>
 

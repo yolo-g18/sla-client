@@ -50,7 +50,7 @@ const defaulAddSets: ISetAdd[] = [];
 const Folder = () => {
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+
 
   // populate form add SS to folder
   const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] =
@@ -79,8 +79,6 @@ const Folder = () => {
     (studySets: IStudySet[]) => void
   ] = React.useState(defaultStudySets);
 
-  const [error, setError]: [string, (error: string) => void] =
-    React.useState("not found");
 
   const [idRemoveStudySet, setIdRemoveStudySet]: [
     number,
@@ -118,7 +116,7 @@ const Folder = () => {
 
   React.useEffect(() => {
     // load detail data of folder
-    setIsSuccess(false);
+   
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -130,16 +128,16 @@ const Folder = () => {
         setStateColorFolder({ color: res.data.color });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+      
       }
     }
 
     excute();
-  }, [id, isSuccess, alert.success]);
+  }, [id, alert.success]);
 
   React.useEffect(() => {
     // list SS already in folder
-    setIsSuccess(false);
+   
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -152,12 +150,12 @@ const Folder = () => {
         else setIsShowEmpty(false);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+      
       }
     }
 
     excute();
-  }, [id, isSuccess, isShowEmpty]);
+  }, [id, alert.success, isShowEmpty]);
 
   // remove SS from folder
   const removeStudySet = async () => {
@@ -166,15 +164,15 @@ const Folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteStudySetFromFolder/${id}/${idRemoveStudySet}`
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
+      dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
 
-      setMessageToast("remove studySet from folder successfully");
+      setMessageToast("set removed");
       setTypeToast("success");
       setIsToastOpen(true);
-      setIsSuccess(true);
+     
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-      setError(err);
+    
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -207,11 +205,10 @@ const Folder = () => {
         setMessageToast("Folder updated");
         setTypeToast("success");
         setIsToastOpen(true);
-        setIsSuccess(true);
+       
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
-        setIsSuccess(true);
+       
       }
     }
 
@@ -238,7 +235,7 @@ const Folder = () => {
         setColors(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+       
       }
     }
     excute();
@@ -250,7 +247,7 @@ const Folder = () => {
   ));
 
   React.useEffect(() => {
-    setIsSuccess(false);
+   
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -262,12 +259,12 @@ const Folder = () => {
         setAddSets(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+        
       }
     }
 
     excute();
-  }, [auth.userResponse?._id, isSuccess]);
+  }, [auth.userResponse?._id, alert.success]);
 
   // populate SS to li in ul
   const listSetAdd = addSets.map((set) => (
@@ -303,19 +300,19 @@ const Folder = () => {
         `${PARAMS.ENDPOINT}folder/addStudySetToFolder`,
         data
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
+      dispatch({ type: ALERT, payload: { loading: false , success:"ac"} });
 
-      console.log(res.data);
+     
 
       if (res.data === "cancel adding") {
-        setMessageToast("Study Set existed in folder");
+        setMessageToast("set existed in folder");
         setTypeToast("error");
         setIsToastOpen(true);
       } else {
-        setMessageToast("Add successfully");
+        setMessageToast("set added");
         setTypeToast("success");
         setIsToastOpen(true);
-        setIsSuccess(true);
+       
       }
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
@@ -354,9 +351,9 @@ const Folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteFolder/${folder.folder_id}`
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
-      setIsSuccess(true);
-      setMessageToast("remove folder successfully");
+      dispatch({ type: ALERT, payload: { loading: false , success:"aa"} });
+    
+      setMessageToast("folder removed");
       setTypeToast("success");
       setIsToastOpen(true);
       router.push({
@@ -368,7 +365,7 @@ const Folder = () => {
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
-      setIsSuccess(false);
+     
     }
 
     setIsShowDeleteModal(false);
@@ -765,10 +762,10 @@ const Folder = () => {
                 <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
                   <div className="mb-8">
                     <p className="text-xl font-semibold">
-                      Are you sure want to delete this folder?
+                      Are you sure want to remove this folder?
                     </p>
                     <small>
-                      All sets in this folder will not be remove from the
+                      All sets in this folder will not be deleted from the
                       library
                     </small>
                   </div>
@@ -795,7 +792,7 @@ const Folder = () => {
                             </svg>
                           </div>
                         ) : (
-                          "Delete"
+                          "Remove"
                         )}
                     </button>
                     <button
