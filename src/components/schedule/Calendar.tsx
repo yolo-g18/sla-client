@@ -68,6 +68,7 @@ const Calendar = (props: Props) => {
 
   const jumToToday = () => {
     setDayObj(todayObj);
+    setCalendarChange(true);
   };
 
   const showModalEditHandle = (evn: IEventRes) => {
@@ -139,7 +140,7 @@ const Calendar = (props: Props) => {
   };
   return (
     <div>
-      <div className="mx-auto container pt-2 pb-10 px-6">
+      <div className="mx-auto pt-2 pb-10">
         <div className="w-full flex items-cente justify-between">
           <div className="flex flex-wrap">
             <button

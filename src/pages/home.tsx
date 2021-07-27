@@ -23,8 +23,8 @@ const home = () => {
   const { auth, alert } = useSelector((state: RootStore) => state);
 
   //get event today
-  //get 4 study set learning
-  //get 4 study set own
+  //get 6 study set learning
+  //get 6 study set own
 
   const [list4StudySetLeaning, setList4StudySetLearning] = useState<
     IStudySetLearning[]
@@ -72,7 +72,7 @@ const home = () => {
   return (
     <div>
       <AppLayout2 title="home" desc="home">
-        <div className=" pb-24 px-4 lg:w-5/6 w-full mx-auto">
+        <div className=" pb-24 px-4 items-center mx-auto w-5/6">
           <h1 className="text-4xl font-semibold text-gray-800 dark:text-white mb-4 px-2">
             Home
           </h1>
@@ -119,7 +119,10 @@ const home = () => {
                                   href={`/set/${set.studySetId}`}
                                   className="hover:underline"
                                 >
-                                  {set.studySetName}{" "}
+                                  {set.studySetName.length <= 15
+                                    ? set.studySetName
+                                    : set.studySetName.substring(0, 15) +
+                                      "..."}{" "}
                                 </a>
                                 {set.color ? (
                                   <FiberManualRecordIcon
@@ -127,16 +130,16 @@ const home = () => {
                                   />
                                 ) : null}
                                 {"  "}
-                                <a href={`/${set.userName}/library/sets`}>
+                                <a href={`/${set.owner}/library/sets`}>
                                   <span className="text-gray-500 text-sm hover:underline">
-                                    {set.userName}
+                                    {set.owner}
                                   </span>
                                 </a>
                               </p>
                             </div>
                           </div>
                           <div className="row-span-3 mb-12">
-                            {set.ssDescription.length < 50 ? (
+                            {set.ssDescription.length <= 50 ? (
                               <p className="text-gray-500">
                                 {set.ssDescription}
                               </p>
@@ -172,11 +175,8 @@ const home = () => {
                 <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
                   {list4StudySetCreated.map((set, index) => {
                     return (
-                      <div className=" col-span-1">
-                        <div
-                          key={index}
-                          className="grid grid-rows-5 shadow-lg flex-row col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800 "
-                        >
+                      <div className=" col-span-1" key={index}>
+                        <div className="grid grid-rows-5 shadow-lg flex-row col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800 ">
                           <div className="row-span-1 w-full mb-2">
                             <div className="w-full">
                               <p className="text-gray-800 dark:text-white text-xl font-medium ">
@@ -195,15 +195,13 @@ const home = () => {
                             </div>
                           </div>
                           <div className="row-span-3 mb-12">
-                            {/* {set.ssDescription.length < 50 ? (
-                              <p className="text-gray-500">
-                                {set.ssDescription}
-                              </p>
+                            {set.description.length <= 50 ? (
+                              <p className="text-gray-500">{set.description}</p>
                             ) : (
                               <p className="text-gray-500">
-                                {set.ssDescription.substring(0, 50)}...
+                                {set.description.substring(0, 50)}...
                               </p>
-                            )} */}
+                            )}
                           </div>
                           <div className="row-span-1 mt-2">
                             <p>{set.numberOfCards} cards</p>

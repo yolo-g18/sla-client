@@ -98,9 +98,9 @@ export interface ISearch {
   export interface IStudySetLearning {
     userID:number
     studySetId: number
-    userName: string
+    owner: string
     studySetName: string  
-    ssDescription: string 
+    ssDescription: string | ""
     progress: number
     status: string
     rating: number
@@ -111,7 +111,7 @@ export interface ISearch {
   export interface IStudySetInfo {
     _id?:number
     title?: string
-    description?: string
+    description: string | ""
     tag?:string 
     creatorName?:string
     isPublic?:false
@@ -122,7 +122,7 @@ export interface ISearch {
     id?:number
     creator?:string
     title?: string
-    description?: string
+    description: string | ""
     tag?:string 
     creatorName?:string
     isPublic?:false
@@ -186,7 +186,7 @@ export interface ISearch {
   export interface IStudySet{
     studySet_id:number
     title: string
-    description: string
+    description: string | ""
     tags:string 
     numberOfCards:number
     creatorName:string
@@ -208,7 +208,8 @@ export interface ISearch {
     id:number
     creator: string
     title: string 
-    tag:string
+    tag:string | ""
+    description:string | ""
     numberOfCards:number
     createdDate:Date
     first4Cards: ICardLite[]

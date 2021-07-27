@@ -376,7 +376,7 @@ const SetEditLayout = (props: Props) => {
             Not permitted
           </h1>
         ) : (
-          <div className="lg:w-3/4 mx-auto h-full mt-4 px-4">
+          <div className="lg:w-3/4 mx-auto mt-4 px-4 h-screen">
             <form onSubmit={handleSubmit}>
               <div className="flex justify-between">
                 <div className="flex flex-grow">
