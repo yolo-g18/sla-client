@@ -21,21 +21,15 @@ const SearchLayout = (props: Props) => {
     query: { type, search_query, searchBy },
   } = router;
 
-  console.log("type " + type);
-  console.log("search by  " + searchBy);
-  console.log("key  " + search_query);
-
   useEffect(() => {
     if (type === "set") {
+      setT(0);
       if (searchBy === "title") {
-        setT(0);
-        setSb(0);
         dispatch(
           putSearchKeyword(search_query ? search_query.toString() : "", 0, 0)
         );
       }
       if (searchBy === "tag") {
-        setT(0);
         setSb(1);
         dispatch(
           putSearchKeyword(search_query ? search_query.toString() : "", 0, 1)
@@ -71,13 +65,6 @@ const SearchLayout = (props: Props) => {
     if (t === 2) {
       router.push(`/search/room/title?search_query=${search.keyword}`);
     }
-    dispatch(
-      putSearchKeyword(
-        search_query ? search_query.toString() : "",
-        t ? t : 0,
-        sb ? sb : 0
-      )
-    );
   }, [t, sb]);
 
   return (

@@ -215,6 +215,23 @@ export interface ISearch {
     first4Cards: ICardLite[]
   }
 
+  export interface IUserResultSearch {
+    username:string
+    avatar:string
+    bio:string
+    numberStudySetOwn:number
+  }
+
+  export interface IRoomResultSearch {
+    id:number
+    owner:string
+    name:string
+    description:string
+    createdDate:Date
+    numberOfMembers:number
+    numberOfStudySets:number
+  }
+
   export interface IEventReq {
     color: string
     name: string

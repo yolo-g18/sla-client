@@ -30,13 +30,16 @@ const AppLayout = (props: Props) => {
   );
 
   useEffect(() => {
-    if (search.keyword) setSearchValue(search.keyword);
     if (localStorage.getItem("access-token")) {
       dispatch(getUserProfile());
     } else {
       router.push("/");
     }
   }, []);
+
+  useEffect(() => {
+    if (search.keyword) setSearchValue(search.keyword);
+  }, [search.keyword]);
 
   const handleOnClick = () => {
     setOpenSidebar(!isOpenSidebar);
@@ -46,7 +49,14 @@ const AppLayout = (props: Props) => {
     e.preventDefault();
 
     console.log(searchValue);
-    if (searchValue.length > 0) dispatch(putSearchKeyword(searchValue, 0, 0));
+    if (searchValue.length > 0)
+      dispatch(
+        putSearchKeyword(
+          searchValue,
+          search.type ? search.type : 0,
+          search.searchBy ? search.searchBy : 0
+        )
+      );
   };
 
   return (
