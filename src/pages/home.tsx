@@ -35,7 +35,7 @@ const home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      //list ss learning
+      //list ss created
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const listSSCreatedRes = await getAPI(
@@ -50,7 +50,7 @@ const home = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
 
-      //list studyset created
+      //list studyset learning
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const listSSLearningRes = await getAPI(

@@ -25,6 +25,7 @@ const SearchLayout = (props: Props) => {
     if (type === "set") {
       setT(0);
       if (searchBy === "title") {
+        setSb(0);
         dispatch(
           putSearchKeyword(search_query ? search_query.toString() : "", 0, 0)
         );

@@ -118,8 +118,15 @@ const index = () => {
               </p>
               <p>{totalResult} Results</p>
             </div>
-            {type === "set"
-              ? setsResult.map((set, index) => {
+            {type === "set" ? (
+              setsResult.length === 0 ? (
+                <div className="flex mt-12">
+                  <p className="text-2xl font-bold mx-auto">
+                    Sorry, we don’t have any content that matches your search.
+                  </p>
+                </div>
+              ) : (
+                setsResult.map((set, index) => {
                   return (
                     <div
                       key={index}
@@ -180,8 +187,16 @@ const index = () => {
                     </div>
                   );
                 })
-              : type === "user"
-              ? userResult.map((user, index) => {
+              )
+            ) : type === "user" ? (
+              userResult.length === 0 ? (
+                <div className="flex mt-12">
+                  <p className="text-2xl font-bold mx-auto">
+                    Sorry, we don’t have any content that matches your search.
+                  </p>
+                </div>
+              ) : (
+                userResult.map((user, index) => {
                   return (
                     <div
                       className=" bg-white dark:bg-gray-800 mt-6 border-b-2 cursor-pointer
@@ -224,90 +239,103 @@ const index = () => {
                     </div>
                   );
                 })
-              : roomResult.map((room, index) => {
-                  return (
-                    <div
-                      className="bg-white dark:bg-gray-800 mt-6 border-b-2  
+              )
+            ) : roomResult.length === 0 ? (
+              <div className="flex mt-12">
+                <p className="text-2xl font-bold mx-auto">
+                  Sorry, we don’t have any content that matches your search.
+                </p>
+              </div>
+            ) : (
+              roomResult.map((room, index) => {
+                return (
+                  <div
+                    className="bg-white dark:bg-gray-800 mt-6 border-b-2  
               hover:border-gray-300 hover:shadow-lg rounded-lg shadow-md flex justify-between"
-                      key={index}
-                    >
-                      <div className="w-full">
-                        <Link
-                          href={{
-                            pathname: "/room/[id]/library",
-                            query: { id: room.id },
-                          }}
-                        >
-                          <div className="cursor-pointer flex items-center p-4 justify-between">
-                            <div className="">
-                              <div className="font-medium dark:text-white flex">
-                                {room.name}
-                              </div>
-                              <div>
-                                {room.description ? (
-                                  room.description.length <= 80 ? (
-                                    <p className="text-gray-500">
-                                      {room.description}
-                                    </p>
-                                  ) : (
-                                    <p className="text-gray-500">
-                                      {room.description.substring(0, 80)}...
-                                    </p>
-                                  )
-                                ) : null}
-                              </div>
-                              <div className="flex justify-between">
-                                <div className="text-gray-600 text-sm ">
-                                  {room.numberOfMembers <= 1
-                                    ? room.numberOfMembers + " member"
-                                    : room.numberOfMembers + " members"}
-                                </div>
-                                <div className="text-gray-600 text-sm ml-4">
-                                  {room.numberOfStudySets + " sets"}
-                                </div>
-                              </div>
+                    key={index}
+                  >
+                    <div className="w-full">
+                      <Link
+                        href={{
+                          pathname: "/room/[id]/library",
+                          query: { id: room.id },
+                        }}
+                      >
+                        <div className="cursor-pointer flex items-center p-4 justify-between">
+                          <div className="">
+                            <div className="font-medium dark:text-white flex">
+                              {room.name}
                             </div>
-                            <div className="text-gray-600 text-xs">
-                              {formatDate(
-                                convertTime(
-                                  parseFloat(room.createdDate.toString()) * 1000
+                            <div>
+                              {room.description ? (
+                                room.description.length <= 80 ? (
+                                  <p className="text-gray-500">
+                                    {room.description}
+                                  </p>
+                                ) : (
+                                  <p className="text-gray-500">
+                                    {room.description.substring(0, 80)}...
+                                  </p>
                                 )
-                              )}
+                              ) : null}
+                            </div>
+                            <div className="flex justify-between">
+                              <div className="text-gray-600 text-sm ">
+                                {room.numberOfMembers <= 1
+                                  ? room.numberOfMembers + " member"
+                                  : room.numberOfMembers + " members"}
+                              </div>
+                              <div className="text-gray-600 text-sm ml-4">
+                                {room.numberOfStudySets + " sets"}
+                              </div>
                             </div>
                           </div>
-                        </Link>
-                      </div>
+                          <div className="text-gray-600 text-xs">
+                            {formatDate(
+                              convertTime(
+                                parseFloat(room.createdDate.toString()) * 1000
+                              )
+                            )}
+                          </div>
+                        </div>
+                      </Link>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })
+            )}
           </div>
-          <div className="flex flex-row justify-center items-center inset-x-0 mb-6 absolute bottom-2">
-            <button
-              className={`${
-                currentPage <= 1
-                  ? "text-gray-300"
-                  : "hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-              } focus:outline-none mx-4`}
-              onClick={() => handlePageChange("prev")}
-              disabled={currentPage <= 1}
-            >
-              <KeyboardArrowLeftIcon fontSize="large" />
-            </button>
-            <div>
-              <p className="my-auto text-xl font-bold mx-4">{currentPage}</p>
+          {(setsResult.length === 0 && type === "set") ||
+          (userResult.length === 0 && type === "user") ||
+          (roomResult.length === 0 && type === "room") ? null : (
+            <div className="flex flex-row justify-center items-center inset-x-0 mb-6 absolute bottom-2">
+              <button
+                className={`${
+                  currentPage <= 1
+                    ? "text-gray-300"
+                    : "hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                } focus:outline-none mx-4`}
+                onClick={() => handlePageChange("prev")}
+                disabled={currentPage <= 1}
+              >
+                <KeyboardArrowLeftIcon fontSize="large" />
+              </button>
+              <div>
+                <p className="my-auto text-xl font-bold mx-4">{currentPage}</p>
+              </div>
+              <button
+                className={`${
+                  currentPage >= totalPages
+                    ? "text-gray-300"
+                    : "hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                } focus:outline-none mx-4`}
+                onClick={() => handlePageChange("next")}
+                disabled={currentPage >= totalPages}
+              >
+                <KeyboardArrowRightIcon fontSize="large" />
+              </button>
             </div>
-            <button
-              className={`${
-                currentPage >= totalPages
-                  ? "text-gray-300"
-                  : "hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-              } focus:outline-none mx-4`}
-              onClick={() => handlePageChange("next")}
-              disabled={currentPage >= totalPages}
-            >
-              <KeyboardArrowRightIcon fontSize="large" />
-            </button>
-          </div>
+          )}
         </div>
       </SearchLayout>
     </div>

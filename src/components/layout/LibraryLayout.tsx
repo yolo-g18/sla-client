@@ -50,9 +50,11 @@ const LibraryLayout = (props: Props) => {
   }, [username]);
 
   function handleAddNew() {
-    if (router.pathname.includes("sets")) return;
-
-    setShowModal(true);
+    if (router.pathname.includes("sets")) {
+      router.push({
+        pathname: "/set/add",
+      });
+    } else setShowModal(true);
   }
 
   const { auth, alert } = useSelector((state: RootStore) => state);
@@ -221,7 +223,7 @@ const LibraryLayout = (props: Props) => {
   return (
     <div>
       <AppLayout title={`${username} | SLA`} desc="library">
-        <div className="grid grid-cols-1 lg:grid-cols-3 mt-8 xl:w-3/4 w-11/12  mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 mt-8 xl:w-3/4 w-11/12 mx-auto pb-64">
           <div className=" col-span-1 px-2">
             <div className="flex flex-col justify-between items-center pt-10">
               <svg
@@ -291,7 +293,10 @@ const LibraryLayout = (props: Props) => {
 
                 {user.username === auth.userResponse?.username ? (
                   <Link href="/me/profile">
-                    <button className="w-full mt-8 text-center py-1 rounded-md text-gray-700 border-gray-300 border-2 hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none">
+                    <button
+                      className="w-3/5 flex mx-auto justify-center mt-8 py-1 rounded-md text-gray-600 border-gray-300 border-2
+                    hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none"
+                    >
                       Edit profile
                     </button>
                   </Link>
@@ -366,7 +371,7 @@ const LibraryLayout = (props: Props) => {
                     <SelectBox
                       items={itemsFoldersFilter}
                       searchKeyWord=""
-                      typeResult="sets"
+                      typeResult="folder"
                     />
                   ) : null}
                 </div>
@@ -402,7 +407,6 @@ const LibraryLayout = (props: Props) => {
                 </div>
               </div>
             </div>
-
             <div>{props.children}</div>
           </div>
         </div>
