@@ -1,20 +1,15 @@
 import AppLayout2 from "../components/layout/AppLayout";
 import { useEffect, useState } from "react";
-import Schedule from "../components/schedule/Schedule";
+import Calendar from "../components/schedule/Calendar";
 
 const schedule = () => {
   return (
     <div>
-      <AppLayout2 title="library" desc="library">
-        <div className="">
-          {/* <h1 className="text-4xl font-semibold text-gray-800 dark:text-white">
-            Schedule
-          </h1> */}
-          <div className="overflow-auto h-screen grid grid-cols-1 gap-1 lg:grid-cols-4">
-            <div className="col-span-1 bg-red-200"></div>
-            <div className="lg:col-span-3 col-span-1">
-              <Schedule />
-            </div>
+      <AppLayout2 title="Schedule" desc="Schedule">
+        <div className=" grid grid-cols-1 gap-1 lg:grid-cols-5 w-full px-2 mb-44">
+          <div className="col-span-1 bg-red-200"></div>
+          <div className="lg:col-span-4 col-span-1 ">
+            <Calendar />
           </div>
         </div>
       </AppLayout2>

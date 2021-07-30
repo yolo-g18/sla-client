@@ -16,7 +16,7 @@ export const validRegister = (userRegister: IUserRegister) => {
 
   if (!usernameRegex.test(username)) {
     let err =
-      "Usernames can only use letters, numbers, underscores and periods.";
+    "Usernames can only use letters, numbers, underscores and periods and cannot exceed 20 characters";
       errors = { ...errors, username: err };
   } 
 
@@ -37,7 +37,7 @@ export const validLogin = (userLogin: IUserLogin) => {
 
   if (!usernameRegex.test(username)) {
     let err =
-      "Usernames can only use letters, numbers, underscores and periods.";
+      "Usernames can only use letters, numbers, underscores and periods and cannot exceed 20 characters";
       errors = { ...errors, username: err };
   } 
 

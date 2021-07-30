@@ -1,8 +1,7 @@
 export const itemsSetsFilter = [
-  { label: "recent", searchType: 0 },
-  { label: "create", searchType: 1 },
-  { label: "learning", tysearchTypepe: 2 },
-  { label: "not started", searchType: 3 },
+  { label: "create", searchType: 0 },
+  { label: "learning", tysearchTypepe: 1 },
+  { label: "not started", searchType: 2 },
 ];
 
 export const itemsFoldersFilter = [

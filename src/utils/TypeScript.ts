@@ -98,9 +98,9 @@ export interface ISearch {
   export interface IStudySetLearning {
     userID:number
     studySetId: number
-    userName: string
+    owner: string
     studySetName: string  
-    ssDescription: string 
+    ssDescription: string | ""
     progress: number
     status: string
     rating: number
@@ -111,7 +111,7 @@ export interface ISearch {
   export interface IStudySetInfo {
     _id?:number
     title?: string
-    description?: string
+    description: string | ""
     tag?:string 
     creatorName?:string
     isPublic?:false
@@ -121,8 +121,8 @@ export interface ISearch {
   export interface IStudySetInfo2 {
     id?:number
     creator?:string
-    title?: string
-    description?: string
+    title: string
+    description: string | ""
     tag?:string 
     creatorName?:string
     isPublic?:false
@@ -189,7 +189,7 @@ export interface ISearch {
   export interface IStudySet{
     studySet_id:number
     title: string
-    description: string
+    description: string | ""
     tags:string 
     numberOfCards:number
     creatorName:string
@@ -211,7 +211,8 @@ export interface ISearch {
     id:number
     creator: string
     title: string 
-    tag:string
+    tag:string | ""
+    description:string | ""
     numberOfCards:number
     createdDate:Date
     first4Cards: ICardLite[]
@@ -228,3 +229,43 @@ export interface ISearch {
     userName?:string
 
   }
+  export interface IUserResultSearch {
+    username:string
+    avatar:string
+    bio:string
+    numberStudySetOwn:number
+  }
+
+  export interface IRoomResultSearch {
+    id:number
+    owner:string
+    name:string
+    description:string
+    createdDate:Date
+    numberOfMembers:number
+    numberOfStudySets:number
+  }
+
+  export interface IEventReq {
+    color: string
+    name: string
+    description: string
+    fromTime: Date
+    toTime: Date
+    isLearnEvent: boolean
+  }
+  export interface IEventRes {
+    id: number
+        userId: number
+        name: string
+        description?: string
+        isLearnEvent: true
+        fromTime: number
+        toTime: number
+        color?: string | null
+        createdTime: number
+        updateTime: number
+        learnEvent: boolean
+        
+  }
+

@@ -193,6 +193,7 @@ const Folder = () => {
     setIsDescriptionTyping(false);
 
     e.preventDefault();
+    if (titleErr || descErr) return;
 
     const color = "" + color_folder.current?.value;
     const data = { title, description, color, id };
@@ -374,7 +375,7 @@ const Folder = () => {
   return (
     <div>
       <AppLayout title={`Folder | ${folder.title}`} desc="folder">
-        <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-5/6 w-full px-2 mt-4">
+        <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-5/6 w-full px-2 mt-4 h-full">
           {/* left side */}
           <div className="col-span-1 px-2 ">
             <div className=" w-full px-2">
@@ -406,7 +407,7 @@ const Folder = () => {
             </div>
           </div>
           {/* right side */}
-          <div className="col-span-3 h-screen">
+          <div className="col-span-3 mb-44">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
                 <Link href={`/${folder.creatorUserName}/library/folders`}>
@@ -626,13 +627,13 @@ const Folder = () => {
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
               <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
                 <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
-                  <div className="px-4 pb-6 pt-8 rounded-t">
+                  <div className="px-2 pb-6 pt-2 rounded-t">
                     <p className="text-gray-700 font-semibold text-lg text-center">
                       Edit folder
                     </p>
                   </div>
                   <form onSubmit={editFolder}>
-                    <div className="w-full px-4 mb-8 flex-wrap">
+                    <div className="w-full mb-8 flex-wrap">
                       <InputGroup
                         type="text"
                         value={title}
@@ -675,19 +676,7 @@ const Folder = () => {
                       >
                         {alert.loading ? (
                           <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
+                            Saving...
                           </div>
                         ) : (
                           "Save"

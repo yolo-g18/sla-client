@@ -30,13 +30,16 @@ const AppLayout = (props: Props) => {
   );
 
   useEffect(() => {
-    if (search.keyword) setSearchValue(search.keyword);
     if (localStorage.getItem("access-token")) {
       dispatch(getUserProfile());
     } else {
       router.push("/");
     }
   }, []);
+
+  useEffect(() => {
+    if (search.keyword) setSearchValue(search.keyword);
+  }, [search.keyword]);
 
   const handleOnClick = () => {
     setOpenSidebar(!isOpenSidebar);
@@ -46,16 +49,23 @@ const AppLayout = (props: Props) => {
     e.preventDefault();
 
     console.log(searchValue);
-    if (searchValue.length > 0) dispatch(putSearchKeyword(searchValue, 0, 0));
+    if (searchValue.length > 0)
+      dispatch(
+        putSearchKeyword(
+          searchValue,
+          search.type ? search.type : 0,
+          search.searchBy ? search.searchBy : 0
+        )
+      );
   };
 
   return (
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
-      <main className="dark:bg-gray-800 flex flex-col">
+      <main className="flex flex-col  overflow-hidden relative min-h-screen">
         <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center shadow-sm border-b-2">
           {auth.userResponse ? (
-            <div className="container mx-auto px-4 flex items-center justify-between">
+            <div className="w-full mx-auto px-4 flex items-center justify-between">
               <div className="  text-gray-700 dark:text-white  flex items-center">
                 <Link href="/home">
                   <a href="" className="text-2xl font-bold ml-3">
@@ -275,12 +285,31 @@ const AppLayout = (props: Props) => {
             </div>
           )}
         </header>
-        <div className="bg-gray-100 flex ">
-          <div className="container mx-auto h-screen flex flex-col justify-between pt-2 position:relative">
-            {props.children}
-          </div>
-          <div className="h-96 "></div>
+        <div
+          className=" flex flex-col items-center justify-between w-full h-full"
+          style={{ background: "#F3F4F5" }}
+        >
+          {props.children}
         </div>
+        <footer
+          style={{ background: "#F3F4F5" }}
+          className="absolute bottom-0 w-full"
+        >
+          <div className="border-solid border-t">
+            <div className="max-w-screen-lg mx-auto px-4  ">
+              <section className="flex flex-col md:flex-row md:justify-between text-gray-700 font-light text-sm pt-4 pb-6 md:pt-5 md:pb-6 w-full">
+                <div>
+                  <p className="leading-8 tracking-wide">
+                    © Lorem Ipsum Co., 123 Lorem Street, New York, NY
+                  </p>
+                </div>
+                <div>
+                  <p className="leading-8 tracking-wide">Privacy Policy</p>
+                </div>
+              </section>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   );

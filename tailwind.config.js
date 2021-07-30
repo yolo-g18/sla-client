@@ -19,7 +19,7 @@ module.exports = {
      extend: {
        backdropBlur: {
          xs: '2px',
-       }
+       },
      }
     }
   }

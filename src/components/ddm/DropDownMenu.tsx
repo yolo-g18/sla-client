@@ -96,9 +96,9 @@ const DropDownMenu = (props: Props) => {
               </Link>
             ) : null}
 
-            {props.items.map((item) => {
+            {props.items.map((item, index) => {
               return (
-                <div>
+                <div key={index}>
                   <Link href={item.link ? item.link : ""}>
                     <a
                       key={item.label}
