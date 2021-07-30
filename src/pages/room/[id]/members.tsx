@@ -215,7 +215,7 @@ const members = () => {
               <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
                 <div className="mb-8">
                   <p className="text-xl font-semibold">
-                    Are you sure want to delete this member?
+                    Are you sure want to remove this member?
                   </p>
                   <small>
                     This member will be kicked out of room
@@ -244,7 +244,7 @@ const members = () => {
                             </svg>
                           </div>
                         ) : (
-                          "Delete"
+                          "Remove"
                         )}
                   </button>
                   <button

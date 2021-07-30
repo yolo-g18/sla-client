@@ -647,7 +647,7 @@ const RoomLayout = (props: Props) => {
                                 onClick={() => handleRemoveAllMember(room.room_id)}
                               >
                                 <span className="flex flex-col">
-                                  <span>delete all members</span>
+                                  <span>remove all members</span>
                                 </span>
                               </a>
                               <a
@@ -1017,7 +1017,7 @@ const RoomLayout = (props: Props) => {
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p className="text-xl font-semibold">
-                    Are you sure want to delete all members this room?
+                    Are you sure want to remove all members this room?
                   </p>
                   <small>
                     There is no one in room
@@ -1046,7 +1046,7 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                      "Delete"
+                      "Remove"
                     )}
                   </button>
                   <button
