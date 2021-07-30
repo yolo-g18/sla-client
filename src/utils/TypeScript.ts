@@ -222,3 +222,9 @@ export interface ISearch {
     userName?:string
 
   }
+
+  export interface IGuestRoom{
+    user_id:number
+    userName?:string
+
+  }
