@@ -65,10 +65,10 @@ const library = () => {
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
- 
+
   React.useEffect(() => {
     // load detail data of room
-  
+
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -88,7 +88,7 @@ const library = () => {
   }, [id, alert.success]);
 
   React.useEffect(() => {
-   
+
     // list all folders in room
     async function excute() {
       try {
@@ -110,7 +110,7 @@ const library = () => {
 
   React.useEffect(() => {
     // list all SS  in room
-  
+
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -137,8 +137,8 @@ const library = () => {
         `${PARAMS.ENDPOINT}room/deleteFolderFromRoom/${id}/${idRemoveFolder}`
       );
 
-      dispatch({ type: ALERT, payload: { loading: false ,success:"ss"} });
-  
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+
       setMessageToast("folder removed");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -146,7 +146,7 @@ const library = () => {
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
- 
+
     }
 
     setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
@@ -168,9 +168,9 @@ const library = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}room/deleteStudySetFromRoom/${id}/${idRemoveSet}`
       );
-      
-      dispatch({ type: ALERT, payload: { loading: false, success:"ss" } });
-    
+
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+
       setMessageToast("set removed");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -178,7 +178,7 @@ const library = () => {
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
-     
+
     }
 
     setIsShowRemoveSetModal(!isShowRemoveSetModal);
@@ -193,8 +193,8 @@ const library = () => {
     setIsShowRemoveSetModal(!isShowRemoveSetModal);
   };
 
-   //handel close toast
-   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
@@ -238,7 +238,13 @@ const library = () => {
           <div>
             {/* sets */}
             <div className="mb-4">
-              <p className="text-lg font-bold text-gray-500">{room.setNumbers} Sets</p>
+              {auth.userResponse?.username === room.ownerName ? (
+                <p className="text-lg font-bold text-gray-500">{room.setNumbers} Sets</p>
+              )
+                :
+                null
+              }
+
               <hr />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -312,7 +318,10 @@ const library = () => {
 
             {/* folders */}
             <div className="mt-8 mb-4">
-              <p className="text-lg font-bold text-gray-500">{room.folderNumbers} Folders</p>
+              {auth.userResponse?.username === room.ownerName ? (
+                <p className="text-lg font-bold text-gray-500">{room.folderNumbers} Folders</p>
+              ) : null}
+
               <hr />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -386,7 +395,7 @@ const library = () => {
                     Are you sure want to remove this folder?
                   </p>
                   <small>
-            
+
                   </small>
                 </div>
 
@@ -396,24 +405,24 @@ const library = () => {
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
                     {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Remove"
-                        )}
+                      <div className="flex justify-center items-center space-x-1">
+                        <svg
+                          fill="none"
+                          className="w-6 h-6 animate-spin"
+                          viewBox="0 0 32 32"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    ) : (
+                      "Remove"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}
@@ -435,7 +444,7 @@ const library = () => {
                     Are you sure want to remove this set?
                   </p>
                   <small>
-                
+
                   </small>
                 </div>
 
@@ -445,24 +454,24 @@ const library = () => {
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
                     {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Remove"
-                        )}
+                      <div className="flex justify-center items-center space-x-1">
+                        <svg
+                          fill="none"
+                          className="w-6 h-6 animate-spin"
+                          viewBox="0 0 32 32"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    ) : (
+                      "Remove"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveSetModal}
@@ -475,20 +484,20 @@ const library = () => {
             </div>
           </div>
         ) : null}
-      
+
       </div>
       <Snackbar
-          open={isToastOpen}
-          autoHideDuration={6000}
+        open={isToastOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert
           onClose={handleClose}
+          severity={typeToast === "success" ? "success" : "error"}
         >
-          <Alert
-            onClose={handleClose}
-            severity={typeToast === "success" ? "success" : "error"}
-          >
-            {messageToast}
-          </Alert>
-        </Snackbar>
+          {messageToast}
+        </Alert>
+      </Snackbar>
     </RoomLayout>
   );
 };

@@ -460,7 +460,7 @@ const RoomLayout = (props: Props) => {
     setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
   };
 
-  function openCreateFolderModal(){
+  function openCreateFolderModal() {
     setIsShowCreateFolderModal(true);
     setIsShowAddFolderModal(false);
   }
@@ -485,10 +485,10 @@ const RoomLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "ss" },
         });
-      
+
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-       
+
       }
 
       // get id of folder just created
@@ -504,20 +504,48 @@ const RoomLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "ss" },
         });
-       
+
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-       
+
       }
-      
+
       // add this folder to room
       addFolderToRoom(justFolderId);
-      
+
       setIsShowCreateFolderModal(false);
     }
   };
 
+  async function requestAttendRoom() {
 
+    const data = {
+      "room_id": id,
+      "user_id": auth.userResponse?._id
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await putAPI(
+        `${PARAMS.ENDPOINT}room/requestAttendRoom`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+      setMessageToast("request sent");
+      setTypeToast("success");
+      setIsToastOpen(true);
+
+
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+
+    }
+
+
+  }
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -602,6 +630,7 @@ const RoomLayout = (props: Props) => {
                 ) : (
                   // sau phai check member hay ko de hien btn join
                   <button
+                    onClick={requestAttendRoom}
                     className="w-32 text-md rounded-md px-4 py-1 mx-2
                   text-sm font-medium bg-green-500 hover:bg-green-600 
                text-white focus:outline-none"
@@ -776,7 +805,7 @@ const RoomLayout = (props: Props) => {
                       className="w-40 text-md rounded-md px-4 mx-2 py-2
                           text-md font-bold bg-green-500 hover:bg-green-600 
                        text-white focus:outline-none"
-                       onClick={() => openCreateFolderModal()}
+                      onClick={() => openCreateFolderModal()}
                     >
                       Create a new folder
                     </button>
