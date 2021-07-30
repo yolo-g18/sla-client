@@ -492,7 +492,7 @@ const RoomLayout = (props: Props) => {
         `${PARAMS.ENDPOINT}room/removeAllMemberOfRoom/` + idRemoveRoom
       );
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-      setMessageToast("all members deleted");
+      setMessageToast("all members removed");
       setTypeToast("success");
       setIsToastOpen(true);
 
