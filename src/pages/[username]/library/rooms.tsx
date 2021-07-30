@@ -13,6 +13,9 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { IRoom } from "../../../utils/TypeScript";
 import { PARAMS } from "../../../common/params";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { ALERT } from "../../../redux/types/alertType";
+
 
 //alert
 function Alert(props: AlertProps) {
@@ -30,11 +33,7 @@ const rooms = (props: any) => {
     query: { username },
   } = router;
 
-  const [loading, setLoading]: [boolean, (loading: boolean) => void] =
-    React.useState<boolean>(true);
-
-  const [error, setError]: [string, (error: string) => void] =
-    React.useState("not found");
+  const dispatch = useDispatch();
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
   const [isShowEmpty, setIsShowEmpty] = React.useState(false);
@@ -49,38 +48,40 @@ const rooms = (props: any) => {
   React.useEffect(() => {
     async function excute() {
       try {
+        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
           `${PARAMS.ENDPOINT}room/getRoomListOfUser/${user._id}`
         );
+        dispatch({ type: ALERT, payload: { loading: false } });
         setRooms(res.data);
 
         if (rooms.length === 0) setIsShowEmpty(true);
         else setIsShowEmpty(false);
 
-        setLoading(false);
+        
       } catch (err: any) {
-        setLoading(false);
-        setError(err);
+        dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
 
     excute();
-  }, [user._id, user.username, rooms]);
+  }, [user._id, alert.success]);
 
   // remove room from listRoom of user
   async function removeRoom() {
-    setLoading(true);
+   
     try {
+      dispatch({ type: ALERT, payload: { loading: true } });
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
       );
-      setLoading(false);
-      setMessageToast("remove room successfully");
+      dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+      setMessageToast("room deleted");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
-      setError(err);
-      setLoading(false);
+      dispatch({ type: ALERT, payload: { loading: false } });
+    
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -179,7 +180,25 @@ const rooms = (props: any) => {
                     onClick={removeRoom}
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                    Remove
+                           {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Delete"
+                        )}
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}

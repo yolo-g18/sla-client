@@ -1,28 +1,23 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { IStudySetInfo } from "../../utils/TypeScript";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { RootStore } from "../../utils/TypeScript";
 import AppLayout from "../layout/AppLayout";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import FolderOpenIcon from "@material-ui/icons/FolderOpen";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
 import ShareIcon from "@material-ui/icons/Share";
 import { IFolder } from "../../utils/TypeScript";
 import { IStudySet } from "../../utils/TypeScript";
-import _, { divide } from "lodash";
+import _ from "lodash";
 import React from "react";
 import { deleteAPI } from "../../utils/FetchData";
 import { getAPI } from "../../utils/FetchData";
 import InputGroup from "../input/InputGroup";
 import { FormSubmit } from "../../utils/TypeScript";
 import { putAPI } from "../../utils/FetchData";
-import Icon from "@material-ui/core/Icon";
 import { ISetAdd } from "../../utils/TypeScript";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
@@ -55,9 +50,9 @@ const defaulAddSets: ISetAdd[] = [];
 const Folder = () => {
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
-  // add SS to folder
+
+  // populate form add SS to folder
   const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] =
     React.useState(defaulAddSets);
   // set state for array color
@@ -84,8 +79,6 @@ const Folder = () => {
     (studySets: IStudySet[]) => void
   ] = React.useState(defaultStudySets);
 
-  const [error, setError]: [string, (error: string) => void] =
-    React.useState("not found");
 
   const [idRemoveStudySet, setIdRemoveStudySet]: [
     number,
@@ -123,7 +116,7 @@ const Folder = () => {
 
   React.useEffect(() => {
     // load detail data of folder
-    setIsSuccess(false);
+   
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -135,16 +128,16 @@ const Folder = () => {
         setStateColorFolder({ color: res.data.color });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+      
       }
     }
 
     excute();
-  }, [id, isSuccess]);
+  }, [id, alert.success]);
 
   React.useEffect(() => {
     // list SS already in folder
-    setIsSuccess(false);
+   
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -157,12 +150,12 @@ const Folder = () => {
         else setIsShowEmpty(false);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+      
       }
     }
 
     excute();
-  }, [id, isSuccess, isShowEmpty]);
+  }, [id, alert.success, isShowEmpty]);
 
   // remove SS from folder
   const removeStudySet = async () => {
@@ -171,15 +164,15 @@ const Folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteStudySetFromFolder/${id}/${idRemoveStudySet}`
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
+      dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
 
-      setMessageToast("remove studySet from folder successfully");
+      setMessageToast("set removed");
       setTypeToast("success");
       setIsToastOpen(true);
-      setIsSuccess(true);
+     
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-      setError(err);
+    
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -202,12 +195,6 @@ const Folder = () => {
     e.preventDefault();
     if (titleErr || descErr) return;
 
-    // update static data
-    folder.title = title;
-    folder.description = description;
-    folder.color = "" + color_folder.current?.value;
-
-    // update dynamic data
     const color = "" + color_folder.current?.value;
     const data = { title, description, color, id };
 
@@ -215,15 +202,14 @@ const Folder = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await putAPI(`${PARAMS.ENDPOINT}folder/editFolder`, data);
-        dispatch({ type: ALERT, payload: { loading: false } });
+        dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
         setMessageToast("Folder updated");
         setTypeToast("success");
         setIsToastOpen(true);
-        setIsSuccess(true);
+       
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
-        setIsSuccess(true);
+       
       }
     }
 
@@ -250,7 +236,7 @@ const Folder = () => {
         setColors(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+       
       }
     }
     excute();
@@ -262,7 +248,7 @@ const Folder = () => {
   ));
 
   React.useEffect(() => {
-    setIsSuccess(false);
+   
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -274,12 +260,12 @@ const Folder = () => {
         setAddSets(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
+        
       }
     }
 
     excute();
-  }, [auth.userResponse?._id, isSuccess]);
+  }, [auth.userResponse?._id, alert.success]);
 
   // populate SS to li in ul
   const listSetAdd = addSets.map((set) => (
@@ -315,19 +301,19 @@ const Folder = () => {
         `${PARAMS.ENDPOINT}folder/addStudySetToFolder`,
         data
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
+      dispatch({ type: ALERT, payload: { loading: false , success:"ac"} });
 
-      console.log(res.data);
+     
 
       if (res.data === "cancel adding") {
-        setMessageToast("Study Set existed in folder");
+        setMessageToast("set existed in folder");
         setTypeToast("error");
         setIsToastOpen(true);
       } else {
-        setMessageToast("Add successfully");
+        setMessageToast("set added");
         setTypeToast("success");
         setIsToastOpen(true);
-        setIsSuccess(true);
+       
       }
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
@@ -366,9 +352,9 @@ const Folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteFolder/${folder.folder_id}`
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
-      setIsSuccess(true);
-      setMessageToast("remove folder successfully");
+      dispatch({ type: ALERT, payload: { loading: false , success:"aa"} });
+    
+      setMessageToast("folder removed");
       setTypeToast("success");
       setIsToastOpen(true);
       router.push({
@@ -380,7 +366,7 @@ const Folder = () => {
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
-      setIsSuccess(false);
+     
     }
 
     setIsShowDeleteModal(false);
@@ -765,10 +751,10 @@ const Folder = () => {
                 <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
                   <div className="mb-8">
                     <p className="text-xl font-semibold">
-                      Are you sure want to delete this folder?
+                      Are you sure want to remove this folder?
                     </p>
                     <small>
-                      All sets in this folder will not be remove from the
+                      All sets in this folder will not be deleted from the
                       library
                     </small>
                   </div>
@@ -778,7 +764,25 @@ const Folder = () => {
                       onClick={deleteFolder}
                       className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                     >
-                      Delete
+                       {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Remove"
+                        )}
                     </button>
                     <button
                       onClick={() => setIsShowDeleteModal(false)}

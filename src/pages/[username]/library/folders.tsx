@@ -21,8 +21,9 @@ function Alert(props: AlertProps) {
 }
 
 const folder = () => {
+  
   const [folders, setFolders] = React.useState<IFolder[]>([]);
-  const [isSuccess, setIsSuccess] = useState(false);
+ 
 
   const dispatch = useDispatch();
 
@@ -46,7 +47,7 @@ const folder = () => {
   console.log("id: " + user._id);
 
   React.useEffect(() => {
-    setIsSuccess(false);
+  
     // list all folders of user
     async function excute() {
       try {
@@ -65,7 +66,7 @@ const folder = () => {
       }
     }
     excute();
-  }, [user._id, isSuccess, alert.success]);
+  }, [user._id, alert.success]);
 
   // remove folder from listFolder of user
   async function removeFolder() {
@@ -74,9 +75,9 @@ const folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteFolder/${idRemoveFolder}`
       );
-      dispatch({ type: ALERT, payload: { loading: false } });
-      setIsSuccess(true);
-      setMessageToast("remove folder successfully");
+      dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+      
+      setMessageToast("folder deleted");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
@@ -84,7 +85,7 @@ const folder = () => {
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
-      setIsSuccess(false);
+   
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -199,7 +200,25 @@ const folder = () => {
                     onClick={removeFolder}
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                    Delete
+                           {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Delete"
+                        )}
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}

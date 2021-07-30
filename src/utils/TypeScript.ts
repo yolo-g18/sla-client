@@ -175,10 +175,13 @@ export interface ISearch {
   };
   
   export interface INewRoom {
-   
+    room_id: number;
     name: string;
     description: string;
-    owner_id: string;
+    createdDate: string;
+    ownerName:string;
+    setNumbers:number;
+    folderNumbers:number;
   };
   
   
@@ -215,6 +218,17 @@ export interface ISearch {
     first4Cards: ICardLite[]
   }
 
+  export interface IMember{
+    member_id:number
+    userName?:string
+
+  }
+
+  export interface IGuestRoom{
+    user_id:number
+    userName?:string
+
+  }
   export interface IUserResultSearch {
     username:string
     avatar:string

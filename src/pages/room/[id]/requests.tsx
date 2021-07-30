@@ -1,43 +1,178 @@
 import RoomLayout from "../../../components/layout/RoomLayout";
-
 import Link from "next/link";
-
 import FaceOutlinedIcon from "@material-ui/icons/FaceOutlined";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
 import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
+import React from "react";
+import { INewRoom , IGuestRoom } from "../../../utils/TypeScript";
+import { useRouter } from "next/router";
+import { ALERT } from "../../../redux/types/alertType";
+import { PARAMS } from "../../../common/params";
+import { getAPI ,deleteAPI ,putAPI} from "../../../utils/FetchData";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
-const room = {
-  id: 1,
-  name: "G18",
-  desc: "Lớp Đồ Án This example uses a typographic feature called ligatures, which allows rendering of an icon glyph simply by using its textual name.",
-  owner_name: "_testuser2",
-  request: [
-    { username: "Nguyen", avatar: "andas" },
-    { username: "_testuser2", avatar: "andas" },
-    { username: "Tran", avatar: "andas" },
-    { username: "Ling", avatar: "andas" },
-  ],
-};
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+const defaultRoom = {
+  room_id: 0,
+  name: "",
+  description: "",
+  createdDate: "",
+  ownerName: "",
+  setNumbers: 0,
+  folderNumbers: 0
+}
+
+const defaulGuests: IGuestRoom[] = [];
+
+
 
 const requests = () => {
   const { auth, alert, user } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
 
+  const router = useRouter();
+
+  const {
+    query: { id },
+  } = router;
+
+  const [room, setRoom] = React.useState<INewRoom>(defaultRoom);
+
+  const [guestRooms, setGuestRooms]: [IGuestRoom[], (guestRooms: IGuestRoom[]) => void] =
+  React.useState(defaulGuests);
+
+
+
+  const [isToastOpen, setIsToastOpen] = React.useState(false);
+  const [typeToast, setTypeToast] = React.useState("success");
+  const [messageToast, setMessageToast] = React.useState("");
+
+   //handel close toast
+   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
+  React.useEffect(() => {
+    // load detail data of room
+  
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
+        setRoom(res.data);
+
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+    
+      }
+    }
+
+    excute();
+  }, [id, alert.success]);
+
+  React.useEffect(() => {
+
+    // list all member of room
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}room/listRoomRequestAttend/${id}`
+        );
+        setGuestRooms(res.data);
+    
+      
+        dispatch({ type: ALERT, payload: { loading: false } });
+        
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    }
+    excute();
+  }, [id, alert.success]);
+
+  
+
+  async function acceptRequest(user_id:number){
+
+    const data = {
+      "room_id":id,
+      "member_id":user_id
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await putAPI(
+        `${PARAMS.ENDPOINT}room/addMemberToRoom`,data
+      );
+
+    dispatch({ type: ALERT, payload: { loading: false } });
+      
+      setMessageToast("request accepted");
+      setTypeToast("success");
+      setIsToastOpen(true);
+  
+   
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+ 
+    }
+
+    deleteRequest(user_id);
+  }
+
+  function handleRejectRequest(user_id:number){
+    deleteRequest(user_id);
+    setMessageToast("request rejected");
+    setTypeToast("success");
+    setIsToastOpen(true);
+
+  }
+  async function deleteRequest(user_id:number){
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteRoomRequestAttend/${id}/${user_id}`
+      );
+
+    dispatch({ type: ALERT, payload: { loading: false ,success:"ss"} });
+      
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+ 
+    }
+  }
   return (
     <RoomLayout>
-      {room.request.length === 0 ? (
+      {guestRooms.length === 0 ? (
         <div></div>
       ) : (
+        room.ownerName === auth.userResponse?.username ?(
         <div>
           <div className="mt-8 mb-6">
             <p className="text-lg font-bold text-gray-500">
-              {room.request.length} users are waiting for approval
+              {guestRooms.length} users are waiting for approval
             </p>
             <hr />
           </div>
-          {room.request.map((item, index) => {
+          {guestRooms.map((item, index) => {
             return (
               <div>
                 <div
@@ -49,17 +184,17 @@ const requests = () => {
                     <Link
                       href={{
                         pathname: "/[username]/library/sets",
-                        query: { username: item.username },
+                        query: { username: item.userName },
                       }}
                     >
                       <div className="cursor-pointer flex flex-1 items-center p-4">
                         <FaceOutlinedIcon style={{ fontSize: 65 }} />
                         <div className="flex-1 pl-1 mr-16">
-                          {room.owner_name === item.username
+                          {room.ownerName === item.userName
                             ? "host"
                             : "request"}
                           <div className="font-medium hover:underline flex">
-                            <p>{item.username}</p>
+                            <p>{item.userName}</p>
                           </div>
                         </div>
                       </div>
@@ -68,19 +203,20 @@ const requests = () => {
 
                   <div className="my-auto px-2">
                     <button
-                      // onClick={() => handleRemoveFolder(item.folder_id)}
+                       onClick={() =>acceptRequest(item.user_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
                       <AddBoxRoundedIcon
                         style={{ fontSize: 28 }}
                         className="hover:text-green-600 text-green-500"
                       />
-                      <span className="tooltiptext w-16">reject</span>
+                      <span className="tooltiptext w-16">accept</span>
                     </button>
                   </div>
                   <div className="my-auto px-2">
+                 
                     <button
-                      // onClick={() => handleRemoveFolder(item.folder_id)}
+                       onClick={() =>handleRejectRequest(item.user_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
                       <HighlightOffOutlinedIcon
@@ -95,7 +231,21 @@ const requests = () => {
             );
           })}
         </div>
+        ):null
+      
       )}
+          <Snackbar
+          open={isToastOpen}
+          autoHideDuration={6000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
     </RoomLayout>
   );
 };
