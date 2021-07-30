@@ -96,6 +96,8 @@ const RoomLayout = (props: Props) => {
   const [isShowAddFolderModal, setIsShowAddFolderModal] = React.useState(false);
   const [folders, setFolders] = React.useState<IFolder[]>([]);
 
+  const [isPendingRequestAttend, setIsPendingRequestAttend] = React.useState(false);
+  const [isMember, setIsMember] = React.useState(false);
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
@@ -157,16 +159,10 @@ const RoomLayout = (props: Props) => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}room/isMemberOfRoom/${id}`);
+        setIsMember(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
 
-        const btn = (document.getElementById('btnRequest') as HTMLInputElement);
-
-        if (btn) {
-
-          btn.disabled = res.data;
-
-        }
-      } catch (err) {
+       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
       }
@@ -180,6 +176,7 @@ const RoomLayout = (props: Props) => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}room/isUserRequestPending/${id}`);
+        setIsPendingRequestAttend(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
 
         const btn = (document.getElementById('btnRequest') as HTMLInputElement);
@@ -188,10 +185,13 @@ const RoomLayout = (props: Props) => {
 
           if (res.data === true) {
 
-            btn.style.backgroundColor = 'gray';
-            btn.disabled = true;
-            btn.textContent = 'Sent request';
+            btn.style.backgroundColor = '#607D8B';
+            btn.textContent = 'Cancel request';
 
+          }
+          else {
+            btn.style.backgroundColor = 'rgba(16, 185, 129, var(--tw-bg-opacity)';
+            btn.textContent = 'Request to join';
           }
 
 
@@ -202,7 +202,7 @@ const RoomLayout = (props: Props) => {
       }
     }
     excute();
-  }, [id,alert.success]);
+  }, [id, alert.success]);
 
   // load option for select of folder color
   const listColorItems = colors.map((item) => (
@@ -571,9 +571,20 @@ const RoomLayout = (props: Props) => {
     }
   };
 
+  function handleRequestAttend() {
+
+    if (isPendingRequestAttend === true) {
+      deleteRequestAttendRoom();
+    }
+    else {
+      requestAttendRoom();
+    }
+
+  }
+
   async function requestAttendRoom() {
 
-    
+
     const data = {
       "room_id": id,
       "user_id": auth.userResponse?._id
@@ -585,7 +596,7 @@ const RoomLayout = (props: Props) => {
         `${PARAMS.ENDPOINT}room/requestAttendRoom`, data
       );
 
-      dispatch({ type: ALERT, payload: { loading: false , success:"xxx"} });
+      dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
 
       setMessageToast("request sent");
       setTypeToast("success");
@@ -600,6 +611,27 @@ const RoomLayout = (props: Props) => {
     }
 
 
+  }
+
+  async function deleteRequestAttendRoom() {
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteRoomRequestAttend/${id}/${auth.userResponse?._id}`
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+
+      setMessageToast("request canceled");
+      setTypeToast("success");
+      setIsToastOpen(true);
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+
+    }
   }
   return (
     <div>
@@ -684,17 +716,20 @@ const RoomLayout = (props: Props) => {
                   </div>
                 ) : (
                   // sau phai check member hay ko de hien btn join
-                  <button
-                    id="btnRequest"
 
-                    onClick={requestAttendRoom}
-                    className="w-32 text-md rounded-md px-4 py-1 mx-2
+
+                  isMember === false ? (
+                    <button
+                      id="btnRequest"
+
+                      onClick={handleRequestAttend}
+                      className="w-32 text-md rounded-md px-4 py-1 mx-2
                   text-sm font-medium bg-green-500 hover:bg-green-600 
                text-white focus:outline-none"
-                  >
-                    <p className="text-md">Request to join</p>
-                  </button>
-
+                    >
+                      <p className="text-md">Request to join</p>
+                    </button>
+                  ) : null
 
                 )}
 

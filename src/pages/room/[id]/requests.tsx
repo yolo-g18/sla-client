@@ -164,6 +164,7 @@ const requests = () => {
       {guestRooms.length === 0 ? (
         <div></div>
       ) : (
+        room.ownerName === auth.userResponse?.username ?(
         <div>
           <div className="mt-8 mb-6">
             <p className="text-lg font-bold text-gray-500">
@@ -230,6 +231,8 @@ const requests = () => {
             );
           })}
         </div>
+        ):null
+      
       )}
           <Snackbar
           open={isToastOpen}
