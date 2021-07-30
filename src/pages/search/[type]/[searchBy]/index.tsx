@@ -110,7 +110,7 @@ const index = () => {
   return (
     <div>
       <SearchLayout>
-        <div className="w-full relative h-screen bottom-14 mt-12  ">
+        <div className="w-full relative min-h-screen">
           <div className="mt-4">
             <div className="flex justify-between">
               <p>
@@ -308,7 +308,7 @@ const index = () => {
           {(setsResult.length === 0 && type === "set") ||
           (userResult.length === 0 && type === "user") ||
           (roomResult.length === 0 && type === "room") ? null : (
-            <div className="flex flex-row justify-center items-center inset-x-0 mb-6 absolute bottom-2">
+            <div className="flex flex-row justify-center items-center inset-x-0 absolute -bottom-20 mb-4">
               <button
                 className={`${
                   currentPage <= 1

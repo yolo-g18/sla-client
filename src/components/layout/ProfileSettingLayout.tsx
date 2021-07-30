@@ -52,7 +52,7 @@ const ProfileSettingLayout = (props: Props) => {
             <div className="col-span-1 w-50 inset-y-0 left-0">
               <Sidebar links={itemListProfile} />.
             </div>
-            <div className="col-span-4">{props.children}</div>
+            <div className="col-span-4 mb-44">{props.children}</div>
           </div>
         </div>
       </AppLayput2>

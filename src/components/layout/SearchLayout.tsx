@@ -75,7 +75,7 @@ const SearchLayout = (props: Props) => {
         desc="Search"
         search={search_query ? search_query.toString() : ""}
       >
-        <div className="mt-6 w-3/4 mx-auto grid lg:grid-cols-4 grid-cols-1 h-screen">
+        <div className="mt-6 w-3/4 mx-auto grid lg:grid-cols-4 grid-cols-1">
           <div className="col-span-1  h-96 px-4">
             <div className="my-4">
               <p className="text-md text-gray-500 font-medium">type</p>
@@ -145,11 +145,11 @@ const SearchLayout = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className="col-span-3  h-96">
+          <div className="col-span-3">
             <div className="h-16">
               <p className="text-4xl font-bold">{search.keyword}</p>
             </div>
-            <div className="h-screen ">{props.children}</div>
+            <div className="mt-8 mb-44">{props.children}</div>
           </div>
         </div>
       </AppLayout>

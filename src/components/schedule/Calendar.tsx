@@ -140,7 +140,7 @@ const Calendar = (props: Props) => {
   };
   return (
     <div>
-      <div className="mx-auto pt-2 pb-10">
+      <div className="mx-auto pt-2 pb-10 px-4">
         <div className="w-full flex items-cente justify-between">
           <div className="flex flex-wrap">
             <button
@@ -202,8 +202,7 @@ const Calendar = (props: Props) => {
                         className={`text-sm text-gray-400  pt-2 ${
                           dayObjOf1.subtract(weekDayOf1 - i, "day").date() ===
                             todayObj.date() &&
-                          thisMonth === todayObj.month() &&
-                          thisYear === todayObj.year()
+                          thisMonth - 1 === todayObj.month()
                             ? "text-red-500 font-bold"
                             : ""
                         }`}
@@ -216,9 +215,7 @@ const Calendar = (props: Props) => {
                   <div className="hide absolute top-1 right-2">
                     <button className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none ">
                       +
-                      <span className="text-sm z-50 tooltiptext w-16 -mt-10">
-                        add
-                      </span>
+                      <span className="text-sm z-50 tooltiptext w-16">add</span>
                     </button>
                   </div>
                 </div>
@@ -285,8 +282,7 @@ const Calendar = (props: Props) => {
                         className={`text-sm text-gray-500 dark:text-gray-100 pt-2 ${
                           dayObjOfLast.add(i + 1, "day").date() ===
                             todayObj.date() &&
-                          thisMonth === todayObj.month() &&
-                          thisYear === todayObj.year()
+                          thisMonth + 1 === todayObj.month()
                             ? "text-red-500 font-bold"
                             : ""
                         }`}

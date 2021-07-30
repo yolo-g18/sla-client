@@ -72,20 +72,20 @@ const home = () => {
   return (
     <div>
       <AppLayout2 title="home" desc="home">
-        <div className=" pb-24 px-4 items-center mx-auto w-5/6">
+        <div className="pt-4 pb-24 px-4 items-center mx-auto w-5/6 mb-44">
           <h1 className="text-4xl font-semibold text-gray-800 dark:text-white mb-4 px-2">
             Home
           </h1>
-          <div className="grid lg:grid-cols-6 grid-cols-1">
+          <div className="grid lg:grid-cols-7 grid-cols-1">
             <div className="col-span-2 px-2 ">
               <div className="flex flex-col">
                 <p className="text-lg font-bold text-gray-800">Task today</p>{" "}
               </div>
-              <div className="">
+              <div className="mb-6">
                 <TasksList />
               </div>
             </div>
-            <div className="col-span-4 px-2">
+            <div className="col-span-5 px-2">
               <div>
                 <div className="flex justify-between">
                   <div className="flex flex-col">
@@ -107,21 +107,22 @@ const home = () => {
                 <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
                   {list4StudySetLeaning.map((set, index) => {
                     return (
-                      <div className="col-span-1">
+                      <div className="col-span-1 ">
                         <div
                           key={index}
-                          className="grid grid-rows-5 shadow-lg flex-col col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800"
+                          className="grid grid-rows-5 flex-col col-span-1 rounded-md p-2 h-36 my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
                         >
-                          <div className="row-span-1 w-full flex mb-2">
+                          <div className="row-span-1 w-full flex flex-row mb-2">
                             <div className="w-full">
                               <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
                                 <a
                                   href={`/set/${set.studySetId}`}
                                   className="hover:underline"
                                 >
-                                  {set.studySetName.length <= 15
+                                  {set.studySetName.length <= 6
                                     ? set.studySetName
-                                    : set.studySetName.substring(0, 15) +
+                                    : set.studySetName.substring(0, 6) +
                                       "..."}{" "}
                                 </a>
                                 {set.color ? (
@@ -129,6 +130,9 @@ const home = () => {
                                     className={`text-${set.color?.toLowerCase()}-400`}
                                   />
                                 ) : null}
+                                <FiberManualRecordIcon
+                                  className={`text-yellow-50-400`}
+                                />
                                 {"  "}
                                 <a href={`/${set.owner}/library/sets`}>
                                   <span className="text-gray-500 text-sm hover:underline">
@@ -176,7 +180,10 @@ const home = () => {
                   {list4StudySetCreated.map((set, index) => {
                     return (
                       <div className=" col-span-1" key={index}>
-                        <div className="grid grid-rows-5 shadow-lg flex-row col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800 ">
+                        <div
+                          className="grid grid-rows-5 flex-row col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800 
+                        hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
+                        >
                           <div className="row-span-1 w-full mb-2">
                             <div className="w-full">
                               <p className="text-gray-800 dark:text-white text-xl font-medium ">
@@ -184,7 +191,9 @@ const home = () => {
                                   href={`/set/${set.id}`}
                                   className="hover:underline"
                                 >
-                                  {set.title}{" "}
+                                  {set.title.length <= 6
+                                    ? set.title
+                                    : set.title.substring(0, 6) + "..."}{" "}
                                 </a>
                                 <a href={`/${set.creator}/library/sets`}>
                                   <span className="text-gray-500 text-sm hover:underline">

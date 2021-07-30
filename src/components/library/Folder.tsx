@@ -389,7 +389,7 @@ const Folder = () => {
   return (
     <div>
       <AppLayout title={`Folder | ${folder.title}`} desc="folder">
-        <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-5/6 w-full px-2 mt-4">
+        <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-5/6 w-full px-2 mt-4 h-full">
           {/* left side */}
           <div className="col-span-1 px-2 ">
             <div className=" w-full px-2">
@@ -421,7 +421,7 @@ const Folder = () => {
             </div>
           </div>
           {/* right side */}
-          <div className="col-span-3 h-screen">
+          <div className="col-span-3 mb-44">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
                 <Link href={`/${folder.creatorUserName}/library/folders`}>

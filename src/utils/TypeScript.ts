@@ -121,7 +121,7 @@ export interface ISearch {
   export interface IStudySetInfo2 {
     id?:number
     creator?:string
-    title?: string
+    title: string
     description: string | ""
     tag?:string 
     creatorName?:string

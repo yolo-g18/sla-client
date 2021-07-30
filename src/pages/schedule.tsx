@@ -7,9 +7,9 @@ const schedule = () => {
   return (
     <div>
       <AppLayout2 title="library" desc="library">
-        <div className=" grid grid-cols-1 gap-1 lg:grid-cols-5 w-full px-2">
+        <div className=" grid grid-cols-1 gap-1 lg:grid-cols-5 w-full px-2 mb-44">
           <div className="col-span-1 bg-red-200"></div>
-          <div className="lg:col-span-4 col-span-1 h-full">
+          <div className="lg:col-span-4 col-span-1 ">
             <Calendar />
           </div>
         </div>

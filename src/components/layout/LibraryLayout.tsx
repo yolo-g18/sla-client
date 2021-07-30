@@ -223,8 +223,8 @@ const LibraryLayout = (props: Props) => {
   return (
     <div>
       <AppLayout title={`${username} | SLA`} desc="library">
-        <div className="grid grid-cols-1 lg:grid-cols-3 mt-8 xl:w-3/4 w-11/12 mx-auto pb-64">
-          <div className=" col-span-1 px-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 mt-8 xl:w-3/4 w-11/12 mx-auto">
+          <div className="col-span-1 px-2">
             <div className="flex flex-col justify-between items-center pt-10">
               <svg
                 width="200"
@@ -407,7 +407,7 @@ const LibraryLayout = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div>{props.children}</div>
+            <div className="mb-44">{props.children}</div>
           </div>
         </div>
       </AppLayout>

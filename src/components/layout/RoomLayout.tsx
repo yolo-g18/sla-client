@@ -70,7 +70,7 @@ const RoomLayout = (props: Props) => {
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
-        <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-4/5 w-full px-2 mt-4">
+        <div className="grid lg:grid-cols-4 gap-6 grid-cols-1 self-center lg:w-4/5 w-full px-4 mt-4 mb-44">
           {/* left side */}
           <div className="col-span-1 px-2">
             <div className=" w-full px-2">
@@ -94,7 +94,7 @@ const RoomLayout = (props: Props) => {
             </div>
           </div>
           {/* right side */}
-          <div className="col-span-3 h-screen">
+          <div className="col-span-3">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
                 <a href={`/${room.owner_name}/library/folders`}>
@@ -259,7 +259,6 @@ const RoomLayout = (props: Props) => {
               </div>
             </div>
             <div>{props.children}</div>
-            <div className="h-40 "></div>
           </div>
         </div>
       </AppLayout>
