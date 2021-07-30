@@ -10,7 +10,7 @@ import { INewRoom , IGuestRoom } from "../../../utils/TypeScript";
 import { useRouter } from "next/router";
 import { ALERT } from "../../../redux/types/alertType";
 import { PARAMS } from "../../../common/params";
-import { getAPI ,deleteAPI } from "../../../utils/FetchData";
+import { getAPI ,deleteAPI ,putAPI} from "../../../utils/FetchData";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
@@ -105,7 +105,45 @@ const requests = () => {
   }, [id, alert.success]);
 
   
-  async function rejectRequest(user_id:number){
+
+  async function acceptRequest(user_id:number){
+
+    const data = {
+      "room_id":id,
+      "member_id":user_id
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await putAPI(
+        `${PARAMS.ENDPOINT}room/addMemberToRoom`,data
+      );
+
+    dispatch({ type: ALERT, payload: { loading: false } });
+      
+      setMessageToast("request accepted");
+      setTypeToast("success");
+      setIsToastOpen(true);
+  
+   
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+ 
+    }
+
+    deleteRequest(user_id);
+  }
+
+  function handleRejectRequest(user_id:number){
+    deleteRequest(user_id);
+    setMessageToast("request rejected");
+    setTypeToast("success");
+    setIsToastOpen(true);
+
+  }
+  async function deleteRequest(user_id:number){
 
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
@@ -115,12 +153,6 @@ const requests = () => {
 
     dispatch({ type: ALERT, payload: { loading: false ,success:"ss"} });
       
-      setMessageToast("request deleted");
-      setTypeToast("success");
-      setIsToastOpen(true);
-  
-   
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -170,7 +202,7 @@ const requests = () => {
 
                   <div className="my-auto px-2">
                     <button
-                      // onClick={() => handleRemoveFolder(item.folder_id)}
+                       onClick={() =>acceptRequest(item.user_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
                       <AddBoxRoundedIcon
@@ -183,7 +215,7 @@ const requests = () => {
                   <div className="my-auto px-2">
                  
                     <button
-                       onClick={() =>rejectRequest(item.user_id)}
+                       onClick={() =>handleRejectRequest(item.user_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
                       <HighlightOffOutlinedIcon
