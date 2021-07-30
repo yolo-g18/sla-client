@@ -82,6 +82,7 @@ const RoomLayout = (props: Props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 
+
   const [error, setError]: [string, (error: string) => void] =
     React.useState("not found");
 
@@ -149,6 +150,59 @@ const RoomLayout = (props: Props) => {
     }
     excute();
   }, []);
+
+  React.useEffect(() => {
+    // check member permisson
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/isMemberOfRoom/${id}`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+        const btn = (document.getElementById('btnRequest') as HTMLInputElement);
+
+        if (btn) {
+
+          btn.disabled = res.data;
+
+        }
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+    excute();
+  }, []);
+
+  React.useEffect(() => {
+    // check member permisson
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/isUserRequestPending/${id}`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+        const btn = (document.getElementById('btnRequest') as HTMLInputElement);
+
+        if (btn) {
+
+          if (res.data === true) {
+
+            btn.style.backgroundColor = 'gray';
+            btn.disabled = true;
+            btn.textContent = 'Sent request';
+
+          }
+
+
+        }
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+    excute();
+  }, [id,alert.success]);
 
   // load option for select of folder color
   const listColorItems = colors.map((item) => (
@@ -519,6 +573,7 @@ const RoomLayout = (props: Props) => {
 
   async function requestAttendRoom() {
 
+    
     const data = {
       "room_id": id,
       "user_id": auth.userResponse?._id
@@ -530,7 +585,7 @@ const RoomLayout = (props: Props) => {
         `${PARAMS.ENDPOINT}room/requestAttendRoom`, data
       );
 
-      dispatch({ type: ALERT, payload: { loading: false } });
+      dispatch({ type: ALERT, payload: { loading: false , success:"xxx"} });
 
       setMessageToast("request sent");
       setTypeToast("success");
@@ -630,6 +685,8 @@ const RoomLayout = (props: Props) => {
                 ) : (
                   // sau phai check member hay ko de hien btn join
                   <button
+                    id="btnRequest"
+
                     onClick={requestAttendRoom}
                     className="w-32 text-md rounded-md px-4 py-1 mx-2
                   text-sm font-medium bg-green-500 hover:bg-green-600 
@@ -637,6 +694,8 @@ const RoomLayout = (props: Props) => {
                   >
                     <p className="text-md">Request to join</p>
                   </button>
+
+
                 )}
 
                 <button
