@@ -15,7 +15,7 @@ import WorkOutlineIcon from "@material-ui/icons/WorkOutline";
 import { getUserByUsername } from "../../redux/actions/userAction";
 import { FormSubmit } from "../../utils/TypeScript";
 
-import { postAPI } from "../../utils/FetchData";
+import { postAPI, putAPI } from "../../utils/FetchData";
 import { getAPI } from "../../utils/FetchData";
 import InputGroup from "../input/InputGroup";
 import React from "react";
@@ -160,6 +160,8 @@ const LibraryLayout = (props: Props) => {
       }
 
       if (router.pathname.includes("rooms")) {
+
+        //creating new room
         setIsNameTyping(false);
         e.preventDefault();
         const owner_id = "" + user._id;
@@ -167,15 +169,52 @@ const LibraryLayout = (props: Props) => {
         try {
           dispatch({ type: ALERT, payload: { loading: true } });
           const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
-          dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
-          setMessageToast("room created");
-          setTypeToast("success");
-          setIsToastOpen(true);
+          dispatch({ type: ALERT, payload: { loading: false } });
+
         } catch (err) {
           dispatch({ type: ALERT, payload: { loading: false } });
           setMessageToast("An error occurred");
           setTypeToast("error");
           setIsToastOpen(true);
+        }
+
+        // get id of just created room
+        let maxIdRoom = 0;
+
+        try {
+          dispatch({ type: ALERT, payload: { loading: true } });
+          const res = await getAPI(`${PARAMS.ENDPOINT}room/getMaxIdRoom`);
+          maxIdRoom = res.data;
+          dispatch({ type: ALERT, payload: { loading: false } });
+        } catch (err) {
+          dispatch({ type: ALERT, payload: { loading: false } });
+          setMessageToast("An error occurred");
+          setTypeToast("error");
+          setIsToastOpen(true);
+        }
+
+        // set creator is member
+        const roomMember = {
+          "room_id": maxIdRoom,
+          "member_id": owner_id
+        }
+
+        dispatch({ type: ALERT, payload: { loading: true } });
+        try {
+          const res = await putAPI(
+            `${PARAMS.ENDPOINT}room/addMemberToRoom`, roomMember
+          );
+
+          dispatch({ type: ALERT, payload: { loading: false, success: "abc" } });
+
+          setMessageToast("room created");
+          setTypeToast("success");
+          setIsToastOpen(true);
+
+        } catch (err) {
+          dispatch({ type: ALERT, payload: { loading: false } });
+
+
         }
       }
 
@@ -318,7 +357,7 @@ const LibraryLayout = (props: Props) => {
                       router.pathname.indexOf("/sets") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
-                    }`}
+                      }`}
                   >
                     <p className="font-bold">Sets</p>
                   </a>
@@ -334,7 +373,7 @@ const LibraryLayout = (props: Props) => {
                       router.pathname.indexOf("/folders") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
-                    }`}
+                      }`}
                   >
                     <p className="font-bold">Folders</p>
                   </a>
@@ -350,7 +389,7 @@ const LibraryLayout = (props: Props) => {
                       router.pathname.indexOf("/rooms") !== -1
                         ? "justify-start border-b-2 border-yellow-500 "
                         : ""
-                    }`}
+                      }`}
                   >
                     <p className="font-bold">Rooms</p>
                   </a>
@@ -445,17 +484,17 @@ const LibraryLayout = (props: Props) => {
                         />
                       </>
                     ) : (
-                      <>
-                        <InputGroup
-                          type="text"
-                          setValue={setName}
-                          placeholder="Name"
-                          error={nameErr}
-                          required
-                          label="Name"
-                        />
-                      </>
-                    )}
+                        <>
+                          <InputGroup
+                            type="text"
+                            setValue={setName}
+                            placeholder="Name"
+                            error={nameErr}
+                            required
+                            label="Name"
+                          />
+                        </>
+                      )}
 
                     <InputGroup
                       type="text"
@@ -515,8 +554,8 @@ const LibraryLayout = (props: Props) => {
                           </svg>
                         </div>
                       ) : (
-                        "Create"
-                      )}
+                          "Create"
+                        )}
                     </button>
                     <button
                       className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-md text-sm font-medium hover:bg-gray-300"
