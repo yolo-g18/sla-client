@@ -230,6 +230,7 @@ export interface ISearch {
 
   }
   export interface IUserResultSearch {
+    userId?:number
     username:string
     avatar:string
     bio:string
@@ -268,4 +269,6 @@ export interface ISearch {
         learnEvent: boolean
         
   }
+
+
 
