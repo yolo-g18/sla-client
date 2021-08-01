@@ -694,7 +694,7 @@ const RoomLayout = (props: Props) => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
-          `${PARAMS.ENDPOINT}search/user/${textUserNameSearch.value}`
+          `${PARAMS.ENDPOINT}search/user/${textUserNameSearch.value}/${id}`
         );
         setUserSearchList(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
