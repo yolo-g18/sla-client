@@ -302,21 +302,15 @@ const Folder = () => {
         data
       );
       dispatch({ type: ALERT, payload: { loading: false , success:"ac"} });
-
-     
-
-      if (res.data === "cancel adding") {
-        setMessageToast("set existed in folder");
-        setTypeToast("error");
-        setIsToastOpen(true);
-      } else {
-        setMessageToast("set added");
-        setTypeToast("success");
-        setIsToastOpen(true);
+      setMessageToast("set added");
+      setTypeToast("success");
+      setIsToastOpen(true);
        
-      }
+     
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("set existed in folder");
+      setTypeToast("error");
       setIsToastOpen(true);
     }
   }

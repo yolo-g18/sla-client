@@ -311,21 +311,16 @@ const RoomLayout = (props: Props) => {
         data
       );
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-
-      if (res.data === "cancel adding") {
-        setMessageToast("set existed");
-        setTypeToast("error");
-        setIsToastOpen(true);
-      }
-      else {
-        setMessageToast("set added");
-        setTypeToast("success");
-        setIsToastOpen(true);
-      }
+      setMessageToast("set added");
+      setTypeToast("success");
+      setIsToastOpen(true);
+  
 
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
+      setMessageToast("set existed");
+      setTypeToast("error");
+      setIsToastOpen(true);
     }
   }
 
@@ -365,23 +360,19 @@ const RoomLayout = (props: Props) => {
 
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
 
-      if (res.data === "cancel adding") {
-        setMessageToast("folder existed");
-        setTypeToast("error");
-        setIsToastOpen(true);
-      }
-      else {
-        setMessageToast("folder added");
-        setTypeToast("success");
-        setIsToastOpen(true);
-      }
+      setMessageToast("folder added");
+      setTypeToast("success");
+      setIsToastOpen(true);
+    
 
 
 
     } catch (err) {
 
       dispatch({ type: ALERT, payload: { loading: false } });
-
+      setMessageToast("folder existed");
+      setTypeToast("error");
+      setIsToastOpen(true);
 
     }
   }
@@ -1304,7 +1295,7 @@ const RoomLayout = (props: Props) => {
                         <div key="resultNotFound" className="flex flex-row ">
                         <div className="select-none cursor-pointer flex flex-1 items-center py-4 px-6">
                           <div className="flex-1">
-                            <div className="text-red-500">Not found</div>
+                            <div><p className="text-red-500 text-center">Not found</p></div>
                           </div>
                         </div>
                       </div>
