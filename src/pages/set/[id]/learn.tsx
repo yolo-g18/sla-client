@@ -18,6 +18,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { useClickOutside } from "../../../hook/useClickOutside";
+import { Transition } from "@tailwindui/react";
 
 //alert
 function Alert(props: AlertProps) {
@@ -88,6 +89,9 @@ const learn = () => {
   const [messageToast, setMessageToast] = useState("");
   const [isChange, setIsChange] = useState(false);
 
+  // to count number of q > 3
+  const [listQ, setListQ] = useState<{ index: number; q: number }[]>([]);
+
   const qValueArr = [
     "bg-green-300",
     "bg-blue-300",
@@ -109,11 +113,21 @@ const learn = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const listCardLearingRes = await getAPI(
-          `${PARAMS.ENDPOINT}learn/continue/studySet?id=${id}`
+          `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
         );
-        dispatch({ type: ALERT, payload: { loading: false } });
-
         setListCardsLearning(listCardLearingRes.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        if (listCardsLearning.length === 0) {
+          console.log("learning");
+
+          dispatch({ type: ALERT, payload: { loading: true } });
+          const listCardLearingRes = await getAPI(
+            `${PARAMS.ENDPOINT}learn/studySet?id=${id}`
+          );
+          dispatch({ type: ALERT, payload: { loading: false } });
+          setListCardsLearning(listCardLearingRes.data);
+        }
+
         setCardHint(listCardsLearning[currenrCard].hint);
       } catch (err) {
         console.log("error is: " + err);
@@ -143,25 +157,12 @@ const learn = () => {
     setIsFlipped(!isFlipped);
   };
 
-  console.log("mat trc la: " + listCardsLearning[0]);
-
   //ask user continue or review
   // const hand;
 
   //switch card
-  const switchCardHandle = (type: string) => {
-    if (type === "next" && currenrCard < listCardsLearning.length) {
-      setIsFlipped(false);
-      setCurrentCard(currenrCard + 1);
-      currenrCard >= listCardsLearning.length
-        ? setShowLearningResultModal(true)
-        : setShowLearningResultModal(false);
-    }
-    if (type === "prev" && currenrCard >= 0) {
-      setIsFlipped(false);
-      setCurrentCard(currenrCard - 1);
-    }
-  };
+
+  const checkQExistencecheckQExist = () => {};
 
   //send q
   const handelResultUserSelect = async (q_value: number) => {
@@ -171,6 +172,10 @@ const learn = () => {
       q: q_value,
       cardId: listCardsLearning[currenrCard].cardId,
     };
+
+    listQ.map((tq) => {
+      if (tq.index === currenrCard) return false;
+    });
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
@@ -222,10 +227,32 @@ const learn = () => {
     setCardHint(listCardsLearning[currenrCard].hint);
   };
 
+  const [switching, setSwitching] = useState(false);
+  const switchCardHandle = (type: string) => {
+    setSwitching(true);
+    if (type === "next" && currenrCard < listCardsLearning.length) {
+      setIsFlipped(false);
+      setCurrentCard(currenrCard + 1);
+      currenrCard + 1 >= listCardsLearning.length
+        ? setShowLearningResultModal(true)
+        : setShowLearningResultModal(false);
+    }
+    if (type === "prev" && currenrCard >= 0) {
+      setIsFlipped(false);
+      setCurrentCard(currenrCard - 1);
+    }
+    setTimeout(() => {
+      setSwitching(false);
+    }, 200);
+  };
+
+  console.log("done:" + showLearningResultModal);
+  console.log("current:" + currenrCard);
+
   return (
     <div>
       <AppLayput2 title="learn" desc="dd">
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 -mt-20 px-2">
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 -mt-24 px-2">
           <div className="h-3/5 2xl:w-2/5 x md:w-1/2 sm:w-2/3 w-full rounded-md">
             <div className="mb-8">
               <Link
@@ -239,138 +266,153 @@ const learn = () => {
                 </button>
               </Link>
             </div>
-            <div className="justify-center items-center flex font-sans text-xl mb-8">
-              <p className="fixed">Practice Your Card</p>
-            </div>
-            <div className="flex justify-between w-full mb-2">
-              <div className="px-1">
-                <h1>
-                  {currenrCard + 1}/{listCardsLearning.length}
-                </h1>
-              </div>
-              <div className="flex ">
-                <div ref={domNode}>
-                  <button className="px-1" onClick={handelExpandMoreBtnClick}>
-                    <ExpandMoreIcon />
-                  </button>
-                  {isMenuOpen ? (
-                    <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
-                      <div
-                        className={`py-1`}
-                        role="menu"
-                        aria-orientation="vertical"
-                        aria-labelledby="options-menu"
+            {showLearningResultModal ? (
+              <div className="mx-auto bg-red-300">Your result</div>
+            ) : (
+              <div>
+                <div className="justify-center items-center flex font-sans text-xl mb-8">
+                  <p className="fixed">Practice Your Card</p>
+                </div>
+                <div className="flex justify-between w-full mb-2">
+                  <div className="px-1">
+                    <h1>
+                      {currenrCard + 1}/{listCardsLearning.length}
+                    </h1>
+                  </div>
+                  <div className="flex ">
+                    <div ref={domNode}>
+                      <button
+                        className="px-1"
+                        onClick={handelExpandMoreBtnClick}
                       >
-                        <div>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                            role="menuitem"
-                            onClick={openHintModal}
+                        <ExpandMoreIcon />
+                      </button>
+                      {isMenuOpen ? (
+                        <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                          <div
+                            className={`py-1`}
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="options-menu"
                           >
-                            <span className="flex flex-col">
-                              <span>hint</span>
-                            </span>
-                          </a>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                            <div>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
                             hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                            role="menuitem"
-                            onClick={showModalEditcard}
-                          >
-                            <span className="flex flex-col">
-                              <span>edit</span>
-                            </span>
-                          </a>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                                role="menuitem"
+                                onClick={openHintModal}
+                              >
+                                <span className="flex flex-col">
+                                  <span>hint</span>
+                                </span>
+                              </a>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                                role="menuitem"
+                                onClick={showModalEditcard}
+                              >
+                                <span className="flex flex-col">
+                                  <span>edit</span>
+                                </span>
+                              </a>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
                              hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                            role="menuitem"
-                            onClick={() => setIsSetColorFromOpen(true)}
-                          >
-                            <span className="flex flex-col">
-                              <span>set color</span>
-                            </span>
-                          </a>
+                                role="menuitem"
+                                onClick={() => setIsSetColorFromOpen(true)}
+                              >
+                                <span className="flex flex-col">
+                                  <span>set color</span>
+                                </span>
+                              </a>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
                     </div>
-                  ) : null}
+                    <div>
+                      <button className="">
+                        <VolumeDownIcon />
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <button className="">
-                    <VolumeDownIcon />
+                  {listCardsLearning.map((card, index) => {
+                    if (index === currenrCard)
+                      return (
+                        <ReactCardFlip
+                          isFlipped={isFlipped}
+                          flipDirection="vertical"
+                        >
+                          <div onClick={flipCardHandel}>
+                            <QuillNoSSRWrapper
+                              className={`h-96 bg-white shadow-md rounded-md border-2 border-gray-200 ${
+                                switching ? "opacity-20 bg-white" : ""
+                              } duration-300`}
+                              readOnly={true}
+                              theme="bubble"
+                              value={card.front}
+                            />
+                          </div>
+                          <div onClick={flipCardHandel}>
+                            <QuillNoSSRWrapper
+                              className={`h-96 bg-white shadow-md rounded-md border-2 border-gray-200 ${
+                                switching ? "opacity-20 bg-gray-500" : ""
+                              } duration-300`}
+                              readOnly={true}
+                              theme="bubble"
+                              value={card.back}
+                            />
+                          </div>
+                        </ReactCardFlip>
+                      );
+                  })}
+                </div>
+                <div className="mt-6">
+                  <p className="font-bold justify-center items-center flex text-gray-700 text-sm">
+                    *How well did you know this?
+                  </p>
+                </div>
+                <div className="justify-center items-center flex mt-2">
+                  {qValueArr.map((qValue, index) => {
+                    return (
+                      <button
+                        onClick={() => handelResultUserSelect(index)}
+                        key={index}
+                        className={`w-1/6 mx-2 h-8 px-4 py-1 rounded-xl transition duration-300 hover:bg-gray-200 ${qValue} focus:outline-none text-white text-sm hover:text-gray-900`}
+                      >
+                        {index === 0 ? "Not at all" : ""}
+                        {index === 5 ? "Perfectly" : null}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="justify-center items-center flex mt-6 ">
+                  <button
+                    disabled={currenrCard === 0 ? true : false}
+                    className={`${
+                      currenrCard === 0
+                        ? "text-gray-300"
+                        : "hover:bg-green-500 rounded-full hover:text-white transition duration-300"
+                    }  focus:outline-none mx-4`}
+                    onClick={() => switchCardHandle("prev")}
+                  >
+                    <KeyboardArrowLeftIcon fontSize="large" />
+                  </button>
+                  <button
+                    disabled={
+                      currenrCard === listCardsLearning.length ? true : false
+                    }
+                    className="mx-4 hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                    onClick={() => switchCardHandle("next")}
+                  >
+                    <KeyboardArrowRightIcon fontSize="large" />
                   </button>
                 </div>
               </div>
-            </div>
-            <div className="">
-              {listCardsLearning.map((card, index) => {
-                if (index === currenrCard)
-                  return (
-                    <ReactCardFlip
-                      isFlipped={isFlipped}
-                      flipDirection="vertical"
-                    >
-                      <div onClick={flipCardHandel}>
-                        <QuillNoSSRWrapper
-                          className="h-96 bg-white shadow-md rounded-md border-2 border-gray-200 transition-opacity duration-500 "
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.front}
-                        />
-                      </div>
-                      <div onClick={flipCardHandel}>
-                        <QuillNoSSRWrapper
-                          className="h-96 bg-white shadow-md rounded-md border-2 border-gray-200 transition-opacity duration-500"
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.back}
-                        />
-                      </div>
-                    </ReactCardFlip>
-                  );
-              })}
-            </div>
-
-            <div className="justify-center items-center flex mt-8">
-              {qValueArr.map((qValue, index) => {
-                return (
-                  <button
-                    onClick={() => handelResultUserSelect(index)}
-                    key={index}
-                    className={`w-1/6 mx-2 h-8 px-4 py-1 rounded-xl transition duration-300 hover:bg-gray-200 ${qValue} focus:outline-none`}
-                  ></button>
-                );
-              })}
-            </div>
-            <div className="justify-center items-center flex mt-6 ">
-              <button
-                disabled={currenrCard === 0 ? true : false}
-                className={`${
-                  currenrCard === 0
-                    ? "text-gray-300"
-                    : "hover:bg-green-500 rounded-full hover:text-white transition duration-300"
-                }  focus:outline-none mx-4`}
-                onClick={() => switchCardHandle("prev")}
-              >
-                <KeyboardArrowLeftIcon fontSize="large" />
-              </button>
-              <button
-                disabled={
-                  currenrCard === listCardsLearning.length ? true : false
-                }
-                className="mx-4 hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-                onClick={() => switchCardHandle("next")}
-              >
-                <KeyboardArrowRightIcon fontSize="large" />
-              </button>
-            </div>
-            <div>
-              <small className="font-medium justify-center items-center flex italic">
-                dasd
-              </small>
-            </div>
+            )}
           </div>
         </div>
         {/* show hint  */}
