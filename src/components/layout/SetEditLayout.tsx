@@ -10,7 +10,7 @@ import "@pathofdev/react-tag-input/build/index.css";
 import "react-quill/dist/quill.snow.css";
 import { PARAMS } from "../../common/params";
 import { ALERT } from "../../redux/types/alertType";
-import { getAPI, postAPI, putAPI } from "../../utils/FetchData";
+import { deleteAPI, getAPI, postAPI, putAPI } from "../../utils/FetchData";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../utils/TypeScript";
 import { useRouter } from "next/router";
@@ -35,7 +35,7 @@ interface ITag {
 
 const QuillNoSSRWrapper = dynamic(import("react-quill"), {
   ssr: false,
-  loading: () => <p>Loading ...</p>,
+  loading: () => <p>...</p>,
 });
 
 const modules = {
@@ -103,6 +103,11 @@ const SetEditLayout = (props: Props) => {
   const [titleErr, setTitleErr] = useState("");
   const [descErr, setDescErr] = useState("");
   const [showModalRemoveAll, setShowModalRemoveAll] = useState(false);
+  const [isChange, setIsChange] = useState(false);
+  const [listCardsDelete, setListCardsDelete] = useState<number[]>([]);
+  const [showModaleComfirmModal, setShowModaleComfirmModal] = useState(false);
+
+  const [isReset, setIsReset] = useState(false);
 
   const router = useRouter();
 
@@ -126,9 +131,6 @@ const SetEditLayout = (props: Props) => {
   // ======================================
   //when user edit studyset
   if (!(router.pathname.indexOf("/set/add") !== -1)) {
-    console.log("this is edit page");
-    console.log("id is: " + props.id);
-
     useEffect(() => {
       dispatch({ type: ALERT, payload: { loading: true } });
       const fetchData = async () => {
@@ -139,9 +141,9 @@ const SetEditLayout = (props: Props) => {
           const cardRes = await getAPI(
             `${PARAMS.ENDPOINT}card/list?id=${props.id}`
           );
-          console.log("study set data is: " + JSON.stringify(studySetRes.data));
-          console.log("study set data is: " + JSON.stringify(cardRes.data));
           dispatch({ type: ALERT, payload: { loading: false } });
+          setIsReset(false);
+          setListCardsDelete([]);
           setTitle(studySetRes.data.title);
           setDesc(studySetRes.data.description);
           setCreatorName(studySetRes.data.creatorName);
@@ -157,7 +159,7 @@ const SetEditLayout = (props: Props) => {
         }
       };
       fetchData();
-    }, [props.id]);
+    }, [props.id, isReset]);
   }
 
   // ===================================
@@ -165,10 +167,6 @@ const SetEditLayout = (props: Props) => {
     setIsPublic(!isPublic);
     console.log("public: " + isPublic);
   };
-
-  const [isHide, setIsHide] = useState(true);
-
-  console.log("text of card: " + text);
 
   const handelCardOnClick = (cardContent: string, index: number) => {
     setShowModal(true);
@@ -189,6 +187,7 @@ const SetEditLayout = (props: Props) => {
     }
 
     setShowModal(false);
+    setIsChange(true);
 
     console.log("cards are: " + cards);
     console.log("This card is front" + isFront);
@@ -210,16 +209,25 @@ const SetEditLayout = (props: Props) => {
     }
   }, [title, desc]);
 
-  console.log(cards);
+  //delete card by id
+  const deleteCardById = async (id: number) => {
+    try {
+      const res = await deleteAPI(`${PARAMS.ENDPOINT}card/delete?id=${id}`);
+    } catch (err) {
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+    }
+  };
+
+  console.log("id:" + listCardsDelete);
 
   //handel submit form
   const handleSubmit = async (e: any) => {
     console.log("tt: " + titleErr + " desc: " + descErr);
 
-    e.preventDefault();
     if (titleErr || descErr) return;
 
-    //========create null card by limit input
     const addData = {
       creator: auth.userResponse?._id,
       title,
@@ -229,12 +237,13 @@ const SetEditLayout = (props: Props) => {
       isPublic: isPublic,
     };
 
-    console.log(addData);
-
-    dispatch({ type: ALERT, payload: { loading: true } });
+    //check delete card
     if (router.pathname.indexOf("/set/add") !== -1) {
       //add
       try {
+        console.log("data: " + JSON.stringify(addData));
+
+        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, addData);
         dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -247,16 +256,22 @@ const SetEditLayout = (props: Props) => {
           query: { id: res.data },
         });
       } catch (err) {
+        console.log("err: " + err);
+
         dispatch({ type: ALERT, payload: { errors: err.response.data } });
         setIsToastOpen(true);
         setTypeToast("error");
         setMessageToast("An error occurred");
       }
     } else {
-      const dataUpdate = {
-        ...addData,
-        id: props.id,
-      };
+      //check list card delete
+
+      if (listCardsDelete.length !== 0) {
+        listCardsDelete.map((id) => {
+          deleteCardById(id);
+        });
+      }
+
       const studySetData = {
         id: props.id,
         creator: auth.userResponse?._id,
@@ -275,7 +290,10 @@ const SetEditLayout = (props: Props) => {
           `${PARAMS.ENDPOINT}studySet/edit`,
           studySetData
         );
-        dispatch({ type: ALERT, payload: { loading: false } });
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Update successful!" },
+        });
         setIsToastOpen(true);
         setTypeToast("success");
         setMessageToast("😎 Your study set updated!");
@@ -308,6 +326,10 @@ const SetEditLayout = (props: Props) => {
     console.log("temp2: " + JSON.stringify(cardsTemp));
 
     setCards(cardsTemp);
+
+    let listCardsId: any[] = [...listCardsDelete];
+    listCardsId.push(cards[index].id);
+    setListCardsDelete(listCardsId);
   };
 
   const deleteAll = () => {
@@ -319,24 +341,38 @@ const SetEditLayout = (props: Props) => {
     }
   };
 
-  const addMoreCard = () => {
+  //handle add card
+  const addMoreCard = async () => {
     let cardstemp: ICard[] = [...cards];
-    cardstemp.push({ front: "", back: "" });
-    setCards(cardstemp);
+    if (router.pathname.indexOf("/set/add") !== -1) {
+      let cardstemp: ICard[] = [...cards];
+      cardstemp.push({ front: "", back: "" });
+      setCards(cardstemp);
+    } else {
+      const cardDataAdd = [
+        {
+          studySet: props.id,
+          front: "",
+          back: "",
+        },
+      ];
+      try {
+        const cardsAddRes = await postAPI(
+          `${PARAMS.ENDPOINT}card/create`,
+          cardDataAdd
+        );
+        const cardRes = await getAPI(
+          `${PARAMS.ENDPOINT}card/list?id=${props.id}`
+        );
+        setTypeToast("success");
+        setMessageToast("😎 Add successful!");
+        setIsToastOpen(true);
+        setCards(cardRes.data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
-
-  // if (alert.loading === true) {
-  //   return (
-  //     <AppLayput2
-  //       title={`${
-  //         router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
-  //       }`}
-  //       desc="create set"
-  //     >
-  //       Loading...
-  //     </AppLayput2>
-  //   );
-  // }
 
   if (
     auth.userResponse?.username !== creatorName &&
@@ -364,6 +400,7 @@ const SetEditLayout = (props: Props) => {
         }`}
         desc="create set"
       >
+        {isChange ? <p className="text-2xl">DCm</p> : null}
         {alert.loading === true ? (
           <div>
             <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
@@ -376,135 +413,163 @@ const SetEditLayout = (props: Props) => {
             Not permitted
           </h1>
         ) : (
-          <div className="lg:w-3/4 mx-auto mt-4 px-4 h-screen">
-            <form onSubmit={handleSubmit}>
-              <div className="flex justify-between">
-                <div className="flex flex-grow">
-                  <h1 className="text-3xl font-semibold">
-                    {router.pathname.indexOf("/set/add") !== -1
-                      ? "Create Study Set"
-                      : "Edit Your Set"}
-                  </h1>
-                </div>
-                <div className="flex relative">
-                  {router.pathname.indexOf("/set/add") === -1 ? (
-                    <Link href={`/set/${props.id}`}>
-                      <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
-                        type="button"
-                      >
-                        Back to set
-                      </button>
-                    </Link>
-                  ) : null}
-
-                  <button className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600">
-                    {alert.loading
-                      ? "Saving..."
-                      : router.pathname.indexOf("/set/add") !== -1
-                      ? "Create"
-                      : "Update"}
-                  </button>
-                </div>
+          <div className="lg:w-3/4 mx-auto mt-4 px-4 h-full">
+            <div className="flex justify-between">
+              <div className="flex flex-grow">
+                <h1 className="text-3xl font-semibold">
+                  {router.pathname.indexOf("/set/add") !== -1
+                    ? "Create Study Set"
+                    : "Edit Your Set"}
+                </h1>
               </div>
-              <div>
-                <h1 className="text-md mt-4 mb-2">Study set Information</h1>
-                <div className="grid lg:grid-cols-2 gap-4 grid-cols-1 h-1/3 mt-4">
-                  <div className="col-span-1 justify-around">
-                    <div className="flex flex-wrap my-1">
-                      <div className="grid lg:grid-cols-3 gap-2 w-full">
-                        <div className="lg:col-span-2 col-span-1">
-                          <InputGroup
-                            type="text"
-                            setValue={setTitle}
-                            placeholder={`enter a title like "Math01-Chap3"`}
-                            value={title}
-                            label="Title"
-                            error={titleErr}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className=" w-full">
-                        <InputArea
-                          setValue={setDesc}
-                          placeholder="study set de"
-                          // error={alert.errors?.errors?.bio}
-                          value={desc}
-                          error={descErr}
-                          label="Description"
+              <div className="flex">
+                {router.pathname.indexOf("/set/add") === -1 ? (
+                  <Link href={`/set/${props.id}`}>
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                    >
+                      Back to set
+                    </button>
+                  </Link>
+                ) : null}
+
+                <button
+                  onClick={
+                    router.pathname.indexOf("/set/add") === -1
+                      ? () => setShowModaleComfirmModal(true)
+                      : (e) => handleSubmit(e)
+                  }
+                  className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600"
+                >
+                  {alert.loading
+                    ? "Saving..."
+                    : router.pathname.indexOf("/set/add") !== -1
+                    ? "Create"
+                    : "Update"}
+                </button>
+              </div>
+            </div>
+            <div>
+              <h1 className="text-md mt-4 mb-2">Study set Information</h1>
+              <div className="grid lg:grid-cols-2 gap-4 grid-cols-1 h-1/3 mt-4">
+                <div className="col-span-1 justify-around">
+                  <div className="flex flex-wrap my-1">
+                    <div className="grid lg:grid-cols-3 gap-2 w-full">
+                      <div className="lg:col-span-2 col-span-1">
+                        <InputGroup
+                          type="text"
+                          setValue={setTitle}
+                          placeholder={`enter a title like "Math01-Chap3"`}
+                          value={title}
+                          label="Title"
+                          error={titleErr}
+                          required
                         />
                       </div>
                     </div>
-                    <div className="px-1">
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={isPublic}
-                            onChange={handleChange}
-                            color="primary"
-                            name="isPublic"
-                          />
-                        }
-                        label="Public"
+                    <div className=" w-full">
+                      <InputArea
+                        setValue={setDesc}
+                        placeholder="study set de"
+                        // error={alert.errors?.errors?.bio}
+                        value={desc}
+                        error={descErr}
+                        label="Description"
                       />
                     </div>
                   </div>
-                  <div className="col-span-1">
-                    <div className="w-2/3">
-                      <label className="text-gray-700 text-sm font-bold mb-2">
-                        Tags
-                      </label>
-                      <div className="mt-1 py-1">
-                        <ReactTagInput
-                          tags={tags}
-                          onChange={(newTags) => setTags(newTags)}
-                          placeholder="Please enter to add tag"
-                          maxTags={10}
+                  <div className="px-1">
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={isPublic}
+                          onChange={handleChange}
+                          color="primary"
+                          name="isPublic"
                         />
-                        <p className="text-gray-600 text-xs pt-1 mb-2">
-                          Tag make your study set easier to search by other
-                        </p>
-                      </div>
+                      }
+                      label="Public"
+                    />
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <div className="w-2/3">
+                    <label className="text-gray-700 text-sm font-bold mb-2">
+                      Tags
+                    </label>
+                    <div className="mt-1 py-1">
+                      <ReactTagInput
+                        tags={tags}
+                        onChange={(newTags) => setTags(newTags)}
+                        placeholder="Please enter to add tag"
+                        maxTags={10}
+                      />
+                      <p className="text-gray-600 text-xs pt-1 mb-2">
+                        Tag make your study set easier to search by other
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-            </form>
-            {true ? (
-              <div className="h-full mt-4">
-                <div className="flex justify-between">
-                  <div className="mb-2">
-                    <h1 className="text-md mt-4 ">Add cards</h1>
-                    <small className="text-gray-500">
-                      * Click into card to edit
-                    </small>
-                  </div>
-
-                  <div className="flex my-auto">
-                    <div className="mx-4 text-center my-auto py-1">
-                      <p>{cards.length} cards</p>
-                    </div>
-                    {router.pathname.indexOf("/set/add") !== -1 ? (
-                      <button
-                        onClick={() => setShowModalRemoveAll(true)}
-                        className={`bg-yellow-500 
-            text-white w-24 py-1 rounded-md text-sm font-medium hover:bg-yellow-600 focus:outline-none
-             ${cards.length <= 2 ? "bg-yellow-300" : ""}`}
-                        disabled={cards.length <= 2}
-                      >
-                        {alert.loading ? "Saving..." : "Remove all"}
-                      </button>
-                    ) : null}
-                  </div>
+            </div>
+            <div className="h-full mt-4 w-full">
+              <div className="flex justify-between">
+                <div className="mb-2">
+                  <h1 className="text-md mt-4 ">Add cards</h1>
+                  <small className="text-gray-500">
+                    * Click into card to edit
+                  </small>
                 </div>
-                <hr />
-                <div className=" w-full">
-                  {cards.map((card, index) => {
-                    return (
-                      <div className="rounded-xl grid grid-cols-11 gap-4 my-4">
+
+                <div className="flex my-auto">
+                  <div className="mx-4 text-center my-auto py-1">
+                    <p>{cards.length} cards</p>
+                  </div>
+                  {router.pathname.indexOf("/set/add") !== -1 ? (
+                    <button
+                      onClick={() => setShowModalRemoveAll(true)}
+                      className={`
+            text-white w-24 py-1 rounded-md text-sm font-medium  focus:outline-none
+             ${
+               cards.length <= 2
+                 ? "bg-gray-300"
+                 : "bg-yellow-500 hover:bg-yellow-600"
+             }`}
+                      disabled={cards.length <= 2}
+                    >
+                      {alert.loading ? "Saving..." : "Remove all"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsReset(true);
+                        setIsChange(false);
+                      }}
+                      className={` tooltip text-white w-20 py-1 rounded-md text-sm font-medium  focus:outline-none
+                        ${
+                          isChange || listCardsDelete.length !== 0
+                            ? "bg-yellow-500 hover:bg-yellow-600"
+                            : "bg-gray-300"
+                        }`}
+                      disabled={!(isChange || listCardsDelete.length !== 0)}
+                    >
+                      Reset
+                      <span className="tooltiptext w-32">
+                        Discard all Change
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              <hr />
+              <div className=" w-full mb-44">
+                {cards.map((card, index) => {
+                  return (
+                    <div className="rounded-xl flex w-full my-4">
+                      <div className="flex justify-between w-full gap-3">
                         <div
-                          className="col-span-5 rounded-xl bg-white shadow-lg hover:bg-indigo-50"
+                          className="w-1/2  rounded-xl bg-white shadow-lg hover:bg-indigo-50"
                           onClick={() => {
                             setIsFront(true);
                             handelCardOnClick(card.front, index);
@@ -518,7 +583,7 @@ const SetEditLayout = (props: Props) => {
                           />
                         </div>
                         <div
-                          className="col-span-5 rounded-xl bg-white shadow-lg hover:bg-indigo-50"
+                          className="w-1/2 rounded-xl bg-white shadow-lg hover:bg-indigo-50"
                           onClick={() => {
                             setIsFront(false);
                             handelCardOnClick(card.back, index);
@@ -531,24 +596,23 @@ const SetEditLayout = (props: Props) => {
                             className="w-64"
                           />
                         </div>
-                        <div className="col-span-1">
-                          <button
-                            onClick={(event) => handelDeleteCard(index)}
-                            className="mx-2 tooltip focus:outline-none"
-                          >
-                            <DeleteOutlineIcon
-                              fontSize="small"
-                              className="hover:text-yellow-500 text-gray-700"
-                            />
-                            <span className="tooltiptext mt-2 w-20">
-                              remove
-                            </span>
-                          </button>
-                        </div>
                       </div>
-                    );
-                  })}
-                </div>
+
+                      <div className="">
+                        <button
+                          onClick={() => handelDeleteCard(index)}
+                          className="mx-2 tooltip focus:outline-none"
+                        >
+                          <DeleteOutlineIcon
+                            fontSize="small"
+                            className="hover:text-yellow-500 text-gray-700"
+                          />
+                          <span className="tooltiptext mt-2 w-20">remove</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
                 <button
                   onClick={addMoreCard}
                   className="text-white w-32 py-2 mx-auto rounded-md text-sm font-medium bg-green-500 hover:bg-green-600 mt-4 focus:outline-none"
@@ -557,7 +621,7 @@ const SetEditLayout = (props: Props) => {
                   Add more card
                 </button>
               </div>
-            ) : null}
+            </div>
             {/* show modal cf remove all */}
             {showModalRemoveAll ? (
               <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
@@ -635,9 +699,40 @@ const SetEditLayout = (props: Props) => {
             ) : null}
           </div>
         )}
+        {showModaleComfirmModal &&
+        router.pathname.indexOf("/set/add") === -1 ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className=" w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want to save?
+                  </p>
+                  <small>Your change will be save</small>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowModaleComfirmModal(false)}
+                    className="  w-32 py-1 mx-4 rounded bg-gray-100 border-2 text-gray-700 focus:outline-none hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    className="text-white w-32 rounded mx-4 bg-green-500 hover:bg-green-600 focus:outline-none"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <Snackbar
           open={isToastOpen}
-          autoHideDuration={6000}
+          autoHideDuration={1000}
           onClose={handleClose}
         >
           <Alert

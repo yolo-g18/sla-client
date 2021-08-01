@@ -17,6 +17,7 @@ import { getAPI, postAPI, putAPI } from "../../../utils/FetchData";
 import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { useClickOutside } from "../../../hook/useClickOutside";
 
 //alert
 function Alert(props: AlertProps) {
@@ -27,26 +28,6 @@ const QuillNoSSRWrapper = dynamic(import("react-quill"), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
 });
-
-let useClickOutside = (handler: any) => {
-  let domNode: any = useRef();
-
-  useEffect(() => {
-    let maybeHandler = (event: any) => {
-      if (!domNode.current.contains(event.target)) {
-        handler();
-      }
-    };
-
-    document.addEventListener("mousedown", maybeHandler);
-
-    return () => {
-      document.removeEventListener("mousedown", maybeHandler);
-    };
-  });
-
-  return domNode;
-};
 
 const modules = {
   toolbar: [
@@ -128,7 +109,7 @@ const learn = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const listCardLearingRes = await getAPI(
-          `${PARAMS.ENDPOINT}learn/studySet?id=${id}`
+          `${PARAMS.ENDPOINT}learn/continue/studySet?id=${id}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
 

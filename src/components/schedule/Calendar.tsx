@@ -15,12 +15,14 @@ import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 import { getAPI } from "../../utils/FetchData";
 
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
 import InputArea from "../input/InputArea";
 import InputGroup from "../input/InputGroup";
-import { colors } from "@material-ui/core";
+import TocRoundedIcon from "@material-ui/icons/TocRounded";
+import EventNoteRoundedIcon from "@material-ui/icons/EventNoteRounded";
+import LocalOfferOutlinedIcon from "@material-ui/icons/LocalOfferOutlined";
+import { useClickOutside } from "../../hook/useClickOutside";
 
 interface Props {}
 
@@ -102,8 +104,19 @@ const Calendar = (props: Props) => {
           `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
             dayObjOf1.subtract(weekDayOf1, "day")
           )}&to=${convertTimeToMySQl(
-            dayObjOfLast.add(_.range(6 - weekDayOfLast).length, "day")
+            dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
           )}`
+        );
+
+        console.log(
+          "from: " +
+            `${convertTimeToMySQl(dayObjOf1.subtract(weekDayOf1, "day"))} `
+        );
+        console.log(
+          "to: " +
+            `${convertTimeToMySQl(
+              dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
+            )} `
         );
 
         setListEvent(res.data);
@@ -132,6 +145,7 @@ const Calendar = (props: Props) => {
   }, []);
 
   const setColorhandle = (color: string) => {
+    setShowModalColorPicker(false);
     setEventColor(color);
   };
 
@@ -439,95 +453,103 @@ const Calendar = (props: Props) => {
       {showModalAdd ? (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
           <div className="w-full flex justify-center h-screen items-center">
-            <div className="rounded-xl bg-white w-full md:w-2/3 lg:w-1/3">
-              <div className="px-5 py-3 flex items-center justify-between  border-b">
-                <button
-                // onClick={() => setShowModalEdit(false)}
-                >
+            <div className="rounded-xl bg-white w-full md:w-2/3 lg:w-1/3 ">
+              <div className="px-5 py-3 flex items-center border-b float-right">
+                <button onClick={() => setShowModalAdd(false)}>
                   <CloseIcon />
                 </button>
               </div>
-              <div className="p-4 grid grid-cols-8 gap-3">
-                <div className="col-span-3 ">
-                  <div className="max-w-sm mx-auto py-16 my-16">
-                    <div className="max-w-sm mx-auto py-16 my-16">
-                      <div className="mb-5">
-                        <div className="flex items-center">
-                          <div className="relative ml-3 mt-8">
-                            <div>
-                              <button
-                                onClick={() => setShowModalColorPicker(true)}
-                                className={`w-10 h-10 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
-                                bg-${eventColor.toLocaleLowerCase()}-400`}
-                              ></button>
-                              {showModalColorPicker ? (
-                                <div className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg">
-                                  <div className="rounded-md bg-white shadow-xs px-4 py-3">
-                                    <div className="flex flex-wrap -mx-2">
-                                      {listColors.map((color, index) => {
-                                        return (
-                                          <div key={index} className="px-2">
-                                            {eventColor === color ? (
-                                              <div
-                                                className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
-                                                bg-${color.toLocaleLowerCase()}-400`}
-                                              ></div>
-                                            ) : (
-                                              <div
-                                                onClick={() =>
-                                                  setColorhandle(color)
-                                                }
-                                                className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
-                                                bg-${color.toLocaleLowerCase()}-400`}
-                                              ></div>
-                                            )}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              <div className="p-6">
+                <div className=" flex flex-col w-full">
+                  <div className="flex w-full ">
+                    <TocRoundedIcon className="my-auto mr-4" />
+                    <InputGroup
+                      type="text"
+                      setValue={setEventName}
+                      placeholder="add title"
+                      value={eventName}
+                      label="Title"
+                      // error={titleErr}
+                      required
+                    />
                   </div>
-                </div>
-                <div className="col-span-5 flex flex-col w-full">
-                  <InputGroup
-                    type="text"
-                    setValue={setEventName}
-                    placeholder={`enter a title like "Math01-Chap3"`}
-                    value={eventName}
-                    label="Title"
-                    // error={titleErr}
-                    required
-                  />
-                  <div className=" w-full">
+
+                  <div className="flex w-full">
+                    <EventNoteRoundedIcon className="my-auto mr-4" />
                     <InputArea
                       setValue={setEventDesc}
-                      placeholder="study set de"
+                      placeholder="add description"
                       // error={alert.errors?.errors?.bio}
                       value={eventDesc}
                       // error={descErr}
                       label="Description"
                     />
                   </div>
-                  <TextField
-                    id="datetime-local"
-                    label="Next appointment"
-                    type="datetime-local"
-                    defaultValue="2017-05-24T10:30"
-                    className="text-gray-600"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
+                  <div className="my-6 flex">
+                    <LocalOfferOutlinedIcon className="my-auto" />
+                    <div className="w-full flex relative ml-4">
+                      <div>
+                        <button
+                          onClick={() =>
+                            setShowModalColorPicker(!showModalColorPicker)
+                          }
+                          className={`w-6 h-6 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
+                                bg-${eventColor.toLocaleLowerCase()}-400`}
+                        ></button>
+                        {showModalColorPicker ? (
+                          <div className="origin-top-right absolute z-50  mt-6 w-40 rounded-md shadow-lg hover:shadow-xl">
+                            <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                              <div className="flex flex-wrap -mx-2">
+                                {listColors.map((color, index) => {
+                                  return (
+                                    <div key={index} className="px-2">
+                                      {eventColor === color ? (
+                                        <div
+                                          className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                        ></div>
+                                      ) : (
+                                        <div
+                                          onClick={() => setColorhandle(color)}
+                                          className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                        ></div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-around">
+                    <TextField
+                      id="datetime-local"
+                      label="From"
+                      type="datetime-local"
+                      defaultValue={todayObj}
+                      className="text-gray-600 mx-1"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    <TextField
+                      id="datetime-local"
+                      label="To"
+                      type="datetime-local"
+                      defaultValue={todayObj}
+                      className="text-gray-600 mx-1"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center text-blue-400 justify-between py-6 px-4 border-t">
+              <div className="flex items-center text-blue-400 justify-between py-6 px-4 border-t float-right">
                 <button
                   // onClick={() => setShowModalEdit(false)}
                   className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"

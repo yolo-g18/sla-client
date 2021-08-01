@@ -1,9 +1,6 @@
 import "../../styles/globals.css";
 import "../../styles/tooltip.css";
 import "react-quill/dist/quill.snow.css";
-import "tui-calendar/dist/tui-calendar.css";
-import "tui-date-picker/dist/tui-date-picker.css";
-import "tui-time-picker/dist/tui-time-picker.css";
 
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
