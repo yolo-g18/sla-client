@@ -132,7 +132,7 @@ const requests = () => {
 
  
     }
-
+    deleteInvitaion(user_id);
     deleteRequest(user_id);
   }
 
@@ -152,6 +152,23 @@ const requests = () => {
       );
 
     dispatch({ type: ALERT, payload: { loading: false ,success:"ss"} });
+      
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+ 
+    }
+  }
+
+  async function deleteInvitaion(user_id:number){
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteRoomInvitation/${id}/${user_id}`
+      );
+
+    dispatch({ type: ALERT, payload: { loading: false } });
       
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
