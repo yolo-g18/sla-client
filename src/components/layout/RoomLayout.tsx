@@ -138,6 +138,8 @@ const RoomLayout = (props: Props) => {
 
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
+  
+  const [isDefaultSearching, setIsDefaultSearching] = React.useState(true);
   React.useEffect(() => {
     // load folder color
     async function excute() {
@@ -690,6 +692,8 @@ const RoomLayout = (props: Props) => {
 
   async function searchUser(e: FormSubmit) {
 
+    setIsDefaultSearching(false);
+
     e.preventDefault();
 
     const textUserNameSearch = (document.getElementById('textNameUserSearch') as HTMLInputElement);
@@ -715,6 +719,7 @@ const RoomLayout = (props: Props) => {
 
   function closeInviteModal(){
       setUserSearchList([]);
+      setIsDefaultSearching(true);
       setIsShowInviteModal(false);
   }
 
@@ -1290,11 +1295,21 @@ const RoomLayout = (props: Props) => {
                     style={{ height: 550, width: 450 }}
                   >
                     <div
-                      id="ulSetAdd"
+                      id="listInvite"
                       className="flex flex-col divide divide-y "
                     >
-                   
-                      {listInvitePerson}
+                    {
+                    isDefaultSearching === false ? (
+                      listInvitePerson.length === 0 ? (
+                        <div key="resultNotFound" className="flex flex-row ">
+                        <div className="select-none cursor-pointer flex flex-1 items-center py-4 px-6">
+                          <div className="flex-1">
+                            <div className="text-red-500">Not found</div>
+                          </div>
+                        </div>
+                      </div>
+                     ):listInvitePerson
+                    ):null}
                     </div>
                   </div>
                   <div className="flex items-center justify-center px-6 py-2 mt-4">
