@@ -716,8 +716,8 @@ const RoomLayout = (props: Props) => {
     
     const data = {
       "creator_id": auth.userResponse?._id,
-      "title":auth.userResponse?.username,
-      "description":"Invite you to attend "+room.name+" room",
+      "title":"Room Invitation",
+      "description":auth.userResponse?.username+" invites you to attend "+room.name+" room",
       "type":"invitation",
       "link":"/invitation",
       "isRead":false,
@@ -743,8 +743,8 @@ const RoomLayout = (props: Props) => {
     
     const data = {
       "creator_id": auth.userResponse?._id,
-      "title":auth.userResponse?.username,
-      "description":auth.userResponse?.username +" want to attend "+room.name+" room",
+      "title":"Room Request Attendance",
+      "description":auth.userResponse?.username +" wants to attend "+room.name+" room",
       "type":"request",
       "link":"/room/"+room.room_id+"/requests",
       "isRead":false,

@@ -10,7 +10,7 @@ import { INewRoom , IGuestRoom } from "../../../utils/TypeScript";
 import { useRouter } from "next/router";
 import { ALERT } from "../../../redux/types/alertType";
 import { PARAMS } from "../../../common/params";
-import { getAPI ,deleteAPI ,putAPI} from "../../../utils/FetchData";
+import { getAPI ,deleteAPI ,putAPI,postAPI} from "../../../utils/FetchData";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
@@ -128,7 +128,7 @@ const requests = () => {
     }
     deleteInvitaion(user_id);
     deleteRequest(user_id);
-
+    notifyAcceptAttendRoom();
     setMessageToast("request accepted");
     setTypeToast("success");
     setIsToastOpen(true);
@@ -172,6 +172,33 @@ const requests = () => {
       dispatch({ type: ALERT, payload: { loading: false } });
 
  
+    }
+  }
+
+  async function notifyAcceptAttendRoom(){
+    
+    const data = {
+      "creator_id": auth.userResponse?._id,
+      "title":"Room Attend Acceptance",
+      "description":auth.userResponse?.username+" allows you attend "+room.name+" room",
+      "type":"acceptance",
+      "link":"/room/"+room.room_id,
+      "isRead":false,
+      "timeTrigger":null
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await postAPI(
+        `${PARAMS.ENDPOINT}notify/create`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false} });
+
+     } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      
+
     }
   }
   return (
