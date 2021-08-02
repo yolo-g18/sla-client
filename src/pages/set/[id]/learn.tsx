@@ -18,7 +18,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { useClickOutside } from "../../../hook/useClickOutside";
-import { Transition } from "@tailwindui/react";
 
 //alert
 function Alert(props: AlertProps) {
@@ -88,6 +87,9 @@ const learn = () => {
   const [typeToast, setTypeToast] = useState("success");
   const [messageToast, setMessageToast] = useState("");
   const [isChange, setIsChange] = useState(false);
+  const [studySetTitle, setStudySetTitle] = useState("");
+
+  const [isContinue, setIsContinue] = useState(false);
 
   // to count number of q > 3
   const [listQ, setListQ] = useState<{ index: number; q: number }[]>([]);
@@ -112,13 +114,23 @@ const learn = () => {
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
+        const studySetRes = await getAPI(
+          `${PARAMS.ENDPOINT}studySet/view?id=${id}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setStudySetTitle(studySetRes.data.title);
+        setIsContinue(true);
+        dispatch({ type: ALERT, payload: { loading: true } });
         const listCardLearingRes = await getAPI(
           `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
         );
         setListCardsLearning(listCardLearingRes.data);
         dispatch({ type: ALERT, payload: { loading: false } });
+        console.log("legth: " + listCardsLearning.length);
+
         if (listCardsLearning.length === 0) {
-          console.log("learning");
+          setIsContinue(false);
+          console.log("get all");
 
           dispatch({ type: ALERT, payload: { loading: true } });
           const listCardLearingRes = await getAPI(
@@ -135,7 +147,7 @@ const learn = () => {
     };
     fetchData();
     setIsChange(false);
-  }, [id, isChange]);
+  }, [id, isChange, isContinue]);
 
   let domNode = useClickOutside(() => {
     setIsMenuOpen(false);
@@ -162,20 +174,25 @@ const learn = () => {
 
   //switch card
 
-  const checkQExistencecheckQExist = () => {};
-
   //send q
   const handelResultUserSelect = async (q_value: number) => {
     console.log("q is: " + q_value);
-
     const data = {
       q: q_value,
       cardId: listCardsLearning[currenrCard].cardId,
     };
 
-    listQ.map((tq) => {
-      if (tq.index === currenrCard) return false;
-    });
+    let listQTemp: { index: number; q: number }[] = [...listQ];
+    const listCheck = listQTemp.filter((tq) => tq.index === currenrCard);
+    if (listCheck.length === 0) {
+      listQTemp.push({ index: currenrCard, q: q_value });
+    } else {
+      listQTemp.map((qt) => {
+        if (qt.index === currenrCard) qt.q = q_value;
+      });
+    }
+    setListQ(listQTemp);
+    console.log("qs: " + JSON.stringify(listQTemp));
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
@@ -246,14 +263,22 @@ const learn = () => {
     }, 200);
   };
 
-  console.log("done:" + showLearningResultModal);
-  console.log("current:" + currenrCard);
+  const reviewAgain = () => {
+    setCurrentCard(0);
+    setShowLearningResultModal(false);
+  };
+
+  const learnContinue = () => {
+    setCurrentCard(0);
+    setIsContinue(true);
+    setShowLearningResultModal(false);
+  };
 
   return (
     <div>
-      <AppLayput2 title="learn" desc="dd">
+      <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 -mt-24 px-2">
-          <div className="h-3/5 2xl:w-2/5 x md:w-1/2 sm:w-2/3 w-full rounded-md">
+          <div className="h-3/5 2xl:w-2/5 md:w-1/2 sm:w-2/3 w-full rounded-md">
             <div className="mb-8">
               <Link
                 href={{
@@ -267,10 +292,69 @@ const learn = () => {
               </Link>
             </div>
             {showLearningResultModal ? (
-              <div className="mx-auto bg-red-300">Your result</div>
+              <div className="mx-auto h-2/3">
+                <p>Congrat</p>
+                <div className="flex justify-around gap-4">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-green-400">
+                      {listQ.filter((qt) => qt.q === 5).length}
+                    </p>
+                    <p>Perfectly</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-blue-400">
+                      {listQ.filter((qt) => qt.q <= 4 && qt.q >= 3).length}
+                    </p>
+                    <p>Understand</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-yellow-400">
+                      {listCardsLearning.length -
+                        listQ.filter((qt) => qt.q === 5).length -
+                        listQ.filter((qt) => qt.q <= 4 && qt.q >= 3)
+                          .length}{" "}
+                    </p>
+                    <p>Studying</p>
+                  </div>
+                </div>
+                {/* <div>
+                  <p className="text-gray-700 text-xl mx-auto font-bold">
+                    Your Progress: {listQ.filter((tq) => tq.q >= 3).length} /{" "}
+                    {listCardsLearning.length}
+                  </p>
+                </div>
+                <div className="relative w-full h-2 bg-gray-200 rounded my-10">
+                  <div
+                    className="absolute top-0 h-2 left-0 rounded bg-green-500"
+                    style={{
+                      width: `${
+                        (listQ.filter((tq) => tq.q >= 3).length /
+                          listCardsLearning.length) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div> */}
+                <div className="flex w-full pt-10 px-4 mx-auto justify-around">
+                  <button
+                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                    type="button"
+                    onClick={() => reviewAgain()}
+                  >
+                    Review again
+                  </button>
+                  <button
+                    className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
+                    type="button"
+                    onClick={() => learnContinue()}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
             ) : (
               <div>
-                <div className="justify-center items-center flex font-sans text-xl mb-8">
+                <div className="justify-center items-center flex text-gray-700 font-bold text-xl mb-8">
                   <p className="fixed">Practice Your Card</p>
                 </div>
                 <div className="flex justify-between w-full mb-2">

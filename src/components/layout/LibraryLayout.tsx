@@ -167,7 +167,10 @@ const LibraryLayout = (props: Props) => {
         try {
           dispatch({ type: ALERT, payload: { loading: true } });
           const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
-          dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
+          dispatch({
+            type: ALERT,
+            payload: { loading: false, success: "abc" },
+          });
           setMessageToast("room created");
           setTypeToast("success");
           setIsToastOpen(true);
@@ -401,7 +404,7 @@ const LibraryLayout = (props: Props) => {
                    text-sm font-medium py-1 bg-green-500 hover:bg-green-600 ml-4
                 text-white hover:bg-green-dark focus:outline-none"
                     >
-                      add new
+                      Add new
                     </button>
                   ) : null}
                 </div>

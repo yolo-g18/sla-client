@@ -62,7 +62,7 @@ const Calendar = (props: Props) => {
 
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
 
-  const [listEvnets, setListEvent] = useState<IEventRes[] | any[]>([]);
+  const [listEvent, setListEvent] = useState<IEventRes[] | any[]>([]);
 
   const thisYear = dayObj.year();
   const thisMonth = dayObj.month();
@@ -108,19 +108,19 @@ const Calendar = (props: Props) => {
           )}`
         );
 
-        console.log(
-          "from: " +
-            `${convertTimeToMySQl(dayObjOf1.subtract(weekDayOf1, "day"))} `
-        );
-        console.log(
-          "to: " +
-            `${convertTimeToMySQl(
-              dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
-            )} `
-        );
+        // console.log(
+        //   "from: " +
+        //     `${convertTimeToMySQl(dayObjOf1.subtract(weekDayOf1, "day"))} `
+        // );
+        // console.log(
+        //   "to: " +
+        //     `${convertTimeToMySQl(
+        //       dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
+        //     )} `
+        // );
 
         setListEvent(res.data);
-        // console.log(JSON.stringify(res.data));
+        console.log(JSON.stringify("events: " + JSON.stringify(listEvent)));
       } catch (err) {}
     };
 
@@ -262,8 +262,8 @@ const Calendar = (props: Props) => {
                         {dayObjOf1.subtract(weekDayOf1 - i, "day").date()}
                       </p>
                     </div>
-                    {listEvnets.map((eventV, index) => {
-                      if (index < 4) {
+                    {listEvent.map((eventV, index) => {
+                      if (index < 100) {
                         return eventCell(
                           eventV,
                           i + 1,
@@ -311,8 +311,8 @@ const Calendar = (props: Props) => {
                       </p>
                     </div>
 
-                    {listEvnets.map((eventV, index) => {
-                      if (index < 4) {
+                    {listEvent.map((eventV, index) => {
+                      if (index < 100) {
                         return eventCell(
                           eventV,
                           i + 1,
@@ -361,8 +361,8 @@ const Calendar = (props: Props) => {
                       </p>
                     </div>
                     {/* event content */}
-                    {listEvnets.map((eventV, index) => {
-                      if (index < 4) {
+                    {listEvent.map((eventV, index) => {
+                      if (index < 100) {
                         return eventCell(
                           eventV,
                           i + 1,
