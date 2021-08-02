@@ -19,6 +19,12 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { useClickOutside } from "../../../hook/useClickOutside";
 
+import CircularProgress, {
+  CircularProgressProps,
+} from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -26,7 +32,7 @@ function Alert(props: AlertProps) {
 
 const QuillNoSSRWrapper = dynamic(import("react-quill"), {
   ssr: false,
-  loading: () => <p>Loading ...</p>,
+  loading: () => <p>...</p>,
 });
 
 const modules = {
@@ -65,6 +71,37 @@ const formats = [
   "video",
 ];
 
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number }
+) {
+  return (
+    <Box position="relative" display="inline-flex">
+      <CircularProgress
+        style={{ color: "#10B981" }}
+        size="40"
+        variant="determinate"
+        {...props}
+      />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography
+          variant="h5"
+          component="div"
+          color="textSecondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
 const learn = () => {
   const { auth, alert } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
@@ -90,6 +127,7 @@ const learn = () => {
   const [studySetTitle, setStudySetTitle] = useState("");
 
   const [isContinue, setIsContinue] = useState(false);
+  const [overralProgress, setOverralProgress] = useState(0);
 
   // to count number of q > 3
   const [listQ, setListQ] = useState<{ index: number; q: number }[]>([]);
@@ -119,27 +157,16 @@ const learn = () => {
         );
         dispatch({ type: ALERT, payload: { loading: false } });
         setStudySetTitle(studySetRes.data.title);
-        setIsContinue(true);
+
         dispatch({ type: ALERT, payload: { loading: true } });
         const listCardLearingRes = await getAPI(
           `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
         );
-        setListCardsLearning(listCardLearingRes.data);
+        setIsContinue(false);
+        setListCardsLearning(listCardLearingRes.data.listCardLearning);
+        setOverralProgress(listCardLearingRes.data.progress);
         dispatch({ type: ALERT, payload: { loading: false } });
         console.log("legth: " + listCardsLearning.length);
-
-        if (listCardsLearning.length === 0) {
-          setIsContinue(false);
-          console.log("get all");
-
-          dispatch({ type: ALERT, payload: { loading: true } });
-          const listCardLearingRes = await getAPI(
-            `${PARAMS.ENDPOINT}learn/studySet?id=${id}`
-          );
-          dispatch({ type: ALERT, payload: { loading: false } });
-          setListCardsLearning(listCardLearingRes.data);
-        }
-
         setCardHint(listCardsLearning[currenrCard].hint);
       } catch (err) {
         console.log("error is: " + err);
@@ -148,6 +175,21 @@ const learn = () => {
     fetchData();
     setIsChange(false);
   }, [id, isChange, isContinue]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const listCardLearingRes = await getAPI(
+          `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
+        );
+        setOverralProgress(listCardLearingRes.data.progress);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, [showLearningResultModal]);
 
   let domNode = useClickOutside(() => {
     setIsMenuOpen(false);
@@ -274,12 +316,14 @@ const learn = () => {
     setShowLearningResultModal(false);
   };
 
+  console.log("is continue: " + isContinue);
+
   return (
     <div>
       <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 -mt-24 px-2">
-          <div className="h-3/5 2xl:w-2/5 md:w-1/2 sm:w-2/3 w-full rounded-md">
-            <div className="mb-8">
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto w-full mt-4 inset-0 px-2 h-full">
+          <div className="h-3/5 2xl:w-2/5 md:w-1/2 sm:w-2/3 w-full rounded-md mb-64">
+            <div className="mb-4">
               <Link
                 href={{
                   pathname: "/set/[id]",
@@ -292,70 +336,89 @@ const learn = () => {
               </Link>
             </div>
             {showLearningResultModal ? (
-              <div className="mx-auto h-2/3">
-                <p>Congrat</p>
-                <div className="flex justify-around gap-4">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-green-400">
-                      {listQ.filter((qt) => qt.q === 5).length}
+              <div className="mx-auto h-2/3 text-center">
+                <p className="font-bold text-gray-700">OVERRAL PROGRESS</p>
+                <CircularProgressWithLabel
+                  className="w-32 my-6"
+                  value={overralProgress * 100}
+                />
+
+                {Math.round(overralProgress * 100) === 100 ? (
+                  <div className="mt-6">
+                    <p className="text-gray-700 font-bold text-2xl">
+                      Congratulations, you've learned everything?
                     </p>
-                    <p>Perfectly</p>
+                    <div className="flex w-full pt-10 px-4 mx-auto justify-center">
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-32 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                        type="button"
+                        onClick={() => learnContinue()}
+                      >
+                        Continue review
+                      </button>
+                      <Link
+                        href={{
+                          pathname: "/set/[id]",
+                          query: { id: id },
+                        }}
+                      >
+                        <button
+                          className=" bg-green-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                          type="button"
+                        >
+                          Finish
+                        </button>
+                      </Link>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-blue-400">
-                      {listQ.filter((qt) => qt.q <= 4 && qt.q >= 3).length}
-                    </p>
-                    <p>Understand</p>
+                ) : (
+                  <div>
+                    <div className="flex justify-around gap-4">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-green-400">
+                          {listQ.filter((qt) => qt.q === 5).length}
+                        </p>
+                        <p>Perfectly</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-blue-400">
+                          {listQ.filter((qt) => qt.q <= 4 && qt.q >= 3).length}
+                        </p>
+                        <p>Understand</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-yellow-400">
+                          {listCardsLearning.length -
+                            listQ.filter((qt) => qt.q === 5).length -
+                            listQ.filter((qt) => qt.q <= 4 && qt.q >= 3)
+                              .length}{" "}
+                        </p>
+                        <p>Studying</p>
+                      </div>
+                    </div>
+                    <div className="flex w-full pt-10 px-4 mx-auto justify-center">
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                        type="button"
+                        onClick={() => reviewAgain()}
+                      >
+                        Review again
+                      </button>
+                      <button
+                        className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                        type="button"
+                        onClick={() => learnContinue()}
+                      >
+                        Continue
+                      </button>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-yellow-400">
-                      {listCardsLearning.length -
-                        listQ.filter((qt) => qt.q === 5).length -
-                        listQ.filter((qt) => qt.q <= 4 && qt.q >= 3)
-                          .length}{" "}
-                    </p>
-                    <p>Studying</p>
-                  </div>
-                </div>
-                {/* <div>
-                  <p className="text-gray-700 text-xl mx-auto font-bold">
-                    Your Progress: {listQ.filter((tq) => tq.q >= 3).length} /{" "}
-                    {listCardsLearning.length}
-                  </p>
-                </div>
-                <div className="relative w-full h-2 bg-gray-200 rounded my-10">
-                  <div
-                    className="absolute top-0 h-2 left-0 rounded bg-green-500"
-                    style={{
-                      width: `${
-                        (listQ.filter((tq) => tq.q >= 3).length /
-                          listCardsLearning.length) *
-                        100
-                      }%`,
-                    }}
-                  />
-                </div> */}
-                <div className="flex w-full pt-10 px-4 mx-auto justify-around">
-                  <button
-                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
-                    type="button"
-                    onClick={() => reviewAgain()}
-                  >
-                    Review again
-                  </button>
-                  <button
-                    className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
-                    type="button"
-                    onClick={() => learnContinue()}
-                  >
-                    Continue
-                  </button>
-                </div>
+                )}
               </div>
             ) : (
               <div>
-                <div className="justify-center items-center flex text-gray-700 font-bold text-xl mb-8">
-                  <p className="fixed">Practice Your Card</p>
+                <div className="justify-center items-center flex text-gray-700 font-bold text-xl mb-4 w-full">
+                  <p>Practice Your Card</p>
                 </div>
                 <div className="flex justify-between w-full mb-2">
                   <div className="px-1">
@@ -366,7 +429,7 @@ const learn = () => {
                   <div className="flex ">
                     <div ref={domNode}>
                       <button
-                        className="px-1"
+                        className="px-1 focus: outline-none"
                         onClick={handelExpandMoreBtnClick}
                       >
                         <ExpandMoreIcon />
@@ -415,11 +478,11 @@ const learn = () => {
                         </div>
                       ) : null}
                     </div>
-                    <div>
+                    {/* <div>
                       <button className="">
                         <VolumeDownIcon />
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div>
@@ -465,7 +528,9 @@ const learn = () => {
                       <button
                         onClick={() => handelResultUserSelect(index)}
                         key={index}
-                        className={`w-1/6 mx-2 h-8 px-4 py-1 rounded-xl transition duration-300 hover:bg-gray-200 ${qValue} focus:outline-none text-white text-sm hover:text-gray-900`}
+                        className={`flex-wrap w-1/6 mx-2 h-8 px-2 py-1 rounded-md transition duration-300 hover:bg-gray-200 bg-green-${
+                          index + 3
+                        }00 focus:outline-none text-white text-sm hover:text-gray-900`}
                       >
                         {index === 0 ? "Not at all" : ""}
                         {index === 5 ? "Perfectly" : null}

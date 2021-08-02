@@ -400,7 +400,6 @@ const SetEditLayout = (props: Props) => {
         }`}
         desc="create set"
       >
-        {isChange ? <p className="text-2xl">DCm</p> : null}
         {alert.loading === true ? (
           <div>
             <h1 className="text-center mx-auto mt-20 text-3xl font-bold">

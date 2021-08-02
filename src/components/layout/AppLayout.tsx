@@ -52,7 +52,7 @@ const AppLayout = (props: Props) => {
     if (searchValue.length > 0)
       dispatch(
         putSearchKeyword(
-          searchValue,
+          searchValue.replace(/ /g, ""),
           search.type ? search.type : 0,
           search.searchBy ? search.searchBy : 0
         )
@@ -303,11 +303,14 @@ const AppLayout = (props: Props) => {
               <section className="flex flex-col md:flex-row md:justify-between text-gray-700 font-light text-sm pt-4 pb-6 md:pt-5 md:pb-6 w-full">
                 <div>
                   <p className="leading-8 tracking-wide">
-                    © Lorem Ipsum Co., 123 Lorem Street, New York, NY
+                    © Group 18 Capstone Co., Hanoi, Vietnam
                   </p>
                 </div>
                 <div>
-                  <p className="leading-8 tracking-wide">Privacy Policy</p>
+                  <p className="leading-8 tracking-wide">
+                    {" "}
+                    Smart learning assistant
+                  </p>
                 </div>
               </section>
             </div>

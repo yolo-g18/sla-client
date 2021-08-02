@@ -158,6 +158,8 @@ const Calendar = (props: Props) => {
   //     )
   // );
 
+  let numberOfEventDisplayInDay = 0;
+
   const eventCell = (event: IEventRes, day: any, month: any, year: any) => {
     // console.log("from time: " + JSON.stringify(event.fromTime));
     // console.log("evn" + JSON.stringify(convertTime(event.fromTime)));
@@ -168,6 +170,7 @@ const Calendar = (props: Props) => {
     ) {
       // console.log("evn" + JSON.stringify(convertTime(event.fromTime * 1000)));
       // console.log("data" + JSON.stringify({ day, month, year }));
+      numberOfEventDisplayInDay++;
       return (
         <button
           key={event.id}
@@ -263,15 +266,8 @@ const Calendar = (props: Props) => {
                       </p>
                     </div>
                     {listEvent.map((eventV, index) => {
-                      if (index < 100) {
-                        return eventCell(
-                          eventV,
-                          i + 1,
-                          dayObj.month(),
-                          dayObj.year()
-                        );
-                      } else {
-                      }
+                      if (numberOfEventDisplayInDay < 5)
+                        eventCell(eventV, i + 1, dayObj.month(), dayObj.year());
                     })}
                   </div>
                   <div className="hide absolute top-1 right-2">
@@ -312,7 +308,7 @@ const Calendar = (props: Props) => {
                     </div>
 
                     {listEvent.map((eventV, index) => {
-                      if (index < 100) {
+                      if (numberOfEventDisplayInDay < 5) {
                         return eventCell(
                           eventV,
                           i + 1,
@@ -362,7 +358,7 @@ const Calendar = (props: Props) => {
                     </div>
                     {/* event content */}
                     {listEvent.map((eventV, index) => {
-                      if (index < 100) {
+                      if (numberOfEventDisplayInDay < 100) {
                         return eventCell(
                           eventV,
                           i + 1,
