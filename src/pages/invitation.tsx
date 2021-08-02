@@ -126,16 +126,20 @@ const invitation = () => {
   }
   return (
     <AppLayout title="INVITATION" desc="INVITATION">
-      {invitationList.length > 0 ? (
-        invitationList.length === 1 ? (
-          <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitation</p>)
-          : (
-            <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitations</p>
-          )
-      ) :
-        (
-          <p className="text-lg font-bold text-gray-700 m-16">You have no invitation</p>)
+      {
+        user.username === auth.userResponse?.username ? (
+          invitationList.length > 0 ? (
+          invitationList.length === 1 ? (
+            <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitation</p>)
+            : (
+              <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitations</p>
+            )
+        ) :
+          (
+            <p className="text-lg font-bold text-gray-700 m-16">You have no invitation</p>)
+        ) : null
       }
+
       {invitationList.map((item, index) => {
         return (
           <div key={index} className="md:w-1/5 sm:w-full rounded-lg shadow-lg bg-white my-3">
