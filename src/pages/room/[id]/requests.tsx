@@ -121,12 +121,6 @@ const requests = () => {
 
     dispatch({ type: ALERT, payload: { loading: false } });
       
-      setMessageToast("request accepted");
-      setTypeToast("success");
-      setIsToastOpen(true);
-  
-   
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -134,6 +128,10 @@ const requests = () => {
     }
     deleteInvitaion(user_id);
     deleteRequest(user_id);
+
+    setMessageToast("request accepted");
+    setTypeToast("success");
+    setIsToastOpen(true);
   }
 
   function handleRejectRequest(user_id:number){

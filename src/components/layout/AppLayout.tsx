@@ -59,6 +59,16 @@ const AppLayout = (props: Props) => {
       );
   };
 
+  function handleBellNotifications() {
+    const notificationTable = (document.getElementById('notificationTable') as HTMLInputElement);
+
+    if (notificationTable.style.display === 'none') {
+      notificationTable.style.display = 'block'
+    }
+    else {
+      notificationTable.style.display = 'none'
+    }
+  }
   return (
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
@@ -127,7 +137,7 @@ const AppLayout = (props: Props) => {
                         router.pathname.indexOf("/home") !== -1
                           ? "justify-start border-b-2 border-yellow-500"
                           : ""
-                      }`}
+                        }`}
                     >
                       HOME
                     </a>
@@ -138,7 +148,7 @@ const AppLayout = (props: Props) => {
                         router.pathname.indexOf("/schedule") !== -1
                           ? "justify-start border-b-2 border-yellow-500"
                           : ""
-                      }`}
+                        }`}
                     >
                       SCHEDULE
                     </a>
@@ -154,20 +164,20 @@ const AppLayout = (props: Props) => {
                         router.pathname.indexOf("/library") !== -1
                           ? "justify-start border-b-2 border-yellow-500"
                           : ""
-                      }`}
+                        }`}
                     >
                       LIBRARY
                     </a>
                   </Link>
-                  <Link href="/activity">
+                  <Link href="/invitation">
                     <a
                       className={`py-2 px-4 flex hover:text-black ${
-                        router.pathname.indexOf("/activity") !== -1
+                        router.pathname.indexOf("/invitation") !== -1
                           ? "justify-start border-b-2 border-yellow-500"
                           : ""
-                      }`}
+                        }`}
                     >
-                      ACTIVITY
+                      INVITATION
                     </a>
                   </Link>
                   <Link href="/explore">
@@ -176,26 +186,51 @@ const AppLayout = (props: Props) => {
                         router.pathname.indexOf("/explore") !== -1
                           ? "justify-start border-b-2 border-yellow-500"
                           : ""
-                      }`}
+                        }`}
                     >
                       EXPLORE
                     </a>
                   </Link>
                   <div className="flex ml-12 pl-4">
                     <div className="ml-3 relative">
-                      <button className="flex p-2 items-center bg-white  text-gray-400 hover:text-gray-700 text-md">
-                        <svg
-                          width="20"
-                          height="20"
-                          className="text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 1792 1792"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
-                        </svg>
-                        <div className="bg-red-500 w-2 h-2 rounded-full right-1 top-1 absolute"></div>
-                      </button>
+                      <div className="relative inline-block text-left">
+                        <div>
+                          <button onClick={handleBellNotifications} className="flex p-2 items-center bg-white  text-gray-400 hover:text-gray-700 text-md">
+                            <svg
+                              width="20"
+                              height="20"
+                              className="text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 1792 1792"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
+                            </svg>
+                            <div className="bg-red-500 w-2 h-2 rounded-full right-1 top-1 absolute"></div>
+                          </button>
+                        </div>
+                        <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                          <div id="notificationTable" className="py-1 overflow-y-scroll" style={{ display: 'none' }} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                            <a href="#" className="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
+                              <li className="flex flex-row">
+                                <div className="select-none cursor-pointer flex flex-1 items-center p-4">
+                                 <div className="flex-1 pl-1 mr-16">
+                                    <div className="font-medium dark:text-white">
+                                      Jean Marc
+                                    </div>
+                                    <div className="text-gray-600 dark:text-gray-200 text-sm">
+                                      has invited you to a room
+                                    </div>
+                                  </div>
+                                  <div className="text-gray-600 dark:text-gray-200 text-xs">
+                                    6:00 AM
+                                    </div>
+                                </div>
+                              </li>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="px-0 relative">
                       <Ddm
@@ -232,58 +267,58 @@ const AppLayout = (props: Props) => {
               </div>
             </div>
           ) : (
-            <div className="container mx-auto px-6 flex items-center justify-between">
-              <div className="text-gray-700 dark:text-white flex items-center">
-                <Link href="/home">
-                  <a href="" className="text-2xl font-bold ml-3">
-                    SLA
+              <div className="container mx-auto px-6 flex items-center justify-between">
+                <div className="text-gray-700 dark:text-white flex items-center">
+                  <Link href="/home">
+                    <a href="" className="text-2xl font-bold ml-3">
+                      SLA
                   </a>
-                </Link>
-                <div className="relative text-gray-600 ml-6">
-                  <svg
-                    className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
+                  </Link>
+                  <div className="relative text-gray-600 ml-6">
+                    <svg
+                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
+                    </svg>
+                    <input
+                      type="text"
+                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
+                      placeholder="Search"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center font-semibold">
+                  <nav className=" text-gray-700 dark:text-white text-sm lg:flex items-center hidden">
+                    <div className="flex ml-12 pl-4">
+                      <div className="ml-3 relative">
+                        <Link href="/auth/login">
+                          <button className="flex p-2 items-center bg-white  text-gray-400 hover:text-gray-700 text-md">
+                            Login
+                        </button>
+                        </Link>
+                      </div>
+                      <div className="px-0 ml-4 relative">
+                        <Link href="/auth/register">
+                          <button className="flex p-2 items-center bg-green-500  text-white rounded-lg hover:text-gray-100 text-md">
+                            Sign up
+                        </button>
+                        </Link>
+                      </div>
+                    </div>
+                  </nav>
+                  <button
+                    className="lg:hidden flex flex-col ml-4"
+                    onClick={handleOnClick}
                   >
-                    <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
-                  </svg>
-                  <input
-                    type="text"
-                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
-                    placeholder="Search"
-                  />
+                    <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
+                    <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
+                    <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center font-semibold">
-                <nav className=" text-gray-700 dark:text-white text-sm lg:flex items-center hidden">
-                  <div className="flex ml-12 pl-4">
-                    <div className="ml-3 relative">
-                      <Link href="/auth/login">
-                        <button className="flex p-2 items-center bg-white  text-gray-400 hover:text-gray-700 text-md">
-                          Login
-                        </button>
-                      </Link>
-                    </div>
-                    <div className="px-0 ml-4 relative">
-                      <Link href="/auth/register">
-                        <button className="flex p-2 items-center bg-green-500  text-white rounded-lg hover:text-gray-100 text-md">
-                          Sign up
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                </nav>
-                <button
-                  className="lg:hidden flex flex-col ml-4"
-                  onClick={handleOnClick}
-                >
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                </button>
-              </div>
-            </div>
-          )}
+            )}
         </header>
         <div
           className=" flex flex-col items-center justify-between w-full h-full"

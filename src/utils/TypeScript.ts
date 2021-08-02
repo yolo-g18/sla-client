@@ -270,5 +270,12 @@ export interface ISearch {
         
   }
 
+  export interface IHostInvitation{
+    roomId:number
+    roomName:string
+    userNameHost:string
+    timeInvited:string
+  }
+
 
 
