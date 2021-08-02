@@ -171,7 +171,7 @@ const RoomLayout = (props: Props) => {
       }
     }
     excute();
-  }, []);
+  }, [alert.success]);
 
   React.useEffect(() => {
     // check member permisson

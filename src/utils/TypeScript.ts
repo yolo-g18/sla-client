@@ -172,6 +172,7 @@ export interface ISearch {
     name: string;
     numberOfMembers: number;
     createdDate: string;
+    ownerName:string;
   };
   
   export interface INewRoom {

@@ -59,12 +59,13 @@ const rooms = (props: any) => {
         else setIsShowEmpty(false);
 
         
-      } catch (err: any) {
+      } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
 
     excute();
+    
   }, [user._id, alert.success]);
 
   // remove room from listRoom of user
@@ -148,7 +149,8 @@ const rooms = (props: any) => {
                 </Link>
               </div>
               {username === auth.userResponse?.username ? (
-                <div className="my-auto px-4">
+                item.ownerName === auth.userResponse?.username ? (
+                  <div className="my-auto px-4">
                   <button
                     onClick={() => handleRemoveRoom(item.room_id)}
                     className="text-right flex justify-end focus:outline-none"
@@ -156,6 +158,8 @@ const rooms = (props: any) => {
                     <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
                   </button>
                 </div>
+                ):null
+               
               ) : null}
             </div>
           ))
