@@ -127,7 +127,6 @@ const invitation = () => {
   return (
     <AppLayout title="INVITATION" desc="INVITATION">
       {
-        user.username === auth.userResponse?.username ? (
           invitationList.length > 0 ? (
           invitationList.length === 1 ? (
             <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitation</p>)
@@ -137,8 +136,9 @@ const invitation = () => {
         ) :
           (
             <p className="text-lg font-bold text-gray-700 m-16">You have no invitation</p>)
-        ) : null
+        
       }
+
 
       {invitationList.map((item, index) => {
         return (
@@ -154,7 +154,7 @@ const invitation = () => {
             </div>
 
             <div className="px-10 py-5 text-gray-600">
-              <p>Invite you to his room "{item.roomName}"</p>
+              <p>Invite you to attend "{item.roomName}" room</p>
               <br></br>
               <p className="text-xs italic">{item.timeInvited}</p>
             </div>

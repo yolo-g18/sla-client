@@ -643,14 +643,12 @@ const RoomLayout = (props: Props) => {
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
-
+      notifyInvitation();
       setMessageToast("invitation sent");
       setTypeToast("success");
       setIsToastOpen(true);
 
-
-
-    } catch (err) {
+      } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("invitation has been sent");
       setTypeToast("error");
@@ -712,6 +710,33 @@ const RoomLayout = (props: Props) => {
       setUserSearchList([]);
       setIsDefaultSearching(true);
       setIsShowInviteModal(false);
+  }
+
+  async function notifyInvitation(){
+    
+    const data = {
+      "creator_id": auth.userResponse?._id,
+      "title":auth.userResponse?.username,
+      "description":"Invite you to attend "+room.name+" room",
+      "type":"invitation",
+      "link":"invitation",
+      "isRead":false,
+      "timeTrigger":null
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await postAPI(
+        `${PARAMS.ENDPOINT}notify/create`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false} });
+
+     } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      
+
+    }
   }
 
   return (

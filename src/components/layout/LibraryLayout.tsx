@@ -440,7 +440,7 @@ const LibraryLayout = (props: Props) => {
                    text-sm font-medium py-1 bg-green-500 hover:bg-green-600 ml-4
                 text-white hover:bg-green-dark focus:outline-none"
                     >
-                      add new
+                      Create
                     </button>
                   ) : null}
                 </div>
