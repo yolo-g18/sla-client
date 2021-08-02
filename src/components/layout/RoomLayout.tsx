@@ -591,7 +591,7 @@ const RoomLayout = (props: Props) => {
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
-
+      notifyRequestAttendRoom();
       setMessageToast("request sent");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -719,7 +719,34 @@ const RoomLayout = (props: Props) => {
       "title":auth.userResponse?.username,
       "description":"Invite you to attend "+room.name+" room",
       "type":"invitation",
-      "link":"invitation",
+      "link":"/invitation",
+      "isRead":false,
+      "timeTrigger":null
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await postAPI(
+        `${PARAMS.ENDPOINT}notify/create`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false} });
+
+     } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      
+
+    }
+  }
+
+  async function notifyRequestAttendRoom(){
+    
+    const data = {
+      "creator_id": auth.userResponse?._id,
+      "title":auth.userResponse?.username,
+      "description":auth.userResponse?.username +" want to attend "+room.name+" room",
+      "type":"request",
+      "link":"/room/"+room.room_id+"/requests",
       "isRead":false,
       "timeTrigger":null
     }
