@@ -169,12 +169,14 @@ const LibraryLayout = (props: Props) => {
         try {
           dispatch({ type: ALERT, payload: { loading: true } });
           const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
+          
           dispatch({ type: ALERT, payload: { loading: false } });
 
         } catch (err) {
           dispatch({ type: ALERT, payload: { loading: false } });
           setMessageToast("An error occurred");
           setTypeToast("error");
+
           setIsToastOpen(true);
         }
 

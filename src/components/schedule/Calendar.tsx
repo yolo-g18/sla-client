@@ -15,12 +15,15 @@ import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 import { getAPI } from "../../utils/FetchData";
 
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
 import InputArea from "../input/InputArea";
 import InputGroup from "../input/InputGroup";
-import { colors } from "@material-ui/core";
+import TocRoundedIcon from "@material-ui/icons/TocRounded";
+import EventNoteRoundedIcon from "@material-ui/icons/EventNoteRounded";
+import LocalOfferOutlinedIcon from "@material-ui/icons/LocalOfferOutlined";
+import { useClickOutside } from "../../hook/useClickOutside";
+import { putEvent } from "../../redux/actions/EventAction";
 
 interface Props {}
 
@@ -43,7 +46,7 @@ const todayObj = dayjs();
 
 const Calendar = (props: Props) => {
   const dispatch = useDispatch();
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, event } = useSelector((state: RootStore) => state);
 
   const [dayObj, setDayObj] = useState(dayjs());
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -58,9 +61,20 @@ const Calendar = (props: Props) => {
   const [eventColor, setEventColor] = useState("BLUE");
   const [listColors, setListColors] = useState<string[]>([]);
 
+  //to check number of event display each day
+  const [weekDayOf1Evn, setWeekDayOf1Evn] = useState<
+    { i: number; evn: number }[]
+  >([]);
+  const [dayInMonthtEvn, setDayInMonthtEvn] = useState<
+    { i: number; evn: number }[]
+  >([]);
+  const [weekDayOfLastEvn, setWeekDayOfLastEvn] = useState<
+    { i: number; evn: number }[]
+  >([]);
+
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
 
-  const [listEvnets, setListEvent] = useState<IEventRes[] | any[]>([]);
+  const [listEvent, setListEvent] = useState<IEventRes[]>([]);
 
   const thisYear = dayObj.year();
   const thisMonth = dayObj.month();
@@ -75,11 +89,17 @@ const Calendar = (props: Props) => {
   const handlePrev = () => {
     setDayObj(dayObj.subtract(1, "month"));
     setCalendarChange(true);
+    setWeekDayOf1Evn([]);
+    setDayInMonthtEvn([]);
+    setWeekDayOfLastEvn([]);
   };
 
   const handleNext = () => {
     setDayObj(dayObj.add(1, "month"));
     setCalendarChange(true);
+    setWeekDayOf1Evn([]);
+    setDayInMonthtEvn([]);
+    setWeekDayOfLastEvn([]);
   };
 
   const jumToToday = () => {
@@ -94,6 +114,9 @@ const Calendar = (props: Props) => {
 
   //get all event for calendar
   useEffect(() => {
+    setWeekDayOf1Evn([]);
+    setDayInMonthtEvn([]);
+    setWeekDayOfLastEvn([]);
     setCalendarChange(false);
     const fetchData = async () => {
       try {
@@ -102,13 +125,15 @@ const Calendar = (props: Props) => {
           `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
             dayObjOf1.subtract(weekDayOf1, "day")
           )}&to=${convertTimeToMySQl(
-            dayObjOfLast.add(_.range(6 - weekDayOfLast).length, "day")
+            dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
           )}`
         );
+        dispatch({ type: ALERT, payload: { loading: false } });
 
         setListEvent(res.data);
-        // console.log(JSON.stringify(res.data));
-      } catch (err) {}
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
     };
 
     fetchData();
@@ -122,7 +147,6 @@ const Calendar = (props: Props) => {
         const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
         dispatch({ type: ALERT, payload: { loading: false } });
         setListColors(res.data);
-        console.log("color: " + JSON.stringify(res.data));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         console.log(err);
@@ -132,50 +156,38 @@ const Calendar = (props: Props) => {
   }, []);
 
   const setColorhandle = (color: string) => {
+    setShowModalColorPicker(false);
     setEventColor(color);
   };
 
-  // console.log(
-  //   "from: " +
-  //     convertTimeToMySQl(dayObjOf1.subtract(weekDayOf1, "day")) +
-  //     " to: " +
-  //     convertTimeToMySQl(
-  //       dayObjOfLast.add(_.range(6 - weekDayOfLast).length, "day")
-  //     )
-  // );
-
-  const eventCell = (event: IEventRes, day: any, month: any, year: any) => {
-    // console.log("from time: " + JSON.stringify(event.fromTime));
-    // console.log("evn" + JSON.stringify(convertTime(event.fromTime)));
-
-    if (
-      JSON.stringify(convertTime(event.fromTime)) ===
-      JSON.stringify({ day, month, year })
-    ) {
-      // console.log("evn" + JSON.stringify(convertTime(event.fromTime * 1000)));
-      // console.log("data" + JSON.stringify({ day, month, year }));
-      return (
-        <button
-          key={event.id}
-          onClick={() => showModalEditHandle(event)}
-          className="flex  px-2 w-full my-2"
-        >
-          <img src="draft.svg" className="h-4 w-4 my-auto mr-2" alt="" />
-          {/* <div className="w-2 h-2 my-auto mr-2 bg-purple-700 rounded py-1" /> */}
-          <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
-            {event.name}
-          </div>
-          <div className=" hidden xl:block">
-            {/* <p className="text-xs text-gray-800 dark:text-gray-100">
-              {convertTime(event.fromTime * 1000).day +
-                "-" +
-                monthNames[convertTime(event.fromTime * 1000).month]}
-            </p> */}
-          </div>
-        </button>
-      );
-    }
+  const getDate = (day: any, month: any, year: any) => {
+    return { day, month, year };
   };
+
+  const [listEvnByDay, setListEvnByDay] = useState<IEventRes[]>([]);
+
+  const showMoreHandle = (dateFrom: any, dateTo: any) => {
+    console.log("from: " + convertTimeToMySQl(dateFrom));
+    console.log("to: " + convertTimeToMySQl(dateTo));
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
+            dateFrom
+          )}&to=${convertTimeToMySQl(dateTo)}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setListEvnByDay(res.data);
+        console.log("by day: " + JSON.stringify(res.data));
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    };
+    fetchData();
+    dispatch(putEvent(listEvnByDay));
+  };
+
   return (
     <div>
       <div className="mx-auto pt-2 pb-10 px-4">
@@ -237,10 +249,17 @@ const Calendar = (props: Props) => {
                   >
                     <div className="justify-between flex px-2">
                       <p
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOf1.subtract(weekDayOf1 - i, "day"),
+                            dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                          )
+                        }
                         className={`text-xs text-gray-400  pt-2 ${
                           dayObjOf1.subtract(weekDayOf1 - i, "day").date() ===
                             todayObj.date() &&
-                          thisMonth - 1 === todayObj.month()
+                          thisMonth - 1 === todayObj.month() &&
+                          thisYear === todayObj.year()
                             ? "text-red-500 font-bold"
                             : ""
                         }`}
@@ -248,17 +267,64 @@ const Calendar = (props: Props) => {
                         {dayObjOf1.subtract(weekDayOf1 - i, "day").date()}
                       </p>
                     </div>
-                    {listEvnets.map((eventV, index) => {
-                      if (index < 4) {
-                        return eventCell(
-                          eventV,
-                          i + 1,
-                          dayObj.month(),
-                          dayObj.year()
+                    {/* event content */}
+                    {listEvent
+                      .filter(
+                        (evn) =>
+                          JSON.stringify(convertTime(evn.fromTime)) ===
+                          JSON.stringify(
+                            getDate(
+                              dayObjOf1.subtract(weekDayOf1 - i, "day").date(),
+                              thisMonth === 0 ? 11 : thisMonth - 1,
+                              thisMonth === 0 ? thisYear - 1 : thisYear
+                            )
+                          )
+                      )
+                      .slice(0, 4)
+                      .map((evn) => {
+                        return (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className="flex  px-2 w-full my-1.5"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
                         );
-                      } else {
-                      }
-                    })}
+                      })}
+                    {listEvent.filter(
+                      (evn) =>
+                        JSON.stringify(convertTime(evn.fromTime)) ===
+                        JSON.stringify(
+                          getDate(
+                            dayObjOf1.subtract(weekDayOf1 - i, "day").date(),
+                            thisMonth === 0 ? 11 : thisMonth - 1,
+                            thisMonth === 0 ? thisYear - 1 : thisYear
+                          )
+                        )
+                    ).length > 4 ? (
+                      <button
+                        className="flex px-2 w-full my-1.5"
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOf1.subtract(weekDayOf1 - i, "day"),
+                            dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                          )
+                        }
+                      >
+                        <div className="text-xs font-medium text-blue-500 dark:text-gray-100  truncate hover:underline">
+                          Show more
+                        </div>
+                      </button>
+                    ) : null}
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
@@ -285,6 +351,12 @@ const Calendar = (props: Props) => {
                   >
                     <div className={`justify-between flex px-2 `}>
                       <p
+                        onClick={() =>
+                          showMoreHandle(
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                          )
+                        }
                         className={`text-xs text-gray-800  pt-2 ${
                           i + 1 === todayObj.date() &&
                           thisMonth === todayObj.month() &&
@@ -296,17 +368,52 @@ const Calendar = (props: Props) => {
                         {i + 1}
                       </p>
                     </div>
-
-                    {listEvnets.map((eventV, index) => {
-                      if (index < 4) {
-                        return eventCell(
-                          eventV,
-                          i + 1,
-                          dayObj.month(),
-                          dayObj.year()
+                    {/* event content */}
+                    {listEvent
+                      .filter(
+                        (evn) =>
+                          JSON.stringify(convertTime(evn.fromTime)) ===
+                          JSON.stringify(getDate(i + 1, thisMonth, thisYear))
+                      )
+                      .slice(0, 4)
+                      .map((evn) => {
+                        return (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className="flex  px-2 w-full my-1.5"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
                         );
-                      }
-                    })}
+                      })}
+                    {listEvent.filter(
+                      (evn) =>
+                        JSON.stringify(convertTime(evn.fromTime)) ===
+                        JSON.stringify(getDate(i + 1, thisMonth, thisYear))
+                    ).length > 4 ? (
+                      <button
+                        onClick={() =>
+                          showMoreHandle(
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                          )
+                        }
+                        className="flex px-2 w-full my-1.5"
+                      >
+                        <div className="text-xs font-medium text-blue-500 dark:text-gray-100  truncate hover:underline">
+                          Show more
+                        </div>
+                      </button>
+                    ) : null}
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
@@ -335,10 +442,17 @@ const Calendar = (props: Props) => {
                   >
                     <div className="justify-between flex px-2">
                       <p
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOfLast.add(i + 1, "day"),
+                            dayObjOfLast.add(i + 2, "day")
+                          )
+                        }
                         className={`text-xs text-gray-500 dark:text-gray-100 pt-2 ${
                           dayObjOfLast.add(i + 1, "day").date() ===
                             todayObj.date() &&
-                          thisMonth + 1 === todayObj.month()
+                          thisMonth + 1 === todayObj.month() &&
+                          thisYear === todayObj.year()
                             ? "text-red-500 font-bold"
                             : ""
                         }`}
@@ -347,16 +461,63 @@ const Calendar = (props: Props) => {
                       </p>
                     </div>
                     {/* event content */}
-                    {listEvnets.map((eventV, index) => {
-                      if (index < 4) {
-                        return eventCell(
-                          eventV,
-                          i + 1,
-                          dayObj.month(),
-                          dayObj.year()
+                    {listEvent
+                      .filter(
+                        (evn) =>
+                          JSON.stringify(convertTime(evn.fromTime)) ===
+                          JSON.stringify(
+                            getDate(
+                              dayObjOfLast.add(i + 1, "day").date(),
+                              thisMonth === 11 ? 0 : thisMonth + 1,
+                              thisMonth === 11 ? thisYear + 1 : thisYear
+                            )
+                          )
+                      )
+                      .slice(0, 4)
+                      .map((evn) => {
+                        return (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className="flex  px-2 w-full my-2"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
                         );
-                      }
-                    })}
+                      })}
+                    {listEvent.filter(
+                      (evn) =>
+                        JSON.stringify(convertTime(evn.fromTime)) ===
+                        JSON.stringify(
+                          getDate(
+                            dayObjOfLast.add(i + 1, "day").date(),
+                            thisMonth === 11 ? 0 : thisMonth + 1,
+                            thisMonth === 11 ? thisYear + 1 : thisYear
+                          )
+                        )
+                    ).length > 4 ? (
+                      <button
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOfLast.add(i + 1, "day"),
+                            dayObjOfLast.add(i + 2, "day")
+                          )
+                        }
+                        className="flex px-2 w-full my-1.5"
+                      >
+                        <div className="text-xs font-medium text-blue-500 dark:text-gray-100  truncate hover:underline">
+                          Show more
+                        </div>
+                      </button>
+                    ) : null}
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
@@ -439,95 +600,103 @@ const Calendar = (props: Props) => {
       {showModalAdd ? (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
           <div className="w-full flex justify-center h-screen items-center">
-            <div className="rounded-xl bg-white w-full md:w-2/3 lg:w-1/3">
-              <div className="px-5 py-3 flex items-center justify-between  border-b">
-                <button
-                // onClick={() => setShowModalEdit(false)}
-                >
+            <div className="rounded-xl bg-white w-full md:w-2/3 lg:w-1/3 ">
+              <div className="px-5 py-3 flex items-center border-b float-right">
+                <button onClick={() => setShowModalAdd(false)}>
                   <CloseIcon />
                 </button>
               </div>
-              <div className="p-4 grid grid-cols-8 gap-3">
-                <div className="col-span-3 ">
-                  <div className="max-w-sm mx-auto py-16 my-16">
-                    <div className="max-w-sm mx-auto py-16 my-16">
-                      <div className="mb-5">
-                        <div className="flex items-center">
-                          <div className="relative ml-3 mt-8">
-                            <div>
-                              <button
-                                onClick={() => setShowModalColorPicker(true)}
-                                className={`w-10 h-10 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
-                                bg-${eventColor.toLocaleLowerCase()}-400`}
-                              ></button>
-                              {showModalColorPicker ? (
-                                <div className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg">
-                                  <div className="rounded-md bg-white shadow-xs px-4 py-3">
-                                    <div className="flex flex-wrap -mx-2">
-                                      {listColors.map((color, index) => {
-                                        return (
-                                          <div key={index} className="px-2">
-                                            {eventColor === color ? (
-                                              <div
-                                                className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
-                                                bg-${color.toLocaleLowerCase()}-400`}
-                                              ></div>
-                                            ) : (
-                                              <div
-                                                onClick={() =>
-                                                  setColorhandle(color)
-                                                }
-                                                className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
-                                                bg-${color.toLocaleLowerCase()}-400`}
-                                              ></div>
-                                            )}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              <div className="p-6">
+                <div className=" flex flex-col w-full">
+                  <div className="flex w-full ">
+                    <TocRoundedIcon className="my-auto mr-4" />
+                    <InputGroup
+                      type="text"
+                      setValue={setEventName}
+                      placeholder="add title"
+                      value={eventName}
+                      label="Title"
+                      // error={titleErr}
+                      required
+                    />
                   </div>
-                </div>
-                <div className="col-span-5 flex flex-col w-full">
-                  <InputGroup
-                    type="text"
-                    setValue={setEventName}
-                    placeholder={`enter a title like "Math01-Chap3"`}
-                    value={eventName}
-                    label="Title"
-                    // error={titleErr}
-                    required
-                  />
-                  <div className=" w-full">
+
+                  <div className="flex w-full">
+                    <EventNoteRoundedIcon className="my-auto mr-4" />
                     <InputArea
                       setValue={setEventDesc}
-                      placeholder="study set de"
+                      placeholder="add description"
                       // error={alert.errors?.errors?.bio}
                       value={eventDesc}
                       // error={descErr}
                       label="Description"
                     />
                   </div>
-                  <TextField
-                    id="datetime-local"
-                    label="Next appointment"
-                    type="datetime-local"
-                    defaultValue="2017-05-24T10:30"
-                    className="text-gray-600"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
+                  <div className="my-6 flex">
+                    <LocalOfferOutlinedIcon className="my-auto" />
+                    <div className="w-full flex relative ml-4">
+                      <div>
+                        <button
+                          onClick={() =>
+                            setShowModalColorPicker(!showModalColorPicker)
+                          }
+                          className={`w-6 h-6 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
+                                bg-${eventColor.toLocaleLowerCase()}-400`}
+                        ></button>
+                        {showModalColorPicker ? (
+                          <div className="origin-top-right absolute z-50  mt-6 w-40 rounded-md shadow-lg hover:shadow-xl">
+                            <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                              <div className="flex flex-wrap -mx-2">
+                                {listColors.map((color, index) => {
+                                  return (
+                                    <div key={index} className="px-2">
+                                      {eventColor === color ? (
+                                        <div
+                                          className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                        ></div>
+                                      ) : (
+                                        <div
+                                          onClick={() => setColorhandle(color)}
+                                          className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                        ></div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-around">
+                    <TextField
+                      id="datetime-local"
+                      label="From"
+                      type="datetime-local"
+                      defaultValue={todayObj}
+                      className="text-gray-600 mx-1"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    <TextField
+                      id="datetime-local"
+                      label="To"
+                      type="datetime-local"
+                      defaultValue={todayObj}
+                      className="text-gray-600 mx-1"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center text-blue-400 justify-between py-6 px-4 border-t">
+              <div className="flex items-center text-blue-400 justify-between py-6 px-4 border-t float-right">
                 <button
                   // onClick={() => setShowModalEdit(false)}
                   className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"

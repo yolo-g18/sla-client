@@ -44,7 +44,7 @@ let useClickOutside = (handler: any) => {
 
 const QuillNoSSRWrapper = dynamic(import("react-quill"), {
   ssr: false,
-  loading: () => <p>Loading ...</p>,
+  loading: () => <p>...</p>,
 });
 
 const modules = {
@@ -118,6 +118,11 @@ const index = () => {
   useEffect(() => {
     setIsSuc(false);
     const fetchData = async () => {
+      if (alert.success === "😎 Update successful!") {
+        setTypeToast("success");
+        setMessageToast(alert.success.toString());
+        setIsToastOpen(true);
+      }
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const studySetRes = await getAPI(
@@ -126,8 +131,6 @@ const index = () => {
         if (studySetRes.data) {
           const cardRes = await getAPI(`${PARAMS.ENDPOINT}card/list?id=${id}`);
           dispatch({ type: ALERT, payload: { loading: false } });
-          console.log("study set data is: " + JSON.stringify(studySetRes.data));
-          console.log("card data is: " + JSON.stringify(cardRes.data));
           setTitle(studySetRes.data.title);
           setDesc(studySetRes.data.description);
           setIsPublic(studySetRes.data.public);
@@ -153,10 +156,6 @@ const index = () => {
   let domNode = useClickOutside(() => {
     setIsMenuOpen(false);
   });
-
-  // useEffect(() => {
-  //   setCurrentCard();
-  // });
 
   const handelEditOnclick = (index: number) => {
     setCurrentCard(index);
@@ -190,11 +189,11 @@ const index = () => {
         const res = await postAPI(`${PARAMS.ENDPOINT}card/create`, cardDataAdd);
         dispatch({
           type: ALERT,
-          payload: { loading: false, success: "😎 Your card updated!" },
+          payload: { loading: false, success: "😎 Add successful!" },
         });
         setIsSuc(true);
         setTypeToast("success");
-        setMessageToast("😎 Your card updated!");
+        setMessageToast("😎 Add successful!");
         setIsToastOpen(true);
         setIsModalAddOpen(false);
       } catch (err) {
@@ -285,6 +284,13 @@ const index = () => {
 
   const deleteCard = async () => {
     let id = cards[currentCard].id;
+    if (cards.length <= 2) {
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("You need least two cards");
+      setShowDeleteCardModal(false);
+      return;
+    }
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
       const res = await deleteAPI(`${PARAMS.ENDPOINT}card/delete?id=${id}`);
@@ -304,11 +310,18 @@ const index = () => {
     setShowDeleteCardModal(false);
   };
 
+  const shareLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setMessageToast("copied link");
+    setTypeToast("success");
+    setIsToastOpen(true);
+  };
+
   return (
     <div>
       <AppLayout title={title} desc={desc}>
         {/* Day la trang view set, va day la id cua set: {id} */}
-        <div className="grid lg:grid-cols-5 grid-cols-1 gap-8 h-screen lg:w-4/5 mx-auto mt-6">
+        <div className="grid lg:grid-cols-5 grid-cols-1 gap-8 h-full lg:w-4/5 mx-auto mt-6">
           <div className="col-span-1 px-2">
             <div className="w-full flex items-center px-2">
               <div>
@@ -345,24 +358,31 @@ const index = () => {
             </p>
             <br />
             <br />
-            <hr />
-            <br />
-            <span className="text-sm text-gray-700">tags</span>
-            <div className="flex flex-wrap">
-              {_.split(tags, ",").map((tag, index) => {
-                return (
-                  <Link href="">
-                    <div className="my-1 mr-2 flex ">
-                      <span className="px-4 py-1 rounded-xl truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer text-sm font-bold ">
-                        {tag}
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+
+            {tags ? (
+              <div>
+                <hr />
+                <br />
+                <span className="text-sm text-gray-700">tags</span>
+                <div className="flex flex-wrap">
+                  {_.split(tags, ",").map((tag, index) => {
+                    return (
+                      <div key={index}>
+                        <Link href={`/search/set/tag?search_query=${tag}`}>
+                          <div className="my-1 mr-2 flex ">
+                            <span className="px-4 py-1 rounded-xl truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer text-sm font-bold ">
+                              {tag}
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
           </div>
-          <div className="col-span-4">
+          <div className="col-span-4 mb-44">
             <div className=" flex justify-between">
               <div className="fex flex-col">
                 <Link
@@ -417,7 +437,10 @@ const index = () => {
                     </Link>
                   </div>
                 ) : null}
-                <button className="mx-2 tooltip focus:outline-none">
+                <button
+                  onClick={shareLink}
+                  className="mx-2 tooltip focus:outline-none"
+                >
                   <ShareIcon
                     fontSize="small"
                     className="hover:text-gray-400 text-gray-700"
@@ -468,7 +491,7 @@ const index = () => {
                 </div>
               </div>
             </div>
-            <div className="h-full mt-4">
+            <div className="h-full mt-4 44">
               <h1 className="text-md mt-4 mb-2">{numberOfCard} cards</h1>
               <hr />
               <div className=" w-full">
@@ -478,7 +501,7 @@ const index = () => {
                       key={index}
                       className=" rounded-xl grid grid-cols-11 gap-4 my-4"
                     >
-                      <div className="col-span-5  rounded-xl bg-white shadow-sm">
+                      <div className="col-span-5 rounded-xl bg-white shadow-lg border-b-1">
                         <QuillNoSSRWrapper
                           readOnly={true}
                           theme="bubble"
@@ -486,7 +509,7 @@ const index = () => {
                           className="w-64"
                         />
                       </div>
-                      <div className="col-span-5 rounded-xl bg-white shadow-sm ">
+                      <div className="col-span-5 rounded-xl bg-white shadow-lg border-b-1">
                         <QuillNoSSRWrapper
                           readOnly={true}
                           theme="bubble"
@@ -641,7 +664,13 @@ const index = () => {
         >
           <Alert
             onClose={handleClose}
-            severity={typeToast === "success" ? "success" : "error"}
+            severity={
+              typeToast === "success"
+                ? "success"
+                : typeToast === "error"
+                ? "error"
+                : "warning"
+            }
           >
             {messageToast}
           </Alert>

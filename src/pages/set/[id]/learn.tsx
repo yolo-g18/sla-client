@@ -17,6 +17,13 @@ import { getAPI, postAPI, putAPI } from "../../../utils/FetchData";
 import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { useClickOutside } from "../../../hook/useClickOutside";
+
+import CircularProgress, {
+  CircularProgressProps,
+} from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 
 //alert
 function Alert(props: AlertProps) {
@@ -25,28 +32,8 @@ function Alert(props: AlertProps) {
 
 const QuillNoSSRWrapper = dynamic(import("react-quill"), {
   ssr: false,
-  loading: () => <p>Loading ...</p>,
+  loading: () => <p>...</p>,
 });
-
-let useClickOutside = (handler: any) => {
-  let domNode: any = useRef();
-
-  useEffect(() => {
-    let maybeHandler = (event: any) => {
-      if (!domNode.current.contains(event.target)) {
-        handler();
-      }
-    };
-
-    document.addEventListener("mousedown", maybeHandler);
-
-    return () => {
-      document.removeEventListener("mousedown", maybeHandler);
-    };
-  });
-
-  return domNode;
-};
 
 const modules = {
   toolbar: [
@@ -84,6 +71,37 @@ const formats = [
   "video",
 ];
 
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number }
+) {
+  return (
+    <Box position="relative" display="inline-flex">
+      <CircularProgress
+        style={{ color: "#10B981" }}
+        size="40"
+        variant="determinate"
+        {...props}
+      />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography
+          variant="h5"
+          component="div"
+          color="textSecondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
 const learn = () => {
   const { auth, alert } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
@@ -106,6 +124,13 @@ const learn = () => {
   const [typeToast, setTypeToast] = useState("success");
   const [messageToast, setMessageToast] = useState("");
   const [isChange, setIsChange] = useState(false);
+  const [studySetTitle, setStudySetTitle] = useState("");
+
+  const [isContinue, setIsContinue] = useState(false);
+  const [overralProgress, setOverralProgress] = useState(0);
+
+  // to count number of q > 3
+  const [listQ, setListQ] = useState<{ index: number; q: number }[]>([]);
 
   const qValueArr = [
     "bg-green-300",
@@ -127,12 +152,21 @@ const learn = () => {
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
-        const listCardLearingRes = await getAPI(
-          `${PARAMS.ENDPOINT}learn/studySet?id=${id}`
+        const studySetRes = await getAPI(
+          `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
+        setStudySetTitle(studySetRes.data.title);
 
-        setListCardsLearning(listCardLearingRes.data);
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const listCardLearingRes = await getAPI(
+          `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
+        );
+        setIsContinue(false);
+        setListCardsLearning(listCardLearingRes.data.listCardLearning);
+        setOverralProgress(listCardLearingRes.data.progress);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log("legth: " + listCardsLearning.length);
         setCardHint(listCardsLearning[currenrCard].hint);
       } catch (err) {
         console.log("error is: " + err);
@@ -140,7 +174,22 @@ const learn = () => {
     };
     fetchData();
     setIsChange(false);
-  }, [id, isChange]);
+  }, [id, isChange, isContinue]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const listCardLearingRes = await getAPI(
+          `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
+        );
+        setOverralProgress(listCardLearingRes.data.progress);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, [showLearningResultModal]);
 
   let domNode = useClickOutside(() => {
     setIsMenuOpen(false);
@@ -162,34 +211,30 @@ const learn = () => {
     setIsFlipped(!isFlipped);
   };
 
-  console.log("mat trc la: " + listCardsLearning[0]);
-
   //ask user continue or review
   // const hand;
 
   //switch card
-  const switchCardHandle = (type: string) => {
-    if (type === "next" && currenrCard < listCardsLearning.length) {
-      setIsFlipped(false);
-      setCurrentCard(currenrCard + 1);
-      currenrCard >= listCardsLearning.length
-        ? setShowLearningResultModal(true)
-        : setShowLearningResultModal(false);
-    }
-    if (type === "prev" && currenrCard >= 0) {
-      setIsFlipped(false);
-      setCurrentCard(currenrCard - 1);
-    }
-  };
 
   //send q
   const handelResultUserSelect = async (q_value: number) => {
     console.log("q is: " + q_value);
-
     const data = {
       q: q_value,
       cardId: listCardsLearning[currenrCard].cardId,
     };
+
+    let listQTemp: { index: number; q: number }[] = [...listQ];
+    const listCheck = listQTemp.filter((tq) => tq.index === currenrCard);
+    if (listCheck.length === 0) {
+      listQTemp.push({ index: currenrCard, q: q_value });
+    } else {
+      listQTemp.map((qt) => {
+        if (qt.index === currenrCard) qt.q = q_value;
+      });
+    }
+    setListQ(listQTemp);
+    console.log("qs: " + JSON.stringify(listQTemp));
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
@@ -241,12 +286,44 @@ const learn = () => {
     setCardHint(listCardsLearning[currenrCard].hint);
   };
 
+  const [switching, setSwitching] = useState(false);
+  const switchCardHandle = (type: string) => {
+    setSwitching(true);
+    if (type === "next" && currenrCard < listCardsLearning.length) {
+      setIsFlipped(false);
+      setCurrentCard(currenrCard + 1);
+      currenrCard + 1 >= listCardsLearning.length
+        ? setShowLearningResultModal(true)
+        : setShowLearningResultModal(false);
+    }
+    if (type === "prev" && currenrCard >= 0) {
+      setIsFlipped(false);
+      setCurrentCard(currenrCard - 1);
+    }
+    setTimeout(() => {
+      setSwitching(false);
+    }, 200);
+  };
+
+  const reviewAgain = () => {
+    setCurrentCard(0);
+    setShowLearningResultModal(false);
+  };
+
+  const learnContinue = () => {
+    setCurrentCard(0);
+    setIsContinue(true);
+    setShowLearningResultModal(false);
+  };
+
+  console.log("is continue: " + isContinue);
+
   return (
     <div>
-      <AppLayput2 title="learn" desc="dd">
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 -mt-20 px-2">
-          <div className="h-3/5 2xl:w-2/5 x md:w-1/2 sm:w-2/3 w-full rounded-md">
-            <div className="mb-8">
+      <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto w-full mt-4 inset-0 px-2 h-full">
+          <div className="h-3/5 2xl:w-2/5 md:w-1/2 sm:w-2/3 w-full rounded-md mb-64">
+            <div className="mb-4">
               <Link
                 href={{
                   pathname: "/set/[id]",
@@ -258,138 +335,233 @@ const learn = () => {
                 </button>
               </Link>
             </div>
-            <div className="justify-center items-center flex font-sans text-xl mb-8">
-              <p className="fixed">Practice Your Card</p>
-            </div>
-            <div className="flex justify-between w-full mb-2">
-              <div className="px-1">
-                <h1>
-                  {currenrCard + 1}/{listCardsLearning.length}
-                </h1>
-              </div>
-              <div className="flex ">
-                <div ref={domNode}>
-                  <button className="px-1" onClick={handelExpandMoreBtnClick}>
-                    <ExpandMoreIcon />
-                  </button>
-                  {isMenuOpen ? (
-                    <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
-                      <div
-                        className={`py-1`}
-                        role="menu"
-                        aria-orientation="vertical"
-                        aria-labelledby="options-menu"
+            {showLearningResultModal ? (
+              <div className="mx-auto h-2/3 text-center">
+                <p className="font-bold text-gray-700">OVERRAL PROGRESS</p>
+                <CircularProgressWithLabel
+                  className="w-32 my-6"
+                  value={overralProgress * 100}
+                />
+
+                {Math.round(overralProgress * 100) === 100 ? (
+                  <div className="mt-6">
+                    <p className="text-gray-700 font-bold text-2xl">
+                      Congratulations, you've learned everything?
+                    </p>
+                    <div className="flex w-full pt-10 px-4 mx-auto justify-center">
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-32 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                        type="button"
+                        onClick={() => learnContinue()}
                       >
-                        <div>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                            role="menuitem"
-                            onClick={openHintModal}
-                          >
-                            <span className="flex flex-col">
-                              <span>hint</span>
-                            </span>
-                          </a>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                            role="menuitem"
-                            onClick={showModalEditcard}
-                          >
-                            <span className="flex flex-col">
-                              <span>edit</span>
-                            </span>
-                          </a>
-                          <a
-                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                             hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                            role="menuitem"
-                            onClick={() => setIsSetColorFromOpen(true)}
-                          >
-                            <span className="flex flex-col">
-                              <span>set color</span>
-                            </span>
-                          </a>
-                        </div>
+                        Continue review
+                      </button>
+                      <Link
+                        href={{
+                          pathname: "/set/[id]",
+                          query: { id: id },
+                        }}
+                      >
+                        <button
+                          className=" bg-green-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                          type="button"
+                        >
+                          Finish
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex justify-around gap-4">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-green-400">
+                          {listQ.filter((qt) => qt.q === 5).length}
+                        </p>
+                        <p>Perfectly</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-blue-400">
+                          {listQ.filter((qt) => qt.q <= 4 && qt.q >= 3).length}
+                        </p>
+                        <p>Understand</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-yellow-400">
+                          {listCardsLearning.length -
+                            listQ.filter((qt) => qt.q === 5).length -
+                            listQ.filter((qt) => qt.q <= 4 && qt.q >= 3)
+                              .length}{" "}
+                        </p>
+                        <p>Studying</p>
                       </div>
                     </div>
-                  ) : null}
+                    <div className="flex w-full pt-10 px-4 mx-auto justify-center">
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                        type="button"
+                        onClick={() => reviewAgain()}
+                      >
+                        Review again
+                      </button>
+                      <button
+                        className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                        type="button"
+                        onClick={() => learnContinue()}
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <div className="justify-center items-center flex text-gray-700 font-bold text-xl mb-4 w-full">
+                  <p>Practice Your Card</p>
+                </div>
+                <div className="flex justify-between w-full mb-2">
+                  <div className="px-1">
+                    <h1>
+                      {currenrCard + 1}/{listCardsLearning.length}
+                    </h1>
+                  </div>
+                  <div className="flex ">
+                    <div ref={domNode}>
+                      <button
+                        className="px-1 focus: outline-none"
+                        onClick={handelExpandMoreBtnClick}
+                      >
+                        <ExpandMoreIcon />
+                      </button>
+                      {isMenuOpen ? (
+                        <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                          <div
+                            className={`py-1`}
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="options-menu"
+                          >
+                            <div>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                                role="menuitem"
+                                onClick={openHintModal}
+                              >
+                                <span className="flex flex-col">
+                                  <span>hint</span>
+                                </span>
+                              </a>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                                role="menuitem"
+                                onClick={showModalEditcard}
+                              >
+                                <span className="flex flex-col">
+                                  <span>edit</span>
+                                </span>
+                              </a>
+                              <a
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                             hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                                role="menuitem"
+                                onClick={() => setIsSetColorFromOpen(true)}
+                              >
+                                <span className="flex flex-col">
+                                  <span>set color</span>
+                                </span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                    {/* <div>
+                      <button className="">
+                        <VolumeDownIcon />
+                      </button>
+                    </div> */}
+                  </div>
                 </div>
                 <div>
-                  <button className="">
-                    <VolumeDownIcon />
+                  {listCardsLearning.map((card, index) => {
+                    if (index === currenrCard)
+                      return (
+                        <ReactCardFlip
+                          isFlipped={isFlipped}
+                          flipDirection="vertical"
+                        >
+                          <div onClick={flipCardHandel}>
+                            <QuillNoSSRWrapper
+                              className={`h-96 bg-white shadow-md rounded-md border-2 border-gray-200 ${
+                                switching ? "opacity-20 bg-white" : ""
+                              } duration-300`}
+                              readOnly={true}
+                              theme="bubble"
+                              value={card.front}
+                            />
+                          </div>
+                          <div onClick={flipCardHandel}>
+                            <QuillNoSSRWrapper
+                              className={`h-96 bg-white shadow-md rounded-md border-2 border-gray-200 ${
+                                switching ? "opacity-20 bg-gray-500" : ""
+                              } duration-300`}
+                              readOnly={true}
+                              theme="bubble"
+                              value={card.back}
+                            />
+                          </div>
+                        </ReactCardFlip>
+                      );
+                  })}
+                </div>
+                <div className="mt-6">
+                  <p className="font-bold justify-center items-center flex text-gray-700 text-sm">
+                    *How well did you know this?
+                  </p>
+                </div>
+                <div className="justify-center items-center flex mt-2">
+                  {qValueArr.map((qValue, index) => {
+                    return (
+                      <button
+                        onClick={() => handelResultUserSelect(index)}
+                        key={index}
+                        className={`flex-wrap w-1/6 mx-2 h-8 px-2 py-1 rounded-md transition duration-300 hover:bg-gray-200 bg-green-${
+                          index + 3
+                        }00 focus:outline-none text-white text-sm hover:text-gray-900`}
+                      >
+                        {index === 0 ? "Not at all" : ""}
+                        {index === 5 ? "Perfectly" : null}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="justify-center items-center flex mt-6 ">
+                  <button
+                    disabled={currenrCard === 0 ? true : false}
+                    className={`${
+                      currenrCard === 0
+                        ? "text-gray-300"
+                        : "hover:bg-green-500 rounded-full hover:text-white transition duration-300"
+                    }  focus:outline-none mx-4`}
+                    onClick={() => switchCardHandle("prev")}
+                  >
+                    <KeyboardArrowLeftIcon fontSize="large" />
+                  </button>
+                  <button
+                    disabled={
+                      currenrCard === listCardsLearning.length ? true : false
+                    }
+                    className="mx-4 hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                    onClick={() => switchCardHandle("next")}
+                  >
+                    <KeyboardArrowRightIcon fontSize="large" />
                   </button>
                 </div>
               </div>
-            </div>
-            <div className="">
-              {listCardsLearning.map((card, index) => {
-                if (index === currenrCard)
-                  return (
-                    <ReactCardFlip
-                      isFlipped={isFlipped}
-                      flipDirection="vertical"
-                    >
-                      <div onClick={flipCardHandel}>
-                        <QuillNoSSRWrapper
-                          className="h-96 bg-white shadow-md rounded-md border-2 border-gray-200 transition-opacity duration-500 "
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.front}
-                        />
-                      </div>
-                      <div onClick={flipCardHandel}>
-                        <QuillNoSSRWrapper
-                          className="h-96 bg-white shadow-md rounded-md border-2 border-gray-200 transition-opacity duration-500"
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.back}
-                        />
-                      </div>
-                    </ReactCardFlip>
-                  );
-              })}
-            </div>
-
-            <div className="justify-center items-center flex mt-8">
-              {qValueArr.map((qValue, index) => {
-                return (
-                  <button
-                    onClick={() => handelResultUserSelect(index)}
-                    key={index}
-                    className={`w-1/6 mx-2 h-8 px-4 py-1 rounded-xl transition duration-300 hover:bg-gray-200 ${qValue} focus:outline-none`}
-                  ></button>
-                );
-              })}
-            </div>
-            <div className="justify-center items-center flex mt-6 ">
-              <button
-                disabled={currenrCard === 0 ? true : false}
-                className={`${
-                  currenrCard === 0
-                    ? "text-gray-300"
-                    : "hover:bg-green-500 rounded-full hover:text-white transition duration-300"
-                }  focus:outline-none mx-4`}
-                onClick={() => switchCardHandle("prev")}
-              >
-                <KeyboardArrowLeftIcon fontSize="large" />
-              </button>
-              <button
-                disabled={
-                  currenrCard === listCardsLearning.length ? true : false
-                }
-                className="mx-4 hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-                onClick={() => switchCardHandle("next")}
-              >
-                <KeyboardArrowRightIcon fontSize="large" />
-              </button>
-            </div>
-            <div>
-              <small className="font-medium justify-center items-center flex italic">
-                dasd
-              </small>
-            </div>
+            )}
           </div>
         </div>
         {/* show hint  */}

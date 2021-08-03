@@ -108,7 +108,7 @@ const AppLayout = (props: Props) => {
     if (searchValue.length > 0)
       dispatch(
         putSearchKeyword(
-          searchValue,
+          searchValue.replace(/ /g, ""),
           search.type ? search.type : 0,
           search.searchBy ? search.searchBy : 0
         )
@@ -211,8 +211,11 @@ const AppLayout = (props: Props) => {
   return (
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
-      <main className="flex flex-col  overflow-hidden relative min-h-screen">
-        <header className=" z-40 top-0 sticky h-20 sm:h-16 bg-white flex items-center shadow-sm border-b-2">
+      <main
+        className="flex flex-col  overflow-hidden relative min-h-screen "
+        style={{ background: "#F3F4F5" }}
+      >
+        <header className=" z-40 top-0 sticky h-20 sm:h-16  flex items-center shadow-sm border-b-2">
           {auth.userResponse ? (
             <div className="w-full mx-auto px-4 flex items-center justify-between">
               <div className="  text-gray-700 dark:text-white  flex items-center">
@@ -481,11 +484,14 @@ const AppLayout = (props: Props) => {
               <section className="flex flex-col md:flex-row md:justify-between text-gray-700 font-light text-sm pt-4 pb-6 md:pt-5 md:pb-6 w-full">
                 <div>
                   <p className="leading-8 tracking-wide">
-                    © Lorem Ipsum Co., 123 Lorem Street, New York, NY
+                    © Group 18 Capstone Co., Hanoi, Vietnam
                   </p>
                 </div>
                 <div>
-                  <p className="leading-8 tracking-wide">Privacy Policy</p>
+                  <p className="leading-8 tracking-wide">
+                    {" "}
+                    Smart learning assistant
+                  </p>
                 </div>
               </section>
             </div>
