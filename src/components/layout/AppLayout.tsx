@@ -10,7 +10,7 @@ import { ddmItemsAdd, menuitem } from "../../common/listCommon";
 import link from "next/link";
 import { putSearchKeyword } from "../../redux/actions/searchAction";
 import React from "react";
-import { getAPI,putAPI } from "../../utils/FetchData";
+import { getAPI, putAPI } from "../../utils/FetchData";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 
@@ -35,15 +35,19 @@ const AppLayout = (props: Props) => {
     props.search ? props.search : ""
   );
 
+  const [getNotReadNewsNumber, setNotReadNewsNumber] = React.useState<Number>(0);
+
+  
+
   React.useEffect(() => {
-    // load detail data of room
+
 
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=0`);
         setNotificationList(res.data.content);
-        console.log(res.data)
+
         dispatch({ type: ALERT, payload: { loading: false } });
 
 
@@ -55,6 +59,30 @@ const AppLayout = (props: Props) => {
 
     excute();
   }, [alert.success]);
+
+
+  React.useEffect(() => {
+
+
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}notify/getNotReadNewsNumber/${auth.userResponse?._id}`);
+        setNotReadNewsNumber(res.data);
+        console.log("not read "+getNotReadNewsNumber)
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+      }
+    }
+
+    excute();
+  }, [alert.success,auth.userResponse?._id]);
+
+
 
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
@@ -97,18 +125,23 @@ const AppLayout = (props: Props) => {
     }
   }
 
-  async function readNews(notiId : number) {
+  function handleClickOutSideNotiTable(){
+    const notificationTable = (document.getElementById('notificationTable') as HTMLInputElement);
+    notificationTable.style.display = 'none';
+  }
+
+  async function readNews(notiId: number) {
 
     const data = {
-       "notiId":notiId,
-       "userId":auth.userResponse?._id
+      "notiId": notiId,
+      "userId": auth.userResponse?._id
     }
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
-      const res = await putAPI(`${PARAMS.ENDPOINT}notify/readNews`,data);
-     
-      dispatch({ type: ALERT, payload: { loading: false ,success:"xxx" } });
+      const res = await putAPI(`${PARAMS.ENDPOINT}notify/readNews`, data);
+
+      dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
 
 
     } catch (err) {
@@ -120,14 +153,14 @@ const AppLayout = (props: Props) => {
   async function readAllNews() {
 
     const data = {
-      "userId":auth.userResponse?._id
+      "userId": auth.userResponse?._id
     }
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
-      const res = await putAPI(`${PARAMS.ENDPOINT}notify/readAllNews`,data);
-     
-      dispatch({ type: ALERT, payload: { loading: false ,success:"xxx" } });
+      const res = await putAPI(`${PARAMS.ENDPOINT}notify/readAllNews`, data);
+
+      dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
 
 
     } catch (err) {
@@ -295,11 +328,15 @@ const AppLayout = (props: Props) => {
                     <div className="ml-3 relative">
                       <div className="relative inline-block text-left">
                         <div>
-                          <button onClick={handleBellNotifications} type="button" className="text-md text-white text-4xl relative">
+
+                          <button onMouseUp={handleBellNotifications} type="button" className="text-md text-white text-4xl relative">
                             {listNotification.length !== 0 ?
                               (
-                                <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500">
-                                </span>)
+                                getNotReadNewsNumber !== 0 ? (
+                                  <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500">
+                                  </span>
+                                ) : null
+                              )
                               : null}
                             <svg width="15" height="15" fill="currentColor" viewBox="0 0 1792 1792" className="text-black h-5 w-5 m-2" xmlns="http://www.w3.org/2000/svg">
                               <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
@@ -309,7 +346,7 @@ const AppLayout = (props: Props) => {
                         </div>
                         <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                           <div id="notificationTable" className="py-1 overflow-y-scroll" style={{ display: 'none' }} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <p onClick={readAllNews}  className="px-4 py-4 sm:px-6 text-right text-sm font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
+                            <p onClick={readAllNews} className="px-4 py-4 sm:px-6 text-right text-sm font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
                             <ul className="divide-y divide-gray-100">
                               {listNotification.length === 0 ?
                                 (
