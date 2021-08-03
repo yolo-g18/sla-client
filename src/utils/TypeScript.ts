@@ -259,13 +259,12 @@ export interface ISearch {
         userId: number
         name: string
         description?: string
-        isLearnEvent: true
+        isLearnEvent: boolean
         fromTime: number
         toTime: number
         color?: string | null
         createdTime: number
         updateTime: number
-        learnEvent: boolean
         
   }
 

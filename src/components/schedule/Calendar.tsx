@@ -23,6 +23,7 @@ import TocRoundedIcon from "@material-ui/icons/TocRounded";
 import EventNoteRoundedIcon from "@material-ui/icons/EventNoteRounded";
 import LocalOfferOutlinedIcon from "@material-ui/icons/LocalOfferOutlined";
 import { useClickOutside } from "../../hook/useClickOutside";
+import { putEvent } from "../../redux/actions/EventAction";
 
 interface Props {}
 
@@ -45,7 +46,7 @@ const todayObj = dayjs();
 
 const Calendar = (props: Props) => {
   const dispatch = useDispatch();
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, event } = useSelector((state: RootStore) => state);
 
   const [dayObj, setDayObj] = useState(dayjs());
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -60,9 +61,20 @@ const Calendar = (props: Props) => {
   const [eventColor, setEventColor] = useState("BLUE");
   const [listColors, setListColors] = useState<string[]>([]);
 
+  //to check number of event display each day
+  const [weekDayOf1Evn, setWeekDayOf1Evn] = useState<
+    { i: number; evn: number }[]
+  >([]);
+  const [dayInMonthtEvn, setDayInMonthtEvn] = useState<
+    { i: number; evn: number }[]
+  >([]);
+  const [weekDayOfLastEvn, setWeekDayOfLastEvn] = useState<
+    { i: number; evn: number }[]
+  >([]);
+
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
 
-  const [listEvent, setListEvent] = useState<IEventRes[] | any[]>([]);
+  const [listEvent, setListEvent] = useState<IEventRes[]>([]);
 
   const thisYear = dayObj.year();
   const thisMonth = dayObj.month();
@@ -77,11 +89,17 @@ const Calendar = (props: Props) => {
   const handlePrev = () => {
     setDayObj(dayObj.subtract(1, "month"));
     setCalendarChange(true);
+    setWeekDayOf1Evn([]);
+    setDayInMonthtEvn([]);
+    setWeekDayOfLastEvn([]);
   };
 
   const handleNext = () => {
     setDayObj(dayObj.add(1, "month"));
     setCalendarChange(true);
+    setWeekDayOf1Evn([]);
+    setDayInMonthtEvn([]);
+    setWeekDayOfLastEvn([]);
   };
 
   const jumToToday = () => {
@@ -96,6 +114,9 @@ const Calendar = (props: Props) => {
 
   //get all event for calendar
   useEffect(() => {
+    setWeekDayOf1Evn([]);
+    setDayInMonthtEvn([]);
+    setWeekDayOfLastEvn([]);
     setCalendarChange(false);
     const fetchData = async () => {
       try {
@@ -107,21 +128,12 @@ const Calendar = (props: Props) => {
             dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
           )}`
         );
-
-        // console.log(
-        //   "from: " +
-        //     `${convertTimeToMySQl(dayObjOf1.subtract(weekDayOf1, "day"))} `
-        // );
-        // console.log(
-        //   "to: " +
-        //     `${convertTimeToMySQl(
-        //       dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
-        //     )} `
-        // );
+        dispatch({ type: ALERT, payload: { loading: false } });
 
         setListEvent(res.data);
-        console.log(JSON.stringify("events: " + JSON.stringify(listEvent)));
-      } catch (err) {}
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
     };
 
     fetchData();
@@ -135,7 +147,6 @@ const Calendar = (props: Props) => {
         const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
         dispatch({ type: ALERT, payload: { loading: false } });
         setListColors(res.data);
-        console.log("color: " + JSON.stringify(res.data));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         console.log(err);
@@ -149,50 +160,34 @@ const Calendar = (props: Props) => {
     setEventColor(color);
   };
 
-  // console.log(
-  //   "from: " +
-  //     convertTimeToMySQl(dayObjOf1.subtract(weekDayOf1, "day")) +
-  //     " to: " +
-  //     convertTimeToMySQl(
-  //       dayObjOfLast.add(_.range(6 - weekDayOfLast).length, "day")
-  //     )
-  // );
-
-  let numberOfEventDisplayInDay = 0;
-
-  const eventCell = (event: IEventRes, day: any, month: any, year: any) => {
-    // console.log("from time: " + JSON.stringify(event.fromTime));
-    // console.log("evn" + JSON.stringify(convertTime(event.fromTime)));
-
-    if (
-      JSON.stringify(convertTime(event.fromTime)) ===
-      JSON.stringify({ day, month, year })
-    ) {
-      // console.log("evn" + JSON.stringify(convertTime(event.fromTime * 1000)));
-      // console.log("data" + JSON.stringify({ day, month, year }));
-      numberOfEventDisplayInDay++;
-      return (
-        <button
-          key={event.id}
-          onClick={() => showModalEditHandle(event)}
-          className="flex  px-2 w-full my-2"
-        >
-          <img src="draft.svg" className="h-4 w-4 my-auto mr-2" alt="" />
-          {/* <div className="w-2 h-2 my-auto mr-2 bg-purple-700 rounded py-1" /> */}
-          <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
-            {event.name}
-          </div>
-          <div className=" hidden xl:block">
-            {/* <p className="text-xs text-gray-800 dark:text-gray-100">
-              {convertTime(event.fromTime * 1000).day +
-                "-" +
-                monthNames[convertTime(event.fromTime * 1000).month]}
-            </p> */}
-          </div>
-        </button>
-      );
-    }
+  const getDate = (day: any, month: any, year: any) => {
+    return { day, month, year };
   };
+
+  const [listEvnByDay, setListEvnByDay] = useState<IEventRes[]>([]);
+
+  const showMoreHandle = (dateFrom: any, dateTo: any) => {
+    console.log("from: " + convertTimeToMySQl(dateFrom));
+    console.log("to: " + convertTimeToMySQl(dateTo));
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
+            dateFrom
+          )}&to=${convertTimeToMySQl(dateTo)}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setListEvnByDay(res.data);
+        console.log("by day: " + JSON.stringify(res.data));
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    };
+    fetchData();
+    dispatch(putEvent(listEvnByDay));
+  };
+
   return (
     <div>
       <div className="mx-auto pt-2 pb-10 px-4">
@@ -254,10 +249,17 @@ const Calendar = (props: Props) => {
                   >
                     <div className="justify-between flex px-2">
                       <p
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOf1.subtract(weekDayOf1 - i, "day"),
+                            dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                          )
+                        }
                         className={`text-xs text-gray-400  pt-2 ${
                           dayObjOf1.subtract(weekDayOf1 - i, "day").date() ===
                             todayObj.date() &&
-                          thisMonth - 1 === todayObj.month()
+                          thisMonth - 1 === todayObj.month() &&
+                          thisYear === todayObj.year()
                             ? "text-red-500 font-bold"
                             : ""
                         }`}
@@ -265,10 +267,64 @@ const Calendar = (props: Props) => {
                         {dayObjOf1.subtract(weekDayOf1 - i, "day").date()}
                       </p>
                     </div>
-                    {listEvent.map((eventV, index) => {
-                      if (numberOfEventDisplayInDay < 5)
-                        eventCell(eventV, i + 1, dayObj.month(), dayObj.year());
-                    })}
+                    {/* event content */}
+                    {listEvent
+                      .filter(
+                        (evn) =>
+                          JSON.stringify(convertTime(evn.fromTime)) ===
+                          JSON.stringify(
+                            getDate(
+                              dayObjOf1.subtract(weekDayOf1 - i, "day").date(),
+                              thisMonth === 0 ? 11 : thisMonth - 1,
+                              thisMonth === 0 ? thisYear - 1 : thisYear
+                            )
+                          )
+                      )
+                      .slice(0, 4)
+                      .map((evn) => {
+                        return (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className="flex  px-2 w-full my-1.5"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
+                        );
+                      })}
+                    {listEvent.filter(
+                      (evn) =>
+                        JSON.stringify(convertTime(evn.fromTime)) ===
+                        JSON.stringify(
+                          getDate(
+                            dayObjOf1.subtract(weekDayOf1 - i, "day").date(),
+                            thisMonth === 0 ? 11 : thisMonth - 1,
+                            thisMonth === 0 ? thisYear - 1 : thisYear
+                          )
+                        )
+                    ).length > 4 ? (
+                      <button
+                        className="flex px-2 w-full my-1.5"
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOf1.subtract(weekDayOf1 - i, "day"),
+                            dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                          )
+                        }
+                      >
+                        <div className="text-xs font-medium text-blue-500 dark:text-gray-100  truncate hover:underline">
+                          Show more
+                        </div>
+                      </button>
+                    ) : null}
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
@@ -295,6 +351,12 @@ const Calendar = (props: Props) => {
                   >
                     <div className={`justify-between flex px-2 `}>
                       <p
+                        onClick={() =>
+                          showMoreHandle(
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                          )
+                        }
                         className={`text-xs text-gray-800  pt-2 ${
                           i + 1 === todayObj.date() &&
                           thisMonth === todayObj.month() &&
@@ -306,17 +368,52 @@ const Calendar = (props: Props) => {
                         {i + 1}
                       </p>
                     </div>
-
-                    {listEvent.map((eventV, index) => {
-                      if (numberOfEventDisplayInDay < 5) {
-                        return eventCell(
-                          eventV,
-                          i + 1,
-                          dayObj.month(),
-                          dayObj.year()
+                    {/* event content */}
+                    {listEvent
+                      .filter(
+                        (evn) =>
+                          JSON.stringify(convertTime(evn.fromTime)) ===
+                          JSON.stringify(getDate(i + 1, thisMonth, thisYear))
+                      )
+                      .slice(0, 4)
+                      .map((evn) => {
+                        return (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className="flex  px-2 w-full my-1.5"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
                         );
-                      }
-                    })}
+                      })}
+                    {listEvent.filter(
+                      (evn) =>
+                        JSON.stringify(convertTime(evn.fromTime)) ===
+                        JSON.stringify(getDate(i + 1, thisMonth, thisYear))
+                    ).length > 4 ? (
+                      <button
+                        onClick={() =>
+                          showMoreHandle(
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
+                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                          )
+                        }
+                        className="flex px-2 w-full my-1.5"
+                      >
+                        <div className="text-xs font-medium text-blue-500 dark:text-gray-100  truncate hover:underline">
+                          Show more
+                        </div>
+                      </button>
+                    ) : null}
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
@@ -345,10 +442,17 @@ const Calendar = (props: Props) => {
                   >
                     <div className="justify-between flex px-2">
                       <p
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOfLast.add(i + 1, "day"),
+                            dayObjOfLast.add(i + 2, "day")
+                          )
+                        }
                         className={`text-xs text-gray-500 dark:text-gray-100 pt-2 ${
                           dayObjOfLast.add(i + 1, "day").date() ===
                             todayObj.date() &&
-                          thisMonth + 1 === todayObj.month()
+                          thisMonth + 1 === todayObj.month() &&
+                          thisYear === todayObj.year()
                             ? "text-red-500 font-bold"
                             : ""
                         }`}
@@ -357,16 +461,63 @@ const Calendar = (props: Props) => {
                       </p>
                     </div>
                     {/* event content */}
-                    {listEvent.map((eventV, index) => {
-                      if (numberOfEventDisplayInDay < 100) {
-                        return eventCell(
-                          eventV,
-                          i + 1,
-                          dayObj.month(),
-                          dayObj.year()
+                    {listEvent
+                      .filter(
+                        (evn) =>
+                          JSON.stringify(convertTime(evn.fromTime)) ===
+                          JSON.stringify(
+                            getDate(
+                              dayObjOfLast.add(i + 1, "day").date(),
+                              thisMonth === 11 ? 0 : thisMonth + 1,
+                              thisMonth === 11 ? thisYear + 1 : thisYear
+                            )
+                          )
+                      )
+                      .slice(0, 4)
+                      .map((evn) => {
+                        return (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className="flex  px-2 w-full my-2"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
                         );
-                      }
-                    })}
+                      })}
+                    {listEvent.filter(
+                      (evn) =>
+                        JSON.stringify(convertTime(evn.fromTime)) ===
+                        JSON.stringify(
+                          getDate(
+                            dayObjOfLast.add(i + 1, "day").date(),
+                            thisMonth === 11 ? 0 : thisMonth + 1,
+                            thisMonth === 11 ? thisYear + 1 : thisYear
+                          )
+                        )
+                    ).length > 4 ? (
+                      <button
+                        onClick={() =>
+                          showMoreHandle(
+                            dayObjOfLast.add(i + 1, "day"),
+                            dayObjOfLast.add(i + 2, "day")
+                          )
+                        }
+                        className="flex px-2 w-full my-1.5"
+                      >
+                        <div className="text-xs font-medium text-blue-500 dark:text-gray-100  truncate hover:underline">
+                          Show more
+                        </div>
+                      </button>
+                    ) : null}
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
