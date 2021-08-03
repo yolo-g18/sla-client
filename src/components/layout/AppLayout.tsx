@@ -116,6 +116,23 @@ const AppLayout = (props: Props) => {
     }
   }
 
+  async function readAllNews() {
+
+    const data = {}
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await putAPI(`${PARAMS.ENDPOINT}notify/readAllNews`,data);
+     
+      dispatch({ type: ALERT, payload: { loading: false ,success:"xxx" } });
+
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+    }
+  }
+
   const listNotification = notificationList.map((item) => {
     return (<li>
       <a onClick={() => readNews(item.id)} href={item.link} className="block hover:bg-gray-50 dark:hover:bg-gray-900">
@@ -289,7 +306,7 @@ const AppLayout = (props: Props) => {
                         </div>
                         <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                           <div id="notificationTable" className="py-1 overflow-y-scroll" style={{ display: 'none' }} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <p className="px-4 py-4 sm:px-6 text-right text-sm font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
+                            <p onClick={readAllNews}  className="px-4 py-4 sm:px-6 text-right text-sm font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
                             <ul className="divide-y divide-gray-100">
                               {listNotification.length === 0 ?
                                 (
