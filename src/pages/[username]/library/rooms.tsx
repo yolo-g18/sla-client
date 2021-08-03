@@ -16,7 +16,6 @@ import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../../redux/types/alertType";
 
-
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -57,32 +56,27 @@ const rooms = (props: any) => {
 
         if (rooms.length === 0) setIsShowEmpty(true);
         else setIsShowEmpty(false);
-
-        
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
 
     excute();
-    
   }, [user._id, alert.success]);
 
   // remove room from listRoom of user
   async function removeRoom() {
-   
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}room/deleteRoom/` + idRemoveRoom
       );
-      dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
       setMessageToast("room deleted");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-    
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -151,15 +145,14 @@ const rooms = (props: any) => {
               {username === auth.userResponse?.username ? (
                 item.ownerName === auth.userResponse?.username ? (
                   <div className="my-auto px-4">
-                  <button
-                    onClick={() => handleRemoveRoom(item.room_id)}
-                    className="text-right flex justify-end focus:outline-none"
-                  >
-                    <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
-                  </button>
-                </div>
-                ):null
-               
+                    <button
+                      onClick={() => handleRemoveRoom(item.room_id)}
+                      className="text-right flex justify-end focus:outline-none"
+                    >
+                      <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
+                    </button>
+                  </div>
+                ) : null
               ) : null}
             </div>
           ))
@@ -184,25 +177,25 @@ const rooms = (props: any) => {
                     onClick={removeRoom}
                     className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                           {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Delete"
-                        )}
+                    {alert.loading ? (
+                      <div className="flex justify-center items-center space-x-1">
+                        <svg
+                          fill="none"
+                          className="w-6 h-6 animate-spin"
+                          viewBox="0 0 32 32"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    ) : (
+                      "Delete"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}

@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import _, { stubFalse } from "lodash";
+import Link from "next/link";
 
 import { useEffect, useState } from "react";
 
@@ -23,7 +24,7 @@ import TocRoundedIcon from "@material-ui/icons/TocRounded";
 import EventNoteRoundedIcon from "@material-ui/icons/EventNoteRounded";
 import LocalOfferOutlinedIcon from "@material-ui/icons/LocalOfferOutlined";
 import { useClickOutside } from "../../hook/useClickOutside";
-import { putEvent } from "../../redux/actions/EventAction";
+import { putEvent } from "../../redux/actions/eventAction";
 
 interface Props {}
 
@@ -60,6 +61,11 @@ const Calendar = (props: Props) => {
   const [isLearnEvent, setIsLearnEvent] = useState(false);
   const [eventColor, setEventColor] = useState("BLUE");
   const [listColors, setListColors] = useState<string[]>([]);
+
+  //click out side
+  let domNode = useClickOutside(() => {
+    setShowModalEdit(false);
+  });
 
   //to check number of event display each day
   const [weekDayOf1Evn, setWeekDayOf1Evn] = useState<
@@ -187,6 +193,11 @@ const Calendar = (props: Props) => {
     fetchData();
     dispatch(putEvent(listEvnByDay));
   };
+
+  // const learnByDay = (id: string) => {
+  //   console.log("id of ss: " + id);
+  //   rou
+  // };
 
   return (
     <div>
@@ -557,11 +568,18 @@ const Calendar = (props: Props) => {
             <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full">
               <div className="mb-8">
                 <div className="grid grid-cols-8">
-                  <FiberManualRecordIcon className="col-span-1 text-purple-700 pt-1" />
                   <div className="col-span-7 grid grid-cols-1">
-                    <p className="text-lg font-bold text-gray-600 dark:text-gray-100">
-                      {currentEvent.name}
-                    </p>
+                    <div>
+                      <img
+                        src="draft.svg"
+                        className="h-4 w-4 my-auto mr-2"
+                        alt=""
+                      />
+                      <p className="text-lg font-bold text-gray-600 dark:text-gray-100">
+                        {currentEvent.name}
+                      </p>
+                    </div>
+
                     <div className="flex justify-between mt-2">
                       <p className="text-xs text-gray-600">
                         {weekDays[new Date(currentEvent.fromTime).getDay()] +
@@ -573,23 +591,24 @@ const Calendar = (props: Props) => {
                           convertTime(currentEvent.fromTime).year}
                       </p>
                     </div>
-                    <p>Click hear to review {}</p>
+                    <p>Review</p>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-center">
-                <button
-                  //   onClick={deleteFolder}
-                  className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
-                >
-                  Delete
-                </button>
+                <Link href={`/set/${currentEvent.description}/learn`}>
+                  <button className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600 focus:outline-none">
+                    Review
+                  </button>
+                </Link>
+
                 <button
                   onClick={() => setShowModalEdit(false)}
-                  className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                  type="button"
                 >
-                  Cancel
+                  Close
                 </button>
               </div>
             </div>

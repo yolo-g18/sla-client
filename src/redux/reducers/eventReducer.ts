@@ -1,5 +1,5 @@
 import {  IEventRes } from "../../utils/TypeScript";
-import {IEventType, EVENT} from '../types/EventType';
+import {IEventType, EVENT} from '../types/eventType';
 
 const eventReducer = (state: IEventRes[] = [], action: IEventType): IEventRes[] => {
     switch (action.type){
