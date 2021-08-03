@@ -37,20 +37,22 @@ const AppLayout = (props: Props) => {
 
   const [getNotReadNewsNumber, setNotReadNewsNumber] = React.useState<Number>(0);
 
-  
+  const [getCurrentPage, setCurrentPage] = React.useState(0);
 
   React.useEffect(() => {
 
 
     async function excute() {
       try {
+
         dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=0`);
-        setNotificationList(res.data.content);
-
+        const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=${getCurrentPage}`);
         dispatch({ type: ALERT, payload: { loading: false } });
-
-
+        const temptNotificationList : INotification[] = [...notificationList];
+        res.data.content.map((noti:INotification) => {
+          temptNotificationList.push(noti);
+        })
+        setNotificationList(temptNotificationList);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
 
@@ -58,7 +60,7 @@ const AppLayout = (props: Props) => {
     }
 
     excute();
-  }, [alert.success]);
+  }, [alert.success,getCurrentPage]);
 
 
   React.useEffect(() => {
@@ -69,7 +71,6 @@ const AppLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}notify/getNotReadNewsNumber/${auth.userResponse?._id}`);
         setNotReadNewsNumber(res.data);
-        console.log("not read "+getNotReadNewsNumber)
         dispatch({ type: ALERT, payload: { loading: false } });
 
 
@@ -80,7 +81,7 @@ const AppLayout = (props: Props) => {
     }
 
     excute();
-  }, [alert.success,auth.userResponse?._id]);
+  }, [alert.success, auth.userResponse?._id]);
 
 
 
@@ -115,6 +116,7 @@ const AppLayout = (props: Props) => {
   };
 
   function handleBellNotifications() {
+  
     const notificationTable = (document.getElementById('notificationTable') as HTMLInputElement);
 
     if (notificationTable.style.display === 'none') {
@@ -125,10 +127,7 @@ const AppLayout = (props: Props) => {
     }
   }
 
-  function handleClickOutSideNotiTable(){
-    const notificationTable = (document.getElementById('notificationTable') as HTMLInputElement);
-    notificationTable.style.display = 'none';
-  }
+  
 
   async function readNews(notiId: number) {
 
@@ -168,6 +167,13 @@ const AppLayout = (props: Props) => {
 
     }
   }
+
+  async function showMoreNotification(){
+
+     setCurrentPage(getCurrentPage+1);
+  }
+
+
 
   const listNotification = notificationList.map((item) => {
     return (<li>
@@ -329,7 +335,7 @@ const AppLayout = (props: Props) => {
                       <div className="relative inline-block text-left">
                         <div>
 
-                          <button onMouseUp={handleBellNotifications} type="button" className="text-md text-white text-4xl relative">
+                          <button onMouseUp={() => handleBellNotifications()} type="button" className="text-md text-white text-4xl relative">
                             {listNotification.length !== 0 ?
                               (
                                 getNotReadNewsNumber !== 0 ? (
@@ -338,15 +344,19 @@ const AppLayout = (props: Props) => {
                                 ) : null
                               )
                               : null}
-                            <svg width="15" height="15" fill="currentColor" viewBox="0 0 1792 1792" className="text-black h-5 w-5 m-2" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="15" height="15" fill="gray" viewBox="0 0 1792 1792" className="text-black h-5 w-5 m-2" xmlns="http://www.w3.org/2000/svg">
                               <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
                             </svg>
                           </button>
 
                         </div>
-                        <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                        <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                           <div id="notificationTable" className="py-1 overflow-y-scroll" style={{ display: 'none' }} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <p onClick={readAllNews} className="px-4 py-4 sm:px-6 text-right text-sm font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
+                            {listNotification.length !== 0 ?
+                              (
+                                <p onClick={readAllNews} className="px-4 py-4 sm:px-6 text-right text-xs font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
+                              ) : null}
+
                             <ul className="divide-y divide-gray-100">
                               {listNotification.length === 0 ?
                                 (
@@ -360,7 +370,10 @@ const AppLayout = (props: Props) => {
                                 listNotification
                               }
                             </ul>
-
+                            {listNotification.length !== 0 ?
+                              (
+                                <p onClick={showMoreNotification} className="px-4 py-4 sm:px-6 text-center text-xs font-light text-blue-500 cursor-pointer hover:text-gray-600">Show more</p>
+                              ) : null}
                           </div>
                         </div>
                       </div>
