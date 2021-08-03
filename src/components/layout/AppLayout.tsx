@@ -10,7 +10,7 @@ import { ddmItemsAdd, menuitem } from "../../common/listCommon";
 import link from "next/link";
 import { putSearchKeyword } from "../../redux/actions/searchAction";
 import React from "react";
-import { getAPI } from "../../utils/FetchData";
+import { getAPI,putAPI } from "../../utils/FetchData";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 
@@ -97,18 +97,43 @@ const AppLayout = (props: Props) => {
     }
   }
 
+  async function readNews(notiId : number) {
+
+    const data = {
+       "notiId":notiId
+    }
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await putAPI(`${PARAMS.ENDPOINT}notify/readNews`,data);
+     
+      dispatch({ type: ALERT, payload: { loading: false ,success:"xxx" } });
+
+
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+    }
+  }
+
   const listNotification = notificationList.map((item) => {
     return (<li>
-      <a href={item.link} className="block hover:bg-gray-50 dark:hover:bg-gray-900">
+      <a onClick={() => readNews(item.id)} href={item.link} className="block hover:bg-gray-50 dark:hover:bg-gray-900">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <p className="text-md text-gray-700 dark:text-white md:truncate">
               {item.description}
             </p>
             <div className="ml-2 flex-shrink-0 flex">
-              <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                new
-              </p>
+              {item.read === false ?
+                (
+                  <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    new
+                  </p>
+                )
+                :
+                null
+              }
             </div>
           </div>
           <div className="mt-2 sm:flex sm:justify-between">
@@ -251,19 +276,32 @@ const AppLayout = (props: Props) => {
                       <div className="relative inline-block text-left">
                         <div>
                           <button onClick={handleBellNotifications} type="button" className="text-md text-white text-4xl relative">
-                            <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500">
-                            
-                            </span>
+                            {listNotification.length !== 0 ?
+                              (
+                                <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500">
+                                </span>)
+                              : null}
                             <svg width="15" height="15" fill="currentColor" viewBox="0 0 1792 1792" className="text-black h-5 w-5 m-2" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
+                              <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
                             </svg>
                           </button>
-                       
+
                         </div>
                         <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                           <div id="notificationTable" className="py-1 overflow-y-scroll" style={{ display: 'none' }} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <ul className="divide-y divide-gray-200">
-                              {listNotification}
+                            <p className="px-4 py-4 sm:px-6 text-right text-sm font-light text-blue-500 cursor-pointer hover:text-gray-600">Mark read all</p>
+                            <ul className="divide-y divide-gray-100">
+                              {listNotification.length === 0 ?
+                                (
+                                  <li>
+                                    <div className="px-4 py-4 sm:px-6">
+                                      <p className="text-center">You have no notification</p>
+                                    </div>
+                                  </li>
+                                )
+                                :
+                                listNotification
+                              }
                             </ul>
 
                           </div>

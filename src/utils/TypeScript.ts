@@ -281,9 +281,11 @@ export interface IHostInvitation {
 
 
 export interface INotification {
+  id:number
   title: string
   description: string
   link: string
   createdTime: string
+  read:boolean
 }
 
