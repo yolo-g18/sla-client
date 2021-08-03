@@ -100,7 +100,8 @@ const AppLayout = (props: Props) => {
   async function readNews(notiId : number) {
 
     const data = {
-       "notiId":notiId
+       "notiId":notiId,
+       "userId":auth.userResponse?._id
     }
 
     try {
@@ -118,7 +119,9 @@ const AppLayout = (props: Props) => {
 
   async function readAllNews() {
 
-    const data = {}
+    const data = {
+      "userId":auth.userResponse?._id
+    }
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
