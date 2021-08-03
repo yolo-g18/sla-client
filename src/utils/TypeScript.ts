@@ -174,15 +174,17 @@ export interface ISearch {
     createdDate: string;
   };
   
-  export interface INewRoom {
-    room_id: number;
-    name: string;
-    description: string;
-    createdDate: string;
-    ownerName:string;
-    setNumbers:number;
-    folderNumbers:number;
-  };
+
+export interface INewRoom {
+  room_id: number;
+  name: string;
+  description: string;
+  createdDate: string;
+  ownerId?: number;
+  ownerName: string;
+  setNumbers: number;
+  folderNumbers: number;
+};
   
   
 
@@ -230,11 +232,12 @@ export interface ISearch {
 
   }
   export interface IUserResultSearch {
-    username:string
-    avatar:string
-    bio:string
-    numberStudySetOwn:number
-  }
+  userId?: number
+  username: string
+  avatar: string
+  bio: string
+  numberStudySetOwn: number
+}
 
   export interface IRoomResultSearch {
     id:number
@@ -268,3 +271,19 @@ export interface ISearch {
         
   }
 
+export interface IHostInvitation {
+  roomId: number
+  roomName: string
+  userNameHost: string
+  timeInvited: string
+}
+
+
+export interface INotification {
+  id:number
+  title: string
+  description: string
+  link: string
+  createdTime: string
+  read:boolean
+}

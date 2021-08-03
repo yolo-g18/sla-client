@@ -2,6 +2,7 @@ import "../../styles/globals.css";
 import "../../styles/tooltip.css";
 import "react-quill/dist/quill.snow.css";
 
+
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import store from "../redux/store";

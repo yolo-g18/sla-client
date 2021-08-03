@@ -13,7 +13,7 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
-import { INewRoom, ISetAdd, IFolder, FormSubmit } from "../../utils/TypeScript";
+import { INewRoom, ISetAdd, IFolder, FormSubmit, IUserResultSearch } from "../../utils/TypeScript";
 import { getAPI, putAPI, deleteAPI, postAPI } from "../../utils/FetchData";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
@@ -91,11 +91,12 @@ const RoomLayout = (props: Props) => {
   // populate form add SS to room
   const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] =
     React.useState(defaulAddSets);
-
+  const [isShowInviteModal, setIsShowInviteModal] = React.useState(false);
   const [isShowAddSetModal, setIsShowAddSetModal] = React.useState(false);
   const [isShowAddFolderModal, setIsShowAddFolderModal] = React.useState(false);
   const [folders, setFolders] = React.useState<IFolder[]>([]);
 
+  const [userSearchList, setUserSearchList] = React.useState<IUserResultSearch[]>([]);
   const [isPendingRequestAttend, setIsPendingRequestAttend] = React.useState(false);
   const [isMember, setIsMember] = React.useState(false);
   const [isToastOpen, setIsToastOpen] = React.useState(false);
@@ -137,6 +138,8 @@ const RoomLayout = (props: Props) => {
 
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
+  
+  const [isDefaultSearching, setIsDefaultSearching] = React.useState(true);
   React.useEffect(() => {
     // load folder color
     async function excute() {
@@ -162,13 +165,13 @@ const RoomLayout = (props: Props) => {
         setIsMember(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
 
-       } catch (err) {
+      } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
       }
     }
     excute();
-  }, []);
+  }, [alert.success,id]);
 
   React.useEffect(() => {
     // check member permisson
@@ -308,21 +311,16 @@ const RoomLayout = (props: Props) => {
         data
       );
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-
-      if (res.data === "cancel adding") {
-        setMessageToast("set existed");
-        setTypeToast("error");
-        setIsToastOpen(true);
-      }
-      else {
-        setMessageToast("set added");
-        setTypeToast("success");
-        setIsToastOpen(true);
-      }
+      setMessageToast("set added");
+      setTypeToast("success");
+      setIsToastOpen(true);
+  
 
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
+      setMessageToast("set existed");
+      setTypeToast("error");
+      setIsToastOpen(true);
     }
   }
 
@@ -362,23 +360,19 @@ const RoomLayout = (props: Props) => {
 
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
 
-      if (res.data === "cancel adding") {
-        setMessageToast("folder existed");
-        setTypeToast("error");
-        setIsToastOpen(true);
-      }
-      else {
-        setMessageToast("folder added");
-        setTypeToast("success");
-        setIsToastOpen(true);
-      }
+      setMessageToast("folder added");
+      setTypeToast("success");
+      setIsToastOpen(true);
+    
 
 
 
     } catch (err) {
 
       dispatch({ type: ALERT, payload: { loading: false } });
-
+      setMessageToast("folder existed");
+      setTypeToast("error");
+      setIsToastOpen(true);
 
     }
   }
@@ -597,7 +591,7 @@ const RoomLayout = (props: Props) => {
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
-
+      notifyRequestAttendRoom();
       setMessageToast("request sent");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -633,6 +627,145 @@ const RoomLayout = (props: Props) => {
 
     }
   }
+
+  async function inviteUserToRoom(userId:number) {
+
+
+    const data = {
+      "room_id": id,
+      "user_id": userId
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await putAPI(
+        `${PARAMS.ENDPOINT}room/inviteUserToRoom`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
+      notifyInvitation(userId);
+      setMessageToast("invitation sent");
+      setTypeToast("success");
+      setIsToastOpen(true);
+
+      } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("invitation has been sent");
+      setTypeToast("error");
+      setIsToastOpen(true);
+
+    }
+
+
+  }
+  const listInvitePerson = userSearchList.map((item) => (
+    <div key={item.userId} className="flex flex-row ">
+      <div className="select-none cursor-pointer flex flex-1 items-center py-4 px-6">
+        <div className="flex-1">
+          <div className="font-semibold text-xl">{item.username}</div>
+        </div>
+      
+        <button
+          onClick={() => inviteUserToRoom(item.userId!)}
+          className="w-24 text-right flex justify-end focus:outline-none"
+          type="button"
+        >
+          <AddBoxRoundedIcon
+            fontSize="large"
+            className="text-green-500 hover:text-green-600"
+          />
+        </button>
+      </div>
+    </div>
+  ));
+
+  async function searchUser(e: FormSubmit) {
+
+    setIsDefaultSearching(false);
+
+    e.preventDefault();
+
+    const textUserNameSearch = (document.getElementById('textNameUserSearch') as HTMLInputElement);
+
+    // list user invite list
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}search/user/${textUserNameSearch.value}/${id}`
+        );
+        setUserSearchList(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    }
+    excute();
+
+  }
+
+  function closeInviteModal(){
+      setUserSearchList([]);
+      setIsDefaultSearching(true);
+      setIsShowInviteModal(false);
+  }
+
+  async function notifyInvitation(invitedPersonId : number){
+    
+    const data = {
+      "creator_id": invitedPersonId,
+      "title":"Room Invitation",
+      "description":auth.userResponse?.username+" invites you to "+room.name,
+      "type":"invitation",
+      "link":"/invitation",
+      "isRead":false,
+      "timeTrigger":null
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await postAPI(
+        `${PARAMS.ENDPOINT}notify/create`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false} });
+
+     } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      
+
+    }
+  }
+
+  async function notifyRequestAttendRoom(){
+    
+    const data = {
+      "creator_id": room.ownerId,
+      "title":"Room Request Attendance",
+      "description":auth.userResponse?.username +" wants to attend "+room.name,
+      "type":"request",
+      "link":"/room/"+room.room_id+"/requests",
+      "isRead":false,
+      "timeTrigger":null
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await postAPI(
+        `${PARAMS.ENDPOINT}notify/create`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false} });
+
+     } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      
+
+    }
+  }
+
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -704,7 +837,7 @@ const RoomLayout = (props: Props) => {
                       <span className="tooltiptext w-24">add folder</span>
                     </button>
                     <button
-                      // onClick={shareLink}
+                      onClick={() => setIsShowInviteModal(!isShowInviteModal)}
                       className="mx-2 tooltip focus:outline-none"
                     >
                       <GroupAddIcon
@@ -715,23 +848,23 @@ const RoomLayout = (props: Props) => {
                     </button>
                   </div>
                 ) : (
-                  // sau phai check member hay ko de hien btn join
+                    // sau phai check member hay ko de hien btn join
 
 
-                  isMember === false ? (
-                    <button
-                      id="btnRequest"
+                    isMember === false ? (
+                      <button
+                        id="btnRequest"
 
-                      onClick={handleRequestAttend}
-                      className="w-32 text-md rounded-md px-4 py-1 mx-2
+                        onClick={handleRequestAttend}
+                        className="w-32 text-md rounded-md px-4 py-1 mx-2
                   text-sm font-medium bg-green-500 hover:bg-green-600 
                text-white focus:outline-none"
-                    >
-                      <p className="text-md">Request to join</p>
-                    </button>
-                  ) : null
+                      >
+                        <p className="text-md">Request to join</p>
+                      </button>
+                    ) : null
 
-                )}
+                  )}
 
                 <button
                   onClick={shareLink}
@@ -982,8 +1115,8 @@ const RoomLayout = (props: Props) => {
                           </svg>
                         </div>
                       ) : (
-                        "Save"
-                      )}
+                          "Save"
+                        )}
                     </button>
                     <button
                       className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
@@ -1066,8 +1199,8 @@ const RoomLayout = (props: Props) => {
                           </svg>
                         </div>
                       ) : (
-                        "Save"
-                      )}
+                          "Save"
+                        )}
                     </button>
                     <button
                       className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
@@ -1118,8 +1251,8 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                      "Delete"
-                    )}
+                        "Delete"
+                      )}
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}
@@ -1168,8 +1301,8 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                      "Remove"
-                    )}
+                        "Remove"
+                      )}
                   </button>
                   <button
                     onClick={closeRemoveAllMemberModal}
@@ -1177,6 +1310,60 @@ const RoomLayout = (props: Props) => {
                   >
                     Cancel
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {isShowInviteModal ? (
+          <div className="justify-between items-center flex overflow-x-hidden my-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50">
+            <div className="w-full flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-xl shadow py-4">
+                <div>
+                  <div className="mt-2 text-center">
+                    <p className="text-xl font-semibold">Invite a person</p>
+                  </div>
+                  <br></br>
+                  <form onSubmit={searchUser} className="flex flex-col md:flex-row w-3/4 md:w-full max-w-sm md:space-x-3 space-y-3 md:space-y-0 justify-center">
+                    <div className=" relative ">
+                      <input type="text" id="textNameUserSearch" className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent" placeholder="username" />
+                    </div>
+                    <button className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 " type="submit">
+                      Search
+                    </button>
+                  </form>
+
+                  <div
+                    className=" mx-auto w-full mt-4 overflow-y-auto bg-white rounded-lg"
+                    style={{ height: 550, width: 450 }}
+                  >
+                    <div
+                      id="listInvite"
+                      className="flex flex-col divide divide-y "
+                    >
+                    {
+                    isDefaultSearching === false ? (
+                      listInvitePerson.length === 0 ? (
+                        <div key="resultNotFound" className="flex flex-row ">
+                        <div className="select-none cursor-pointer flex flex-1 items-center py-4 px-6">
+                          <div className="flex-1">
+                            <div><p className="text-red-500 text-center">Not found</p></div>
+                          </div>
+                        </div>
+                      </div>
+                     ):listInvitePerson
+                    ):null}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center px-6 py-2 mt-4">
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-md text-sm font-medium hover:text-gray-900 focus:outline-none"
+                      type="button"
+                      onClick={closeInviteModal}
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

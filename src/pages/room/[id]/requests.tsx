@@ -10,7 +10,7 @@ import { INewRoom , IGuestRoom } from "../../../utils/TypeScript";
 import { useRouter } from "next/router";
 import { ALERT } from "../../../redux/types/alertType";
 import { PARAMS } from "../../../common/params";
-import { getAPI ,deleteAPI ,putAPI} from "../../../utils/FetchData";
+import { getAPI ,deleteAPI ,putAPI,postAPI} from "../../../utils/FetchData";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
@@ -121,19 +121,17 @@ const requests = () => {
 
     dispatch({ type: ALERT, payload: { loading: false } });
       
-      setMessageToast("request accepted");
-      setTypeToast("success");
-      setIsToastOpen(true);
-  
-   
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
 
  
     }
-
+    deleteInvitaion(user_id);
     deleteRequest(user_id);
+    notifyAcceptAttendRoom(user_id);
+    setMessageToast("request accepted");
+    setTypeToast("success");
+    setIsToastOpen(true);
   }
 
   function handleRejectRequest(user_id:number){
@@ -157,6 +155,50 @@ const requests = () => {
       dispatch({ type: ALERT, payload: { loading: false } });
 
  
+    }
+  }
+
+  async function deleteInvitaion(user_id:number){
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteRoomInvitation/${id}/${user_id}`
+      );
+
+    dispatch({ type: ALERT, payload: { loading: false } });
+      
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+
+ 
+    }
+  }
+
+  async function notifyAcceptAttendRoom(userId: number){
+    
+    const data = {
+      "creator_id": userId,
+      "title":"Room Attend Acceptance",
+      "description":auth.userResponse?.username+" allows you join "+room.name,
+      "type":"acceptance",
+      "link":"/room/"+room.room_id+"/library",
+      "isRead":false,
+      "timeTrigger":null
+    }
+
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await postAPI(
+        `${PARAMS.ENDPOINT}notify/create`, data
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false} });
+
+     } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      
+
     }
   }
   return (
