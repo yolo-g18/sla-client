@@ -2,14 +2,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Ddm from "../ddm/DropDownMenu";
 import Meta from "../site/Meta";
-
-import { FormSubmit, RootStore } from "../../utils/TypeScript";
+import { FormSubmit, RootStore, INotification } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getUserProfile } from "../../redux/actions/authAction";
 import { ddmItemsAdd, menuitem } from "../../common/listCommon";
 import link from "next/link";
 import { putSearchKeyword } from "../../redux/actions/searchAction";
+import React from "react";
+import { getAPI } from "../../utils/FetchData";
+import { ALERT } from "../../redux/types/alertType";
+import { PARAMS } from "../../common/params";
+
 
 interface Props {
   title: string;
@@ -25,9 +29,32 @@ const AppLayout = (props: Props) => {
   const [isOpenSidebar, setOpenSidebar] = useState(true);
   const { auth, alert, search } = useSelector((state: RootStore) => state);
 
+  const [notificationList, setNotificationList] = React.useState<INotification[]>([]);
+
   const [searchValue, setSearchValue] = useState<string>(
     props.search ? props.search : ""
   );
+
+  React.useEffect(() => {
+    // load detail data of room
+
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=0`);
+        setNotificationList(res.data.content);
+        console.log(res.data)
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+      }
+    }
+
+    excute();
+  }, [alert.success]);
 
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
@@ -69,6 +96,34 @@ const AppLayout = (props: Props) => {
       notificationTable.style.display = 'none'
     }
   }
+
+  const listNotification = notificationList.map((item) => {
+    return (<li>
+      <a href={item.link} className="block hover:bg-gray-50 dark:hover:bg-gray-900">
+        <div className="px-4 py-4 sm:px-6">
+          <div className="flex items-center justify-between">
+            <p className="text-md text-gray-700 dark:text-white md:truncate">
+              {item.description}
+            </p>
+            <div className="ml-2 flex-shrink-0 flex">
+              <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                new
+              </p>
+            </div>
+          </div>
+          <div className="mt-2 sm:flex sm:justify-between">
+            <div className="sm:flex">
+              <p className="flex items-center text-md font-light text-gray-500 dark:text-gray-300">
+                {item.createdTime}
+              </p>
+            </div>
+          </div>
+        </div>
+      </a>
+    </li>)
+
+  });
+
   return (
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
@@ -195,39 +250,22 @@ const AppLayout = (props: Props) => {
                     <div className="ml-3 relative">
                       <div className="relative inline-block text-left">
                         <div>
-                          <button onClick={handleBellNotifications} className="flex p-2 items-center bg-white  text-gray-400 hover:text-gray-700 text-md">
-                            <svg
-                              width="20"
-                              height="20"
-                              className="text-gray-400"
-                              fill="currentColor"
-                              viewBox="0 0 1792 1792"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
+                          <button onClick={handleBellNotifications} type="button" className="text-md text-white text-4xl relative">
+                            <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500">
+                            
+                            </span>
+                            <svg width="15" height="15" fill="currentColor" viewBox="0 0 1792 1792" className="text-black h-5 w-5 m-2" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
                             </svg>
-                            <div className="bg-red-500 w-2 h-2 rounded-full right-1 top-1 absolute"></div>
                           </button>
+                       
                         </div>
                         <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                           <div id="notificationTable" className="py-1 overflow-y-scroll" style={{ display: 'none' }} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <a href="#" className="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
-                              <li className="flex flex-row">
-                                <div className="select-none cursor-pointer flex flex-1 items-center p-4">
-                                 <div className="flex-1 pl-1 mr-16">
-                                    <div className="font-medium dark:text-white">
-                                      Jean Marc
-                                    </div>
-                                    <div className="text-gray-600 dark:text-gray-200 text-sm">
-                                      has invited you to a room
-                                    </div>
-                                  </div>
-                                  <div className="text-gray-600 dark:text-gray-200 text-xs">
-                                    6:00 AM
-                                    </div>
-                                </div>
-                              </li>
-                            </a>
+                            <ul className="divide-y divide-gray-200">
+                              {listNotification}
+                            </ul>
+
                           </div>
                         </div>
                       </div>

@@ -171,7 +171,7 @@ const RoomLayout = (props: Props) => {
       }
     }
     excute();
-  }, [alert.success]);
+  }, [alert.success,id]);
 
   React.useEffect(() => {
     // check member permisson
@@ -643,7 +643,7 @@ const RoomLayout = (props: Props) => {
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
-      notifyInvitation();
+      notifyInvitation(userId);
       setMessageToast("invitation sent");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -712,12 +712,12 @@ const RoomLayout = (props: Props) => {
       setIsShowInviteModal(false);
   }
 
-  async function notifyInvitation(){
+  async function notifyInvitation(invitedPersonId : number){
     
     const data = {
-      "creator_id": auth.userResponse?._id,
+      "creator_id": invitedPersonId,
       "title":"Room Invitation",
-      "description":auth.userResponse?.username+" invites you to attend "+room.name+" room",
+      "description":auth.userResponse?.username+" invites you to "+room.name,
       "type":"invitation",
       "link":"/invitation",
       "isRead":false,
@@ -742,9 +742,9 @@ const RoomLayout = (props: Props) => {
   async function notifyRequestAttendRoom(){
     
     const data = {
-      "creator_id": auth.userResponse?._id,
+      "creator_id": room.ownerId,
       "title":"Room Request Attendance",
-      "description":auth.userResponse?.username +" wants to attend "+room.name+" room",
+      "description":auth.userResponse?.username +" wants to attend "+room.name,
       "type":"request",
       "link":"/room/"+room.room_id+"/requests",
       "isRead":false,

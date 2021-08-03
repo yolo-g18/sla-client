@@ -128,7 +128,7 @@ const requests = () => {
     }
     deleteInvitaion(user_id);
     deleteRequest(user_id);
-    notifyAcceptAttendRoom();
+    notifyAcceptAttendRoom(user_id);
     setMessageToast("request accepted");
     setTypeToast("success");
     setIsToastOpen(true);
@@ -175,14 +175,14 @@ const requests = () => {
     }
   }
 
-  async function notifyAcceptAttendRoom(){
+  async function notifyAcceptAttendRoom(userId: number){
     
     const data = {
-      "creator_id": auth.userResponse?._id,
+      "creator_id": userId,
       "title":"Room Attend Acceptance",
-      "description":auth.userResponse?.username+" allows you attend "+room.name+" room",
+      "description":auth.userResponse?.username+" allows you join "+room.name,
       "type":"acceptance",
-      "link":"/room/"+room.room_id,
+      "link":"/room/"+room.room_id+"/library",
       "isRead":false,
       "timeTrigger":null
     }
