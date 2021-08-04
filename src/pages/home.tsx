@@ -18,6 +18,38 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import TasksList from "../components/data/TaskList";
 
+import CircularProgress, {
+  CircularProgressProps,
+} from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number }
+) {
+  return (
+    <Box position="relative" display="inline-flex">
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="textSecondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
 const home = () => {
   const dispatch = useDispatch();
   const { auth, alert } = useSelector((state: RootStore) => state);
@@ -72,14 +104,14 @@ const home = () => {
   return (
     <div>
       <AppLayout2 title="home" desc="home">
-        <div className="pt-4 pb-24 px-4 items-center mx-auto w-5/6 mb-44">
-          <h1 className="text-4xl font-semibold text-gray-800 dark:text-white mb-4 px-2">
-            Home
-          </h1>
-          <div className="grid lg:grid-cols-7 grid-cols-1">
+        <div className="pt-4 pb-24 items-center mx-auto w-5/6 mb-44">
+          <div className="grid lg:grid-cols-7 grid-cols-1 mt-12">
             <div className="col-span-2 px-2 ">
               <div className="flex flex-col">
-                <p className="text-lg font-bold text-gray-800">Task today</p>{" "}
+                <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
+                <p className="text-lg font-bold text-blue-600">
+                  Today Task
+                </p>{" "}
               </div>
               <div className="mb-6">
                 <TasksList />
@@ -89,7 +121,10 @@ const home = () => {
               <div>
                 <div className="flex justify-between">
                   <div className="flex flex-col">
-                    <p className="text-lg font-bold text-gray-800">Learning</p>{" "}
+                    <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
+                    <p className="text-lg font-bold text-blue-600">
+                      Created
+                    </p>{" "}
                   </div>
                   <div className="flex flex-col">
                     <Link
@@ -110,7 +145,7 @@ const home = () => {
                       <div className="col-span-1 ">
                         <div
                           key={index}
-                          className="grid grid-rows-5 flex-col col-span-1 rounded-md p-2 h-36 my-4 bg-white 
+                          className="grid grid-rows-5 flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white 
                           hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
                         >
                           <div className="row-span-1 w-full flex flex-row mb-2">
@@ -149,16 +184,16 @@ const home = () => {
                               </p>
                             ) : (
                               <p className="text-gray-500">
-                                {set.ssDescription.substring(0, 50)}...
+                                {set.ssDescription.substring(0, 60)}...
                               </p>
                             )}
                           </div>
-                          <div className="relative w-full h-2 bg-gray-200 rounded">
-                            <div
-                              className="absolute top-0 h-2 left-0 rounded bg-green-500"
-                              style={{ width: `${set.progress * 100}%` }}
-                            />
+                          <div>
+                            <p className="text-gray-500 text-sm">
+                              Progress: {set.progress * 100}%
+                            </p>
                           </div>
+
                           <div className="row-span-1 mt-1">
                             <p>{set.numberOfCards} cards</p>
                           </div>
@@ -171,9 +206,12 @@ const home = () => {
               <hr />
               {/* ss created */}
               <div className="mt-6">
-                <div className="flex justify-between">
+                <div className="flex justify-between mb-2">
                   <div className="flex flex-col">
-                    <p className="text-lg font-bold text-gray-800">Created</p>{" "}
+                    <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
+                    <p className="text-lg font-bold text-blue-600">
+                      Created
+                    </p>{" "}
                   </div>
                 </div>
                 <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
@@ -181,7 +219,7 @@ const home = () => {
                     return (
                       <div className=" col-span-1" key={index}>
                         <div
-                          className="grid grid-rows-5 flex-row col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800 
+                          className="grid grid-rows-5 flex-row col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800 
                         hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
                         >
                           <div className="row-span-1 w-full mb-2">

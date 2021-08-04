@@ -50,43 +50,10 @@ const login = () => {
     <div>
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
-          <div className="bg-white px-6 py-8 rounded shadow-sm text-black w-full">
-            <h1 className="font-mono text-3xl mb-1 text-center">Join SLA</h1>
-            <div className="rounded-t mb-0 px-6 py-6">
-              <div className="text-center mb-3">
-                <h6 className="text-gray-600 text-sm font-bold">
-                  Sign in with
-                </h6>
-              </div>
-              <div className="btn-wrapper text-center">
-                <button
-                  className="bg-white active:bg-gray-100 text-gray-800 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center text-xs"
-                  type="button"
-                >
-                  <img
-                    src="https://img.icons8.com/ios-filled/150/000000/facebook-new.png"
-                    className="w-5 mr-1"
-                  />
-                  Facebook
-                </button>
-                <button
-                  className="bg-white active:bg-gray-100 text-gray-800 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center text-xs"
-                  type="button"
-                >
-                  <img
-                    alt="..."
-                    className="w-5 mr-1"
-                    src="https://img.icons8.com/color/144/000000/google-logo.png"
-                  />
-                  Google
-                </button>
-              </div>
-              <hr className="mt-6 border-b-1 border-gray-400" />
-            </div>
-            <div>
-              <div className="text-gray-500 text-center mb-3 font-bold">
-                <small>Or sign in with credentials</small>
-              </div>
+          <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+            <h1 className="font-mono text-3xl mb-16 text-center">Join SLA</h1>
+
+            <div className="mt-10">
               <form onSubmit={handleSubmit}>
                 <InputGroup
                   type="text"
@@ -122,7 +89,7 @@ const login = () => {
                   </a>
                 </Link>
 
-                <button className="w-full mt-4 text-center py-3 rounded bg-green-500 hover:bg-green-600 text-white hover:bg-green-dark focus:outline-none my-1">
+                <button className="w-full mt-10 text-center py-2 rounded bg-blue-500 hover:bg-blue-600 text-white hover:bg-green-dark focus:outline-none my-1">
                   {alert.loading ? (
                     <div className="flex justify-center items-center space-x-1">
                       <svg
@@ -146,7 +113,7 @@ const login = () => {
               </form>
             </div>
           </div>
-          <div className="text-grey-dark mt-4">
+          <div className="text-grey-dark mt-10">
             New to SLA?{" "}
             <Link href="/auth/register">
               <a

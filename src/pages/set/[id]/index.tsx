@@ -370,7 +370,7 @@ const index = () => {
                       <div key={index}>
                         <Link href={`/search/set/tag?search_query=${tag}`}>
                           <div className="my-1 mr-2 flex ">
-                            <span className="px-4 py-1 rounded-xl truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer text-sm font-bold ">
+                            <span className="px-4 py-1 rounded-md truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer text-sm font-bold ">
                               {tag}
                             </span>
                           </div>
@@ -400,11 +400,11 @@ const index = () => {
               <div className="flex h-8">
                 <Link href={`/set/${id}/learn`}>
                   <button
-                    className="w-24 text-md rounded-md px-4 mx-2
-                   text-sm font-medium bg-green-500 hover:bg-green-600 
+                    className="w-24 text-md rounded-sm px-4 mx-2
+                   text-sm font-medium bg-blue-500 hover:bg-blue-600 
                 text-white focus:outline-none"
                   >
-                    learn
+                    Learn
                   </button>
                 </Link>
                 {creatorName === auth.userResponse?.username ? (
@@ -455,7 +455,7 @@ const index = () => {
                     <ExpandMoreIcon />
                   </button>
                   {isMenuOpen ? (
-                    <div className="origin-top-right absolute z-50 mt-8 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                    <div className="origin-top-right absolute z-50 mt-8 w-40 rounded-sm shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                       <div
                         className={`py-1`}
                         role="menu"
@@ -499,9 +499,9 @@ const index = () => {
                   return (
                     <div
                       key={index}
-                      className=" rounded-xl grid grid-cols-11 gap-4 my-4"
+                      className=" rounded-md grid grid-cols-11 gap-4 my-4"
                     >
-                      <div className="col-span-5 rounded-xl bg-white shadow-lg border-b-1">
+                      <div className="col-span-5 rounded-md bg-white shadow-lg border-b-1">
                         <QuillNoSSRWrapper
                           readOnly={true}
                           theme="bubble"
@@ -509,7 +509,7 @@ const index = () => {
                           className="w-64"
                         />
                       </div>
-                      <div className="col-span-5 rounded-xl bg-white shadow-lg border-b-1">
+                      <div className="col-span-5 rounded-md bg-white shadow-lg border-b-1">
                         <QuillNoSSRWrapper
                           readOnly={true}
                           theme="bubble"
@@ -570,7 +570,7 @@ const index = () => {
                   </button>
                   <button
                     onClick={() => setShowDeleteCardModal(false)}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600 focus:outline-none"
+                    className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600 focus:outline-none"
                   >
                     Cancel
                   </button>
@@ -581,7 +581,7 @@ const index = () => {
         ) : null}
         {isModalEditOpen || isModalAddOpen ? (
           <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
-            <div className="mx-2 py-2 rounded-xl bg-white">
+            <div className="mx-2 py-2 rounded-md bg-white">
               <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-2">
                 <div className="col-span-1 flex lg:my-2 my-4">
                   <QuillNoSSRWrapper
@@ -608,14 +608,14 @@ const index = () => {
               </div>
               <div className="flex justify-end px-4">
                 <button
-                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300"
                   type="button"
                   onClick={closeModaAddAndEdit}
                 >
                   Cancel
                 </button>
                 <button
-                  className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
+                  className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600"
                   type="button"
                   onClick={handleCardSave}
                 >
@@ -628,7 +628,7 @@ const index = () => {
         {showModalDelete ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p>Are you sure want to delete this study set</p>
@@ -648,7 +648,7 @@ const index = () => {
                   </button>
                   <button
                     onClick={() => setShowModalDelete(false)}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>

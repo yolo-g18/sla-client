@@ -26,6 +26,7 @@ import { PARAMS } from "../../common/params";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
 import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 //alert
 function Alert(props: AlertProps) {
@@ -50,7 +51,6 @@ const defaulAddSets: ISetAdd[] = [];
 const Folder = () => {
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
 
   // populate form add SS to folder
   const [addSets, setAddSets]: [ISetAdd[], (addSets: ISetAdd[]) => void] =
@@ -78,7 +78,6 @@ const Folder = () => {
     IStudySet[],
     (studySets: IStudySet[]) => void
   ] = React.useState(defaultStudySets);
-
 
   const [idRemoveStudySet, setIdRemoveStudySet]: [
     number,
@@ -116,7 +115,7 @@ const Folder = () => {
 
   React.useEffect(() => {
     // load detail data of folder
-   
+
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -128,7 +127,6 @@ const Folder = () => {
         setStateColorFolder({ color: res.data.color });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-      
       }
     }
 
@@ -137,7 +135,7 @@ const Folder = () => {
 
   React.useEffect(() => {
     // list SS already in folder
-   
+
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -150,7 +148,6 @@ const Folder = () => {
         else setIsShowEmpty(false);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-      
       }
     }
 
@@ -164,15 +161,13 @@ const Folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteStudySetFromFolder/${id}/${idRemoveStudySet}`
       );
-      dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
+      dispatch({ type: ALERT, payload: { loading: false, success: "abc" } });
 
       setMessageToast("set removed");
       setTypeToast("success");
       setIsToastOpen(true);
-     
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-    
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -202,14 +197,12 @@ const Folder = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await putAPI(`${PARAMS.ENDPOINT}folder/editFolder`, data);
-        dispatch({ type: ALERT, payload: { loading: false , success:"abc"} });
+        dispatch({ type: ALERT, payload: { loading: false, success: "abc" } });
         setMessageToast("Folder updated");
         setTypeToast("success");
         setIsToastOpen(true);
-       
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-       
       }
     }
 
@@ -236,7 +229,6 @@ const Folder = () => {
         setColors(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-       
       }
     }
     excute();
@@ -248,7 +240,6 @@ const Folder = () => {
   ));
 
   React.useEffect(() => {
-   
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -260,7 +251,6 @@ const Folder = () => {
         setAddSets(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        
       }
     }
 
@@ -281,7 +271,7 @@ const Folder = () => {
         >
           <AddBoxRoundedIcon
             fontSize="large"
-            className="text-green-500 hover:text-green-600"
+            className="text-blue-500 hover:text-blue-600"
           />
         </button>
       </div>
@@ -301,12 +291,10 @@ const Folder = () => {
         `${PARAMS.ENDPOINT}folder/addStudySetToFolder`,
         data
       );
-      dispatch({ type: ALERT, payload: { loading: false , success:"ac"} });
+      dispatch({ type: ALERT, payload: { loading: false, success: "ac" } });
       setMessageToast("set added");
       setTypeToast("success");
       setIsToastOpen(true);
-       
-     
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("set existed in folder");
@@ -346,8 +334,8 @@ const Folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteFolder/${folder.folder_id}`
       );
-      dispatch({ type: ALERT, payload: { loading: false , success:"aa"} });
-    
+      dispatch({ type: ALERT, payload: { loading: false, success: "aa" } });
+
       setMessageToast("folder removed");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -360,7 +348,6 @@ const Folder = () => {
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
-     
     }
 
     setIsShowDeleteModal(false);
@@ -405,8 +392,8 @@ const Folder = () => {
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
                 <Link href={`/${folder.creatorUserName}/library/folders`}>
-                  <p className="hover:underline cursor-pointer">
-                    back to library folder
+                  <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                    <ChevronLeftIcon /> Back to library folder
                   </p>
                 </Link>
               </div>
@@ -475,8 +462,8 @@ const Folder = () => {
                     >
                       <button
                         type="button"
-                        className="w-40 text-md rounded-md px-4 mx-2 py-2
-                      text-md font-bold bg-green-500 hover:bg-green-600 
+                        className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                      text-md font-bold bg-blue-500 hover:bg-blue-600 
                    text-white focus:outline-none"
                       >
                         Create a new set
@@ -490,7 +477,7 @@ const Folder = () => {
                     <div className="col-span-1">
                       <div
                         key={index}
-                        className="grid grid-rows-5 shadow-lg flex-row col-span-1 rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800"
+                        className="grid grid-rows-5 shadow-lg flex-row col-span-1 rounded-sm p-2 h-36 my-4 bg-white dark:bg-gray-800"
                       >
                         <div className="row-span-1 w-full flex mb-2">
                           <div className="w-full">
@@ -572,7 +559,7 @@ const Folder = () => {
           {isShowRemoveModal ? (
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
               <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-                <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="bg-white rounded-sm shadow p-6 m-4 max-w-xs max-h-full text-center">
                   <div className="mb-4"></div>
                   <div className="mb-8">
                     <p>
@@ -608,7 +595,7 @@ const Folder = () => {
                     </button>
                     <button
                       onClick={closeRemoveStudySetModal}
-                      className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                      className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
                     >
                       Cancel
                     </button>
@@ -620,8 +607,8 @@ const Folder = () => {
           {isShowEditModal ? (
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
               <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-                <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
-                  <div className="px-2 pb-6 pt-2 rounded-t">
+                <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full">
+                  <div className="px-2 pb-6 pt-2 rounded-sm">
                     <p className="text-gray-700 font-semibold text-lg text-center">
                       Edit folder
                     </p>
@@ -653,7 +640,7 @@ const Folder = () => {
                         </div>
                         <select
                           id="color"
-                          className="block border border-grey-light w-full p-2 rounded-md mb-1 focus:outline-none text-sm"
+                          className="block border border-grey-light w-full p-2 rounded-sm mb-1 focus:outline-none text-sm"
                           ref={color_folder}
                           name="color"
                           onChange={formValue}
@@ -665,7 +652,7 @@ const Folder = () => {
                     </div>
                     <div className="flex items-center justify-end px-4">
                       <button
-                        className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
+                        className=" bg-blue-500 text-white w-28 py-1  mx-4 rounded-sm text-sm font-medium hover:bg-blue-600"
                         type="submit"
                       >
                         {alert.loading ? (
@@ -677,7 +664,7 @@ const Folder = () => {
                         )}
                       </button>
                       <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
                         type="button"
                         onClick={() => setIsShowEditModal(!isShowEditModal)}
                       >
@@ -705,8 +692,8 @@ const Folder = () => {
                       >
                         <button
                           type="button"
-                          className="w-40 text-md rounded-md px-4 mx-2 py-2
-                          text-md font-bold bg-green-500 hover:bg-green-600 
+                          className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                          text-md font-bold bg-blue-500 hover:bg-blue-600 
                        text-white focus:outline-none"
                         >
                           Create a new set
@@ -727,7 +714,7 @@ const Folder = () => {
                     </div>
                     <div className="flex items-center justify-center px-6 py-2 mt-4">
                       <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-md text-sm font-medium hover:text-gray-900 focus:outline-none"
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm font-medium hover:text-gray-900 focus:outline-none"
                         type="button"
                         onClick={() => setIsShowAddModal(!isShowAddModal)}
                       >
@@ -758,29 +745,29 @@ const Folder = () => {
                       onClick={deleteFolder}
                       className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
                     >
-                       {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Remove"
-                        )}
+                      {alert.loading ? (
+                        <div className="flex justify-center items-center space-x-1">
+                          <svg
+                            fill="none"
+                            className="w-6 h-6 animate-spin"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clipRule="evenodd"
+                              d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                              fill="currentColor"
+                              fillRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        "Remove"
+                      )}
                     </button>
                     <button
                       onClick={() => setIsShowDeleteModal(false)}
-                      className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                      className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
                     >
                       Cancel
                     </button>

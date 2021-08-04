@@ -90,7 +90,7 @@ const register = () => {
                   {alert.errors?.message}
                 </small>
               </div>
-              <button className="w-full text-center py-3 rounded hover:bg-green-600 bg-green-500 text-white hover:bg-green-dark focus:outline-none my-1">
+              <button className="w-full text-center py-3 rounded-sm hover:bg-blue-600 bg-blue-500 text-white hover:bg-green-dark focus:outline-none my-1">
                 {alert.loading ? (
                   <div className="flex justify-center items-center space-x-1">
                     <svg

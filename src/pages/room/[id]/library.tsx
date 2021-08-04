@@ -26,8 +26,8 @@ const defaultRoom = {
   createdDate: "",
   ownerName: "",
   setNumbers: 0,
-  folderNumbers: 0
-}
+  folderNumbers: 0,
+};
 
 //alert
 function Alert(props: AlertProps) {
@@ -45,18 +45,16 @@ const library = () => {
   const dispatch = useDispatch();
   const { auth, alert, user } = useSelector((state: RootStore) => state);
 
-
   const [error, setError]: [string, (error: string) => void] =
     React.useState("not found");
 
   const [room, setRoom] = React.useState<INewRoom>(defaultRoom);
   const [folders, setFolders] = React.useState<IFolder[]>([]);
-  const [sets, setSets]: [
-    IStudySet[],
-    (sets: IStudySet[]) => void
-  ] = React.useState(defaultStudySets);
+  const [sets, setSets]: [IStudySet[], (sets: IStudySet[]) => void] =
+    React.useState(defaultStudySets);
 
-  const [isShowRemoveFolderModal, setIsShowRemoveFolderModal] = React.useState(false);
+  const [isShowRemoveFolderModal, setIsShowRemoveFolderModal] =
+    React.useState(false);
   const [idRemoveFolder, setIdRemoveFolder] = React.useState<number>(0);
 
   const [isShowRemoveSetModal, setIsShowRemoveSetModal] = React.useState(false);
@@ -76,8 +74,6 @@ const library = () => {
         setRoom(res.data);
 
         dispatch({ type: ALERT, payload: { loading: false } });
-
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
@@ -88,7 +84,6 @@ const library = () => {
   }, [id, alert.success]);
 
   React.useEffect(() => {
-
     // list all folders in room
     async function excute() {
       try {
@@ -99,8 +94,6 @@ const library = () => {
 
         dispatch({ type: ALERT, payload: { loading: false } });
         setFolders(res.data);
-
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -119,7 +112,6 @@ const library = () => {
         );
         dispatch({ type: ALERT, payload: { loading: false } });
         setSets(res.data);
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
@@ -142,11 +134,8 @@ const library = () => {
       setMessageToast("folder removed");
       setTypeToast("success");
       setIsToastOpen(true);
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
-
     }
 
     setIsShowRemoveFolderModal(!isShowRemoveFolderModal);
@@ -174,11 +163,8 @@ const library = () => {
       setMessageToast("set removed");
       setTypeToast("success");
       setIsToastOpen(true);
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
-
     }
 
     setIsShowRemoveSetModal(!isShowRemoveSetModal);
@@ -223,8 +209,8 @@ const library = () => {
                   >
                     <button
                       type="button"
-                      className="w-40 text-md rounded-md px-4 mx-2 py-2
-            text-md font-bold bg-green-500 hover:bg-green-600 
+                      className="w-40 text-md rounded-sm px-4 mx-2 py-2
+            text-md font-bold bg-blue-500 hover:bg-blue-600 
          text-white focus:outline-none"
                     >
                       Create a new set
@@ -239,11 +225,10 @@ const library = () => {
             {/* sets */}
             <div className="mb-4">
               {auth.userResponse?.username === room.ownerName ? (
-                <p className="text-lg font-bold text-gray-500">{room.setNumbers} Sets</p>
-              )
-                :
-                null
-              }
+                <p className="text-lg font-bold text-gray-500">
+                  {room.setNumbers} Sets
+                </p>
+              ) : null}
 
               <hr />
             </div>
@@ -319,7 +304,9 @@ const library = () => {
             {/* folders */}
             <div className="mt-8 mb-4">
               {auth.userResponse?.username === room.ownerName ? (
-                <p className="text-lg font-bold text-gray-500">{room.folderNumbers} Folders</p>
+                <p className="text-lg font-bold text-gray-500">
+                  {room.folderNumbers} Folders
+                </p>
               ) : null}
 
               <hr />
@@ -329,7 +316,7 @@ const library = () => {
                 return (
                   <div
                     className="col-span-2 bg-white dark:bg-gray-800 mt-6 border-b-2  
-             hover:border-gray-300 hover:shadow-lg rounded-lg shadow-md flex justify-between"
+             hover:border-gray-300 hover:shadow-lg rounded-md shadow-md flex justify-between"
                     key={item.folder_id}
                   >
                     <div className="w-full">
@@ -343,7 +330,7 @@ const library = () => {
                           <div className="flex-1 pl-1 mr-16">
                             <div className="font-medium dark:text-white flex">
                               {room.ownerName ===
-                                auth.userResponse?.username ? (
+                              auth.userResponse?.username ? (
                                 item.color ? (
                                   <FolderOpenRoundedIcon
                                     className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
@@ -394,9 +381,7 @@ const library = () => {
                   <p className="text-xl font-semibold">
                     Are you sure want to remove this folder?
                   </p>
-                  <small>
-
-                  </small>
+                  <small></small>
                 </div>
 
                 <div className="flex justify-center">
@@ -426,7 +411,7 @@ const library = () => {
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>
@@ -443,9 +428,7 @@ const library = () => {
                   <p className="text-xl font-semibold">
                     Are you sure want to remove this set?
                   </p>
-                  <small>
-
-                  </small>
+                  <small></small>
                 </div>
 
                 <div className="flex justify-center">
@@ -475,7 +458,7 @@ const library = () => {
                   </button>
                   <button
                     onClick={closeRemoveSetModal}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>
@@ -484,7 +467,6 @@ const library = () => {
             </div>
           </div>
         ) : null}
-
       </div>
       <Snackbar
         open={isToastOpen}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Link as Link2, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 interface Props {
   //boolean to always open ddm (for presentation)
@@ -11,6 +12,7 @@ interface Props {
   items: DDMItem[];
   withBackground?: boolean;
   username?: string;
+  color?: string;
 }
 
 export interface DDMItem {
@@ -54,24 +56,14 @@ const DropDownMenu = (props: Props) => {
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={` ${
-            props.withBackground
-              ? "border border-gray-300 bg-white dark:bg-gray-800 shadow-sm"
-              : ""
-          } flex items-center justify-center w-full rounded-md px-2 py-2 text-sm font-medium text-gray-700 dark:text-gray-50 hover:bg-gray-100 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-white`}
+            props.withBackground ? " dark:bg-gray-800 shadow-sm" : ""
+          } flex items-center justify-center w-full rounded-md px-2 py-2 text-sm font-medium text-gray-700  
+           focus:outline-none `}
           id="options-menu"
         >
           {props.label}
           {props.icon}
-          <svg
-            width="20"
-            height="20"
-            className="px-1 text-gray-700"
-            fill="currentColor"
-            viewBox="0 0 1792 1792"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"></path>
-          </svg>
+          <ArrowDropDownIcon className="text-white" />
         </button>
       </div>
 

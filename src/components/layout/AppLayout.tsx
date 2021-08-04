@@ -14,6 +14,8 @@ import { getAPI, putAPI } from "../../utils/FetchData";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 import { useClickOutside } from "../../hook/useClickOutside";
+import AddIcon from "@material-ui/icons/Add";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 interface Props {
   title: string;
@@ -35,6 +37,8 @@ const AppLayout = (props: Props) => {
   const [isOpenSidebar, setOpenSidebar] = useState(true);
   const { auth, alert, search } = useSelector((state: RootStore) => state);
 
+  const [isClickShowMore, setClickShowMore] = useState(false);
+
   const [notificationList, setNotificationList] = React.useState<
     INotification[]
   >([]);
@@ -47,6 +51,21 @@ const AppLayout = (props: Props) => {
     React.useState<Number>(0);
 
   const [getCurrentPage, setCurrentPage] = React.useState(0);
+
+  React.useEffect(() => {
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=${0}`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setNotificationList(res.data.content);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    }
+
+    excute();
+  }, [alert.success]);
 
   React.useEffect(() => {
     async function excute() {
@@ -67,7 +86,7 @@ const AppLayout = (props: Props) => {
     }
 
     excute();
-  }, [alert.success, getCurrentPage]);
+  }, [isClickShowMore]);
 
   React.useEffect(() => {
     async function excute() {
@@ -152,6 +171,7 @@ const AppLayout = (props: Props) => {
   }
 
   async function showMoreNotification() {
+    setClickShowMore(true);
     setCurrentPage(getCurrentPage + 1);
   }
 
@@ -170,7 +190,7 @@ const AppLayout = (props: Props) => {
               </p>
               <div className="ml-2 flex-shrink-0 flex">
                 {item.read === false ? (
-                  <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                     new
                   </p>
                 ) : null}
@@ -196,19 +216,19 @@ const AppLayout = (props: Props) => {
         className="flex flex-col  overflow-hidden relative min-h-screen "
         style={{ background: "#F3F4F5" }}
       >
-        <header className=" z-40 top-0 sticky h-20 sm:h-16  flex items-center shadow-sm border-b-2">
+        <header className=" z-40 top-0 sticky h-20 sm:h-16 flex items-center border-b-2 bg-blue-500">
           {auth.userResponse ? (
             <div className="w-full mx-auto px-4 flex items-center justify-between">
-              <div className="  text-gray-700 dark:text-white  flex items-center">
+              <div className="   dark:text-white  flex items-center">
                 <Link href="/home">
-                  <a href="" className="text-2xl font-bold ml-3">
+                  <a href="" className="text-2xl font-bold ml-3 text-white">
                     SLA
                   </a>
                 </Link>
                 <form onSubmit={handelSearchSubmit}>
                   <div className="relative text-gray-600 ml-6">
                     <svg
-                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-white pointer-events-none fill-current group-hover:text-white sm:block"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                     >
@@ -216,7 +236,8 @@ const AppLayout = (props: Props) => {
                     </svg>
                     <input
                       type="text"
-                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-2xl focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
+                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-sm focus:border-transparent 
+                      focus:outline-none focus:ring-2 focus:ring-blue-200 ring-opacity-90 bg-blue-400 text-white placeholder-gray-200"
                       placeholder="Search"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
@@ -227,23 +248,7 @@ const AppLayout = (props: Props) => {
                 <div className="px-6 relative">
                   {/* create new drop down menu */}
                   <Ddm
-                    icon={
-                      <svg
-                        width="20px"
-                        height="20px"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M12 4V20M4 12L20 12"
-                          stroke="#001A72"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    }
+                    icon={<AddIcon className="text-white" />}
                     withBackground={false}
                     forceOpen={false}
                     items={ddmItemsAdd.map((item) => {
@@ -252,28 +257,28 @@ const AppLayout = (props: Props) => {
                   />
                 </div>
               </div>
-              <div className="flex items-center font-semibold">
-                <nav className=" text-gray-700 dark:text-white text-sm lg:flex items-center hidden">
+              <div className="flex items-center ">
+                <nav className="text-md lg:flex items-center hidden">
                   <Link href="/home">
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${
+                      className={`py-2 px-4 flex hover:underline  ${
                         router.pathname.indexOf("/home") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                          ? "text-white"
+                          : "text-gray-200"
                       }`}
                     >
-                      HOME
+                      Home
                     </a>
                   </Link>
                   <Link href="/schedule">
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${
+                      className={`py-2 px-4 flex hover:underline ${
                         router.pathname.indexOf("/schedule") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                          ? "text-white"
+                          : "text-gray-200"
                       }`}
                     >
-                      SCHEDULE
+                      Schedule
                     </a>
                   </Link>
                   <Link
@@ -283,39 +288,28 @@ const AppLayout = (props: Props) => {
                     }}
                   >
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${
+                      className={`py-2 px-4 flex hover:underline ${
                         router.pathname.indexOf("/library") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                          ? "text-white"
+                          : "text-gray-200"
                       }`}
                     >
-                      LIBRARY
+                      Library
                     </a>
                   </Link>
                   <Link href="/invitation">
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${
+                      className={`py-2 px-4 hover:underline ${
                         router.pathname.indexOf("/invitation") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
+                          ? "text-white"
+                          : "text-gray-200"
                       }`}
                     >
-                      INVITATION
+                      Invitation
                     </a>
                   </Link>
-                  <Link href="/explore">
-                    <a
-                      className={`py-2 px-4 flex hover:text-black ${
-                        router.pathname.indexOf("/explore") !== -1
-                          ? "justify-start border-b-2 border-yellow-500"
-                          : ""
-                      }`}
-                    >
-                      EXPLORE
-                    </a>
-                  </Link>
-                  <div className="flex ml-12 pl-4">
-                    <div className="ml-3 relative">
+                  <div className="flex flex-row ml-12 pl-4 text-center">
+                    <div className="ml-3 relative pb-1">
                       <div
                         className="relative inline-block text-left"
                         ref={domNode}
@@ -324,27 +318,18 @@ const AppLayout = (props: Props) => {
                           <button
                             onClick={() => handleBellNotifications()}
                             type="button"
-                            className="text-md text-white text-4xl relative"
+                            className="text-md text-white text-4xl relative focus:outline-none "
                           >
                             {listNotification.length !== 0 ? (
                               getNotReadNewsNumber !== 0 ? (
                                 <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500"></span>
                               ) : null
                             ) : null}
-                            <svg
-                              width="15"
-                              height="15"
-                              fill="gray"
-                              viewBox="0 0 1792 1792"
-                              className="text-black h-5 w-5 m-2"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z"></path>
-                            </svg>
+                            <NotificationsIcon />
                           </button>
                         </div>
                         {isMenuOpen ? (
-                          <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                          <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white overflow-auto">
                             <div
                               id="notificationTable"
                               className="py-1 overflow-y-scroll"
@@ -387,12 +372,12 @@ const AppLayout = (props: Props) => {
                         ) : null}
                       </div>
                     </div>
-                    <div className="px-0 relative">
+                    <div className="px-0 my-auto">
                       <Ddm
                         icon={
                           <svg
                             width="20"
-                            fill="currentColor"
+                            fill="white"
                             height="20"
                             className="text-gray-800"
                             viewBox="0 0 1792 1792"
@@ -415,17 +400,17 @@ const AppLayout = (props: Props) => {
                   className="lg:hidden flex flex-col ml-4"
                   onClick={handleOnClick}
                 >
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
+                  <span className="w-6 h-1 bg-white dark:bg-white mb-1" />
+                  <span className="w-6 h-1 bg-white dark:bg-white mb-1" />
+                  <span className="w-6 h-1 bg-white dark:bg-white mb-1" />
                 </button>
               </div>
             </div>
           ) : (
             <div className="container mx-auto px-6 flex items-center justify-between">
-              <div className="text-gray-700 dark:text-white flex items-center">
+              <div className="flex items-center">
                 <Link href="/home">
-                  <a href="" className="text-2xl font-bold ml-3">
+                  <a href="" className="text-2xl font-bold ml-3 text-white">
                     SLA
                   </a>
                 </Link>
@@ -445,18 +430,18 @@ const AppLayout = (props: Props) => {
                 </div>
               </div>
               <div className="flex items-center font-semibold">
-                <nav className=" text-gray-700 dark:text-white text-sm lg:flex items-center hidden">
+                <nav className=" text-gray-700 dark:text-white text-md lg:flex items-center hidden">
                   <div className="flex ml-12 pl-4">
                     <div className="ml-3 relative">
                       <Link href="/auth/login">
-                        <button className="flex p-2 items-center bg-white  text-gray-400 hover:text-gray-700 text-md">
+                        <button className="flex p-2 items-center text-white hover:text-gray-200 text-md focus:outline-none">
                           Login
                         </button>
                       </Link>
                     </div>
                     <div className="px-0 ml-4 relative">
                       <Link href="/auth/register">
-                        <button className="flex p-2 items-center bg-green-500  text-white rounded-lg hover:text-gray-100 text-md">
+                        <button className="flex p-2 items-center bg-blue-500  text-white rounded-lg hover:text-gray-200 text-md focus:outline-none">
                           Sign up
                         </button>
                       </Link>

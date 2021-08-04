@@ -160,7 +160,6 @@ const LibraryLayout = (props: Props) => {
       }
 
       if (router.pathname.includes("rooms")) {
-
         //creating new room
         setIsNameTyping(false);
         e.preventDefault();
@@ -169,9 +168,8 @@ const LibraryLayout = (props: Props) => {
         try {
           dispatch({ type: ALERT, payload: { loading: true } });
           const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
-          
-          dispatch({ type: ALERT, payload: { loading: false } });
 
+          dispatch({ type: ALERT, payload: { loading: false } });
         } catch (err) {
           dispatch({ type: ALERT, payload: { loading: false } });
           setMessageToast("An error occurred");
@@ -197,26 +195,27 @@ const LibraryLayout = (props: Props) => {
 
         // set creator is member
         const roomMember = {
-          "room_id": maxIdRoom,
-          "member_id": owner_id
-        }
+          room_id: maxIdRoom,
+          member_id: owner_id,
+        };
 
         dispatch({ type: ALERT, payload: { loading: true } });
         try {
           const res = await putAPI(
-            `${PARAMS.ENDPOINT}room/addMemberToRoom`, roomMember
+            `${PARAMS.ENDPOINT}room/addMemberToRoom`,
+            roomMember
           );
 
-          dispatch({ type: ALERT, payload: { loading: false, success: "abc" } });
+          dispatch({
+            type: ALERT,
+            payload: { loading: false, success: "abc" },
+          });
 
           setMessageToast("room created");
           setTypeToast("success");
           setIsToastOpen(true);
-
         } catch (err) {
           dispatch({ type: ALERT, payload: { loading: false } });
-
-
         }
       }
 
@@ -359,7 +358,7 @@ const LibraryLayout = (props: Props) => {
                       router.pathname.indexOf("/sets") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
-                      }`}
+                    }`}
                   >
                     <p className="font-bold">Sets</p>
                   </a>
@@ -375,7 +374,7 @@ const LibraryLayout = (props: Props) => {
                       router.pathname.indexOf("/folders") !== -1
                         ? "justify-start border-b-2 border-yellow-500"
                         : ""
-                      }`}
+                    }`}
                   >
                     <p className="font-bold">Folders</p>
                   </a>
@@ -391,7 +390,7 @@ const LibraryLayout = (props: Props) => {
                       router.pathname.indexOf("/rooms") !== -1
                         ? "justify-start border-b-2 border-yellow-500 "
                         : ""
-                      }`}
+                    }`}
                   >
                     <p className="font-bold">Rooms</p>
                   </a>
@@ -438,9 +437,9 @@ const LibraryLayout = (props: Props) => {
                     <button
                       id="btnAddNew"
                       onClick={handleAddNew}
-                      className="w-24 h-8 text-md flex items-center justify-center rounded-md px-4 
-                   text-sm font-medium py-1 bg-green-500 hover:bg-green-600 ml-4
-                text-white hover:bg-green-dark focus:outline-none"
+                      className="w-24 h-8 text-md flex items-center justify-center rounded-sm px-4 
+                   text-sm font-medium py-1 bg-blue-500 hover:bg-blue-600 ml-4
+                text-white  focus:outline-none"
                     >
                       Create
                     </button>
@@ -462,7 +461,7 @@ const LibraryLayout = (props: Props) => {
           >
             <div className="relative w-auto my-6 max-w-3xl">
               {/*content*/}
-              <div className="border-0 rounded-xl shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="border-0 rounded-md shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="justify-between px-4 pb-6 pt-8 rounded-t">
                   <p className="text-gray-700 font-semibold text-lg text-center">
@@ -486,17 +485,17 @@ const LibraryLayout = (props: Props) => {
                         />
                       </>
                     ) : (
-                        <>
-                          <InputGroup
-                            type="text"
-                            setValue={setName}
-                            placeholder="Name"
-                            error={nameErr}
-                            required
-                            label="Name"
-                          />
-                        </>
-                      )}
+                      <>
+                        <InputGroup
+                          type="text"
+                          setValue={setName}
+                          placeholder="Name"
+                          error={nameErr}
+                          required
+                          label="Name"
+                        />
+                      </>
+                    )}
 
                     <InputGroup
                       type="text"
@@ -520,7 +519,7 @@ const LibraryLayout = (props: Props) => {
                           </div>
                           <select
                             id="color"
-                            className="block border border-grey-light w-full p-2 rounded mb-1 focus:border-purple-400 text-sm"
+                            className="block border border-grey-light w-full p-2 rounded-md mb-1 focus:border-purple-400 text-sm"
                             ref={color_folder}
                             name="color"
                             onChange={formValue}
@@ -536,7 +535,7 @@ const LibraryLayout = (props: Props) => {
                   {/*footer*/}
                   <div className="flex items-center justify-end px-12 py-6">
                     <button
-                      className=" bg-green-500 text-white w-28 py-1 mx-2 rounded-md text-sm font-medium hover:bg-green-600"
+                      className=" bg-blue-500 text-white w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-blue-600"
                       type="submit"
                     >
                       {alert.loading ? (
@@ -556,11 +555,11 @@ const LibraryLayout = (props: Props) => {
                           </svg>
                         </div>
                       ) : (
-                          "Create"
-                        )}
+                        "Create"
+                      )}
                     </button>
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-md text-sm font-medium hover:bg-gray-300"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-gray-300"
                       type="button"
                       onClick={() => setShowModal(false)}
                     >

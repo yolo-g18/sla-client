@@ -13,7 +13,13 @@ import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutli
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
-import { INewRoom, ISetAdd, IFolder, FormSubmit, IUserResultSearch } from "../../utils/TypeScript";
+import {
+  INewRoom,
+  ISetAdd,
+  IFolder,
+  FormSubmit,
+  IUserResultSearch,
+} from "../../utils/TypeScript";
 import { getAPI, putAPI, deleteAPI, postAPI } from "../../utils/FetchData";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
@@ -31,7 +37,6 @@ interface Props {
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
 
 let useClickOutside = (handler: any) => {
   let domNode: any = useRef();
@@ -60,8 +65,8 @@ const defaultRoom = {
   createdDate: "",
   ownerName: "",
   setNumbers: 0,
-  folderNumbers: 0
-}
+  folderNumbers: 0,
+};
 
 const defaulAddSets: ISetAdd[] = [];
 
@@ -81,8 +86,6 @@ const RoomLayout = (props: Props) => {
   const { auth, alert, search } = useSelector((state: RootStore) => state);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-
-
   const [error, setError]: [string, (error: string) => void] =
     React.useState("not found");
 
@@ -96,8 +99,11 @@ const RoomLayout = (props: Props) => {
   const [isShowAddFolderModal, setIsShowAddFolderModal] = React.useState(false);
   const [folders, setFolders] = React.useState<IFolder[]>([]);
 
-  const [userSearchList, setUserSearchList] = React.useState<IUserResultSearch[]>([]);
-  const [isPendingRequestAttend, setIsPendingRequestAttend] = React.useState(false);
+  const [userSearchList, setUserSearchList] = React.useState<
+    IUserResultSearch[]
+  >([]);
+  const [isPendingRequestAttend, setIsPendingRequestAttend] =
+    React.useState(false);
   const [isMember, setIsMember] = React.useState(false);
   const [isToastOpen, setIsToastOpen] = React.useState(false);
   const [typeToast, setTypeToast] = React.useState("success");
@@ -111,16 +117,19 @@ const RoomLayout = (props: Props) => {
   const [titleErr, setTitleErr] = useState("");
   const [descErr, setDescErr] = useState("");
 
-  const [isShowRemoveRoomModal, setIsShowRemoveRoomModal] = React.useState(false);
+  const [isShowRemoveRoomModal, setIsShowRemoveRoomModal] =
+    React.useState(false);
 
-  const [isShowRemoveAllMemberModal, setIsShowRemoveAllMemberModal] = React.useState(false);
+  const [isShowRemoveAllMemberModal, setIsShowRemoveAllMemberModal] =
+    React.useState(false);
 
   const [idRemoveRoom, setIdRemoveRoom]: [
     number,
     (idRemoveRoom: number) => void
   ] = React.useState<number>(0);
 
-  const [isShowCreateFolderModal, setIsShowCreateFolderModal] = React.useState(false);
+  const [isShowCreateFolderModal, setIsShowCreateFolderModal] =
+    React.useState(false);
 
   // set state for array color
   const [colors, setColors]: [String[], (colors: String[]) => void] =
@@ -138,7 +147,6 @@ const RoomLayout = (props: Props) => {
 
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
-  
   const [isDefaultSearching, setIsDefaultSearching] = React.useState(true);
   React.useEffect(() => {
     // load folder color
@@ -164,40 +172,36 @@ const RoomLayout = (props: Props) => {
         const res = await getAPI(`${PARAMS.ENDPOINT}room/isMemberOfRoom/${id}`);
         setIsMember(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
       }
     }
     excute();
-  }, [alert.success,id]);
+  }, [alert.success, id]);
 
   React.useEffect(() => {
     // check member permisson
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(`${PARAMS.ENDPOINT}room/isUserRequestPending/${id}`);
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}room/isUserRequestPending/${id}`
+        );
         setIsPendingRequestAttend(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
 
-        const btn = (document.getElementById('btnRequest') as HTMLInputElement);
+        const btn = document.getElementById("btnRequest") as HTMLInputElement;
 
         if (btn) {
-
           if (res.data === true) {
-
-            btn.style.backgroundColor = '#607D8B';
-            btn.textContent = 'Cancel request';
-
+            btn.style.backgroundColor = "#607D8B";
+            btn.textContent = "Cancel request";
+          } else {
+            btn.style.backgroundColor =
+              "rgba(16, 185, 129, var(--tw-bg-opacity)";
+            btn.textContent = "Request to join";
           }
-          else {
-            btn.style.backgroundColor = 'rgba(16, 185, 129, var(--tw-bg-opacity)';
-            btn.textContent = 'Request to join';
-          }
-
-
         }
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -212,7 +216,6 @@ const RoomLayout = (props: Props) => {
     <option key={item.toString()}>{item}</option>
   ));
   React.useEffect(() => {
-
     // list all folders of user
     async function excute() {
       try {
@@ -223,7 +226,6 @@ const RoomLayout = (props: Props) => {
 
         dispatch({ type: ALERT, payload: { loading: false } });
         setFolders(res.data);
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -243,8 +245,6 @@ const RoomLayout = (props: Props) => {
         setDescription(res.data.description);
 
         dispatch({ type: ALERT, payload: { loading: false } });
-
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
@@ -254,9 +254,7 @@ const RoomLayout = (props: Props) => {
     excute();
   }, [id, alert.success]);
 
-
   React.useEffect(() => {
-
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -289,7 +287,7 @@ const RoomLayout = (props: Props) => {
         >
           <AddBoxRoundedIcon
             fontSize="large"
-            className="text-green-500 hover:text-green-600"
+            className="text-blue-500 hover:text-blue-600"
           />
         </button>
       </div>
@@ -298,10 +296,9 @@ const RoomLayout = (props: Props) => {
 
   // add existing SS to Room
   async function addStudySetToRoom(studySetAdd_id: number) {
-
     const data = {
-      "studySet_id": studySetAdd_id,
-      "room_id": id
+      studySet_id: studySetAdd_id,
+      room_id: id,
     };
 
     try {
@@ -314,8 +311,6 @@ const RoomLayout = (props: Props) => {
       setMessageToast("set added");
       setTypeToast("success");
       setIsToastOpen(true);
-  
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("set existed");
@@ -338,7 +333,7 @@ const RoomLayout = (props: Props) => {
         >
           <AddBoxRoundedIcon
             fontSize="large"
-            className="text-green-500 hover:text-green-600"
+            className="text-blue-500 hover:text-blue-600"
           />
         </button>
       </div>
@@ -347,33 +342,24 @@ const RoomLayout = (props: Props) => {
 
   async function addFolderToRoom(folderAdd_id: number) {
     const data = {
-      "folder_id": folderAdd_id,
-      "room_id": id
+      folder_id: folderAdd_id,
+      room_id: id,
     };
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
-      const res = await putAPI(
-        `${PARAMS.ENDPOINT}room/addFolderToRoom`,
-        data
-      );
+      const res = await putAPI(`${PARAMS.ENDPOINT}room/addFolderToRoom`, data);
 
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
 
       setMessageToast("folder added");
       setTypeToast("success");
       setIsToastOpen(true);
-    
-
-
-
     } catch (err) {
-
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("folder existed");
       setTypeToast("error");
       setIsToastOpen(true);
-
     }
   }
 
@@ -407,14 +393,11 @@ const RoomLayout = (props: Props) => {
 
     e.preventDefault();
 
-
     const data = {
-      "id": id,
-      "name": title,
-      "description": description
-    }
-      ;
-
+      id: id,
+      name: title,
+      description: description,
+    };
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -423,11 +406,9 @@ const RoomLayout = (props: Props) => {
         setMessageToast("room updated");
         setTypeToast("success");
         setIsToastOpen(true);
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
-
       }
     }
 
@@ -446,7 +427,6 @@ const RoomLayout = (props: Props) => {
   };
 
   async function removeRoom() {
-
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await deleteAPI(
@@ -462,12 +442,10 @@ const RoomLayout = (props: Props) => {
       });
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
     }
 
     setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
   }
-
 
   const handleRemoveRoom = (room_id: number) => {
     setIsShowRemoveRoomModal(!isShowRemoveRoomModal);
@@ -479,7 +457,6 @@ const RoomLayout = (props: Props) => {
   };
 
   async function removeAllMember() {
-
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await deleteAPI(
@@ -489,15 +466,12 @@ const RoomLayout = (props: Props) => {
       setMessageToast("all members removed");
       setTypeToast("success");
       setIsToastOpen(true);
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
     }
 
     setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
   }
-
 
   const handleRemoveAllMember = (room_id: number) => {
     setIsShowRemoveAllMemberModal(!isShowRemoveAllMemberModal);
@@ -515,7 +489,7 @@ const RoomLayout = (props: Props) => {
 
   const createNewFolder = async (e: FormSubmit) => {
     {
-      // create new folder 
+      // create new folder
       setIsDescriptionTyping(false);
       setIsTitleTyping(false);
 
@@ -533,10 +507,8 @@ const RoomLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "ss" },
         });
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-
       }
 
       // get id of folder just created
@@ -544,18 +516,14 @@ const RoomLayout = (props: Props) => {
 
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(
-          `${PARAMS.ENDPOINT}folder/getMaxIdOfFolder`
-        );
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getMaxIdOfFolder`);
         justFolderId = res.data;
         dispatch({
           type: ALERT,
           payload: { loading: false, success: "ss" },
         });
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-
       }
 
       // add this folder to room
@@ -566,28 +534,24 @@ const RoomLayout = (props: Props) => {
   };
 
   function handleRequestAttend() {
-
     if (isPendingRequestAttend === true) {
       deleteRequestAttendRoom();
-    }
-    else {
+    } else {
       requestAttendRoom();
     }
-
   }
 
   async function requestAttendRoom() {
-
-
     const data = {
-      "room_id": id,
-      "user_id": auth.userResponse?._id
-    }
+      room_id: id,
+      user_id: auth.userResponse?._id,
+    };
 
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
       const res = await putAPI(
-        `${PARAMS.ENDPOINT}room/requestAttendRoom`, data
+        `${PARAMS.ENDPOINT}room/requestAttendRoom`,
+        data
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
@@ -595,20 +559,12 @@ const RoomLayout = (props: Props) => {
       setMessageToast("request sent");
       setTypeToast("success");
       setIsToastOpen(true);
-
-
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
-
     }
-
-
   }
 
   async function deleteRequestAttendRoom() {
-
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
       const res = await deleteAPI(
@@ -620,43 +576,32 @@ const RoomLayout = (props: Props) => {
       setMessageToast("request canceled");
       setTypeToast("success");
       setIsToastOpen(true);
-
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-
-
     }
   }
 
-  async function inviteUserToRoom(userId:number) {
-
-
+  async function inviteUserToRoom(userId: number) {
     const data = {
-      "room_id": id,
-      "user_id": userId
-    }
+      room_id: id,
+      user_id: userId,
+    };
 
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
-      const res = await putAPI(
-        `${PARAMS.ENDPOINT}room/inviteUserToRoom`, data
-      );
+      const res = await putAPI(`${PARAMS.ENDPOINT}room/inviteUserToRoom`, data);
 
       dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
       notifyInvitation(userId);
       setMessageToast("invitation sent");
       setTypeToast("success");
       setIsToastOpen(true);
-
-      } catch (err) {
+    } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("invitation has been sent");
       setTypeToast("error");
       setIsToastOpen(true);
-
     }
-
-
   }
   const listInvitePerson = userSearchList.map((item) => (
     <div key={item.userId} className="flex flex-row ">
@@ -664,7 +609,7 @@ const RoomLayout = (props: Props) => {
         <div className="flex-1">
           <div className="font-semibold text-xl">{item.username}</div>
         </div>
-      
+
         <button
           onClick={() => inviteUserToRoom(item.userId!)}
           className="w-24 text-right flex justify-end focus:outline-none"
@@ -672,7 +617,7 @@ const RoomLayout = (props: Props) => {
         >
           <AddBoxRoundedIcon
             fontSize="large"
-            className="text-green-500 hover:text-green-600"
+            className="text-blue-500 hover:text-blue-600"
           />
         </button>
       </div>
@@ -680,12 +625,13 @@ const RoomLayout = (props: Props) => {
   ));
 
   async function searchUser(e: FormSubmit) {
-
     setIsDefaultSearching(false);
 
     e.preventDefault();
 
-    const textUserNameSearch = (document.getElementById('textNameUserSearch') as HTMLInputElement);
+    const textUserNameSearch = document.getElementById(
+      "textNameUserSearch"
+    ) as HTMLInputElement;
 
     // list user invite list
     async function excute() {
@@ -696,73 +642,59 @@ const RoomLayout = (props: Props) => {
         );
         setUserSearchList(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
-
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
     excute();
-
   }
 
-  function closeInviteModal(){
-      setUserSearchList([]);
-      setIsDefaultSearching(true);
-      setIsShowInviteModal(false);
+  function closeInviteModal() {
+    setUserSearchList([]);
+    setIsDefaultSearching(true);
+    setIsShowInviteModal(false);
   }
 
-  async function notifyInvitation(invitedPersonId : number){
-    
+  async function notifyInvitation(invitedPersonId: number) {
     const data = {
-      "creator_id": invitedPersonId,
-      "title":"Room Invitation",
-      "description":auth.userResponse?.username+" invites you to "+room.name,
-      "type":"invitation",
-      "link":"/invitation",
-      "isRead":false,
-      "timeTrigger":null
-    }
+      creator_id: invitedPersonId,
+      title: "Room Invitation",
+      description: auth.userResponse?.username + " invites you to " + room.name,
+      type: "invitation",
+      link: "/invitation",
+      isRead: false,
+      timeTrigger: null,
+    };
 
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
-      const res = await postAPI(
-        `${PARAMS.ENDPOINT}notify/create`, data
-      );
+      const res = await postAPI(`${PARAMS.ENDPOINT}notify/create`, data);
 
-      dispatch({ type: ALERT, payload: { loading: false} });
-
-     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-      
-
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
     }
   }
 
-  async function notifyRequestAttendRoom(){
-    
+  async function notifyRequestAttendRoom() {
     const data = {
-      "creator_id": room.ownerId,
-      "title":"Room Request Attendance",
-      "description":auth.userResponse?.username +" wants to attend "+room.name,
-      "type":"request",
-      "link":"/room/"+room.room_id+"/requests",
-      "isRead":false,
-      "timeTrigger":null
-    }
+      creator_id: room.ownerId,
+      title: "Room Request Attendance",
+      description:
+        auth.userResponse?.username + " wants to attend " + room.name,
+      type: "request",
+      link: "/room/" + room.room_id + "/requests",
+      isRead: false,
+      timeTrigger: null,
+    };
 
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
-      const res = await postAPI(
-        `${PARAMS.ENDPOINT}notify/create`, data
-      );
+      const res = await postAPI(`${PARAMS.ENDPOINT}notify/create`, data);
 
-      dispatch({ type: ALERT, payload: { loading: false} });
-
-     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
-      
-
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
     }
   }
 
@@ -788,7 +720,9 @@ const RoomLayout = (props: Props) => {
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-sm font-light text-gray-800">{room.description}</p>
+                <p className="text-sm font-light text-gray-800">
+                  {room.description}
+                </p>
               </div>
             </div>
           </div>
@@ -827,7 +761,9 @@ const RoomLayout = (props: Props) => {
                       <span className="tooltiptext w-32">add study sets</span>
                     </button>
                     <button
-                      onClick={() => setIsShowAddFolderModal(!isShowAddFolderModal)}
+                      onClick={() =>
+                        setIsShowAddFolderModal(!isShowAddFolderModal)
+                      }
                       className="mx-2 tooltip"
                     >
                       <CreateNewFolderOutlinedIcon
@@ -847,24 +783,19 @@ const RoomLayout = (props: Props) => {
                       <span className="tooltiptext w-28">invite user</span>
                     </button>
                   </div>
-                ) : (
-                    // sau phai check member hay ko de hien btn join
+                ) : // sau phai check member hay ko de hien btn join
 
-
-                    isMember === false ? (
-                      <button
-                        id="btnRequest"
-
-                        onClick={handleRequestAttend}
-                        className="w-32 text-md rounded-md px-4 py-1 mx-2
-                  text-sm font-medium bg-green-500 hover:bg-green-600 
+                isMember === false ? (
+                  <button
+                    id="btnRequest"
+                    onClick={handleRequestAttend}
+                    className="w-32 text-md rounded-md px-4 py-1 mx-2
+                  text-sm font-medium bg-blue-500 hover:bg-blue-600 
                text-white focus:outline-none"
-                      >
-                        <p className="text-md">Request to join</p>
-                      </button>
-                    ) : null
-
-                  )}
+                  >
+                    <p className="text-md">Request to join</p>
+                  </button>
+                ) : null}
 
                 <button
                   onClick={shareLink}
@@ -900,7 +831,9 @@ const RoomLayout = (props: Props) => {
                                 className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
                             hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                                 role="menuitem"
-                                onClick={() => handleRemoveAllMember(room.room_id)}
+                                onClick={() =>
+                                  handleRemoveAllMember(room.room_id)
+                                }
                               >
                                 <span className="flex flex-col">
                                   <span>remove all members</span>
@@ -932,30 +865,33 @@ const RoomLayout = (props: Props) => {
                   {/* default */}
                   <Link href={`/room/${room.room_id}/library`}>
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${router.pathname.indexOf("/library") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                        }`}
+                      className={`py-2 px-4 flex hover:text-black ${
+                        router.pathname.indexOf("/library") !== -1
+                          ? "justify-start border-b-2 border-yellow-500"
+                          : ""
+                      }`}
                     >
                       Library
                     </a>
                   </Link>
                   <Link href={`/room/${room.room_id}/members`}>
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${router.pathname.indexOf("/members") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                        }`}
+                      className={`py-2 px-4 flex hover:text-black ${
+                        router.pathname.indexOf("/members") !== -1
+                          ? "justify-start border-b-2 border-yellow-500"
+                          : ""
+                      }`}
                     >
                       Members
                     </a>
                   </Link>
                   <Link href={`/room/${room.room_id}/requests`}>
                     <a
-                      className={`py-2 px-4 flex hover:text-black ${router.pathname.indexOf("/requests") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                        }`}
+                      className={`py-2 px-4 flex hover:text-black ${
+                        router.pathname.indexOf("/requests") !== -1
+                          ? "justify-start border-b-2 border-yellow-500"
+                          : ""
+                      }`}
                     >
                       Requests
                     </a>
@@ -982,8 +918,8 @@ const RoomLayout = (props: Props) => {
                     >
                       <button
                         type="button"
-                        className="w-40 text-md rounded-md px-4 mx-2 py-2
-                          text-md font-bold bg-green-500 hover:bg-green-600 
+                        className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                          text-md font-bold bg-blue-500 hover:bg-blue-600 
                        text-white focus:outline-none"
                       >
                         Create a new set
@@ -1004,7 +940,7 @@ const RoomLayout = (props: Props) => {
                   </div>
                   <div className="flex items-center justify-center px-6 py-2 mt-4">
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-md text-sm font-medium hover:text-gray-900 focus:outline-none"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm font-medium hover:text-gray-900 focus:outline-none"
                       type="button"
                       onClick={() => setIsShowAddSetModal(!isShowAddSetModal)}
                     >
@@ -1025,21 +961,19 @@ const RoomLayout = (props: Props) => {
                     <p className="text-xl font-semibold">Add a folder</p>
                   </div>
                   <div className="mt-4 text-center">
-
                     <button
                       type="button"
-                      className="w-40 text-md rounded-md px-4 mx-2 py-2
-                          text-md font-bold bg-green-500 hover:bg-green-600 
+                      className="w-44 text-md rounded-sm px-4 mx-2 py-2
+                          text-md font-bold bg-blue-500 hover:bg-blue-600 
                        text-white focus:outline-none"
                       onClick={() => openCreateFolderModal()}
                     >
                       Create a new folder
                     </button>
-
                   </div>
 
                   <div
-                    className=" mx-auto w-full mt-4 overflow-y-auto bg-white rounded-lg"
+                    className=" mx-auto w-full mt-4 overflow-y-auto bg-white rounded-md"
                     style={{ height: 550, width: 450 }}
                   >
                     <div
@@ -1051,9 +985,11 @@ const RoomLayout = (props: Props) => {
                   </div>
                   <div className="flex items-center justify-center px-6 py-2 mt-4">
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-md text-sm font-medium hover:text-gray-900 focus:outline-none"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm font-medium hover:text-gray-900 focus:outline-none"
                       type="button"
-                      onClick={() => setIsShowAddFolderModal(!isShowAddFolderModal)}
+                      onClick={() =>
+                        setIsShowAddFolderModal(!isShowAddFolderModal)
+                      }
                     >
                       Close
                     </button>
@@ -1066,8 +1002,8 @@ const RoomLayout = (props: Props) => {
         {isShowEditModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
-                <div className="px-4 pb-6 pt-8 rounded-t">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full">
+                <div className="px-4 pb-6 pt-4 rounded-sm">
                   <p className="text-gray-700 font-semibold text-lg text-center">
                     Edit room
                   </p>
@@ -1091,11 +1027,10 @@ const RoomLayout = (props: Props) => {
                       error={descErr}
                       label="Description"
                     />
-
                   </div>
-                  <div className="flex items-center justify-end px-4">
+                  <div className="flex items-center justify-end px-4 my-4">
                     <button
-                      className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
+                      className=" bg-blue-500 text-white w-28 py-1  mx-4 rounded-sm text-sm font-medium hover:bg-blue-600"
                       type="submit"
                     >
                       {alert.loading ? (
@@ -1115,11 +1050,11 @@ const RoomLayout = (props: Props) => {
                           </svg>
                         </div>
                       ) : (
-                          "Save"
-                        )}
+                        "Save"
+                      )}
                     </button>
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
                       type="button"
                       onClick={() => setIsShowEditModal(!isShowEditModal)}
                     >
@@ -1134,8 +1069,8 @@ const RoomLayout = (props: Props) => {
         {isShowCreateFolderModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full">
-                <div className="px-4 pb-6 pt-8 rounded-t">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full">
+                <div className="px-4 pb-6 pt-8 rounded-sm">
                   <p className="text-gray-700 font-semibold text-lg text-center">
                     Create New Folder
                   </p>
@@ -1144,7 +1079,6 @@ const RoomLayout = (props: Props) => {
                   <div className="w-full px-4 mb-8 flex-wrap">
                     <InputGroup
                       type="text"
-
                       setValue={setTitle}
                       placeholder="Title"
                       error={titleErr}
@@ -1153,7 +1087,6 @@ const RoomLayout = (props: Props) => {
                     />
                     <InputGroup
                       type="text"
-
                       setValue={setDescription}
                       placeholder="Description"
                       error={descErr}
@@ -1167,7 +1100,7 @@ const RoomLayout = (props: Props) => {
                       </div>
                       <select
                         id="color"
-                        className="block border border-grey-light w-full p-2 rounded-md mb-1 focus:outline-none text-sm"
+                        className="block border border-grey-light w-full p-2 rounded-sm mb-1 focus:outline-none text-sm"
                         ref={color_folder}
                         name="color"
                         onChange={formValue}
@@ -1179,7 +1112,7 @@ const RoomLayout = (props: Props) => {
                   </div>
                   <div className="flex items-center justify-end px-4">
                     <button
-                      className=" bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
+                      className=" bg-blue-500 text-white w-28 py-1  mx-4 rounded-sm text-sm font-medium hover:bg-blue-600"
                       type="submit"
                     >
                       {alert.loading ? (
@@ -1199,13 +1132,15 @@ const RoomLayout = (props: Props) => {
                           </svg>
                         </div>
                       ) : (
-                          "Save"
-                        )}
+                        "Save"
+                      )}
                     </button>
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
                       type="button"
-                      onClick={() => setIsShowCreateFolderModal(!isShowCreateFolderModal)}
+                      onClick={() =>
+                        setIsShowCreateFolderModal(!isShowCreateFolderModal)
+                      }
                     >
                       Cancel
                     </button>
@@ -1218,7 +1153,7 @@ const RoomLayout = (props: Props) => {
         {isShowRemoveRoomModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p className="text-xl font-semibold">
@@ -1232,7 +1167,7 @@ const RoomLayout = (props: Props) => {
                 <div className="flex justify-center">
                   <button
                     onClick={removeRoom}
-                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                    className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
                     {alert.loading ? (
                       <div className="flex justify-center items-center space-x-1">
@@ -1251,12 +1186,12 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                        "Delete"
-                      )}
+                      "Delete"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>
@@ -1268,21 +1203,19 @@ const RoomLayout = (props: Props) => {
         {isShowRemoveAllMemberModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p className="text-xl font-semibold">
                     Are you sure want to remove all members this room?
                   </p>
-                  <small>
-                    There is no one in room
-                  </small>
+                  <small>There is no one in room</small>
                 </div>
 
                 <div className="flex justify-center">
                   <button
                     onClick={removeAllMember}
-                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                    className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
                     {alert.loading ? (
                       <div className="flex justify-center items-center space-x-1">
@@ -1301,12 +1234,12 @@ const RoomLayout = (props: Props) => {
                         </svg>
                       </div>
                     ) : (
-                        "Remove"
-                      )}
+                      "Remove"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveAllMemberModal}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>
@@ -1318,46 +1251,63 @@ const RoomLayout = (props: Props) => {
         {isShowInviteModal ? (
           <div className="justify-between items-center flex overflow-x-hidden my-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50">
             <div className="w-full flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-xl shadow py-4">
+              <div className="bg-white rounded-md shadow py-4">
                 <div>
                   <div className="mt-2 text-center">
                     <p className="text-xl font-semibold">Invite a person</p>
                   </div>
                   <br></br>
-                  <form onSubmit={searchUser} className="flex flex-col md:flex-row w-3/4 md:w-full max-w-sm md:space-x-3 space-y-3 md:space-y-0 justify-center">
+                  <form
+                    onSubmit={searchUser}
+                    className="flex flex-col md:flex-row w-3/4 md:w-full max-w-sm md:space-x-3 space-y-2 md:space-y-0 justify-center"
+                  >
                     <div className=" relative ">
-                      <input type="text" id="textNameUserSearch" className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent" placeholder="username" />
+                      <input
+                        type="text"
+                        id="textNameUserSearch"
+                        className=" rounded-md border-transparent flex-1 appearance-none border border-gray-300 w-full py-1 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent"
+                        placeholder="username"
+                      />
                     </div>
-                    <button className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 " type="submit">
+                    <button
+                      className="flex-shrink-0 px-4 py-1 text-base font-semibold text-white bg-blue-500 rounded-sm shadow-md
+                       hover:bg-blue-600 focus:outline-none focus:ring-2 "
+                      type="submit"
+                    >
                       Search
                     </button>
                   </form>
 
                   <div
-                    className=" mx-auto w-full mt-4 overflow-y-auto bg-white rounded-lg"
+                    className=" mx-auto w-full mt-4 overflow-y-auto bg-white rounded-md"
                     style={{ height: 550, width: 450 }}
                   >
                     <div
                       id="listInvite"
                       className="flex flex-col divide divide-y "
                     >
-                    {
-                    isDefaultSearching === false ? (
-                      listInvitePerson.length === 0 ? (
-                        <div key="resultNotFound" className="flex flex-row ">
-                        <div className="select-none cursor-pointer flex flex-1 items-center py-4 px-6">
-                          <div className="flex-1">
-                            <div><p className="text-red-500 text-center">Not found</p></div>
+                      {isDefaultSearching === false ? (
+                        listInvitePerson.length === 0 ? (
+                          <div key="resultNotFound" className="flex flex-row ">
+                            <div className="select-none cursor-pointer flex flex-1 items-center py-4 px-6">
+                              <div className="flex-1">
+                                <div>
+                                  <p className="text-red-500 text-center">
+                                    Not found
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                     ):listInvitePerson
-                    ):null}
+                        ) : (
+                          listInvitePerson
+                        )
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex items-center justify-center px-6 py-2 mt-4">
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-md text-sm font-medium hover:text-gray-900 focus:outline-none"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm font-medium hover:text-gray-900 focus:outline-none"
                       type="button"
                       onClick={closeInviteModal}
                     >

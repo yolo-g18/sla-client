@@ -425,7 +425,7 @@ const SetEditLayout = (props: Props) => {
                 {router.pathname.indexOf("/set/add") === -1 ? (
                   <Link href={`/set/${props.id}`}>
                     <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
                       type="button"
                     >
                       Back to set
@@ -439,7 +439,7 @@ const SetEditLayout = (props: Props) => {
                       ? () => setShowModaleComfirmModal(true)
                       : (e) => handleSubmit(e)
                   }
-                  className="bg-green-500 text-white w-28 py-1 rounded-md text-sm font-medium hover:bg-green-600"
+                  className="bg-blue-500 text-white w-28 py-1 rounded-sm text-sm font-medium hover:bg-blue-600"
                 >
                   {alert.loading
                     ? "Saving..."
@@ -529,7 +529,7 @@ const SetEditLayout = (props: Props) => {
                     <button
                       onClick={() => setShowModalRemoveAll(true)}
                       className={`
-            text-white w-24 py-1 rounded-md text-sm font-medium  focus:outline-none
+            text-white w-24 py-1 rounded-sm text-sm font-medium  focus:outline-none
              ${
                cards.length <= 2
                  ? "bg-gray-300"
@@ -545,7 +545,7 @@ const SetEditLayout = (props: Props) => {
                         setIsReset(true);
                         setIsChange(false);
                       }}
-                      className={` tooltip text-white w-20 py-1 rounded-md text-sm font-medium  focus:outline-none
+                      className={` tooltip text-white w-20 py-1 rounded-sm text-sm font-medium  focus:outline-none
                         ${
                           isChange || listCardsDelete.length !== 0
                             ? "bg-yellow-500 hover:bg-yellow-600"
@@ -568,7 +568,7 @@ const SetEditLayout = (props: Props) => {
                     <div className="rounded-xl flex w-full my-4">
                       <div className="flex justify-between w-full gap-3">
                         <div
-                          className="w-1/2  rounded-xl bg-white shadow-lg hover:bg-indigo-50"
+                          className="w-1/2  rounded-sm bg-white shadow-lg hover:bg-indigo-50"
                           onClick={() => {
                             setIsFront(true);
                             handelCardOnClick(card.front, index);
@@ -582,7 +582,7 @@ const SetEditLayout = (props: Props) => {
                           />
                         </div>
                         <div
-                          className="w-1/2 rounded-xl bg-white shadow-lg hover:bg-indigo-50"
+                          className="w-1/2 rounded-sm bg-white shadow-lg hover:bg-indigo-50"
                           onClick={() => {
                             setIsFront(false);
                             handelCardOnClick(card.back, index);
@@ -614,7 +614,7 @@ const SetEditLayout = (props: Props) => {
                 })}
                 <button
                   onClick={addMoreCard}
-                  className="text-white w-32 py-2 mx-auto rounded-md text-sm font-medium bg-green-500 hover:bg-green-600 mt-4 focus:outline-none"
+                  className="text-white w-32 py-2 mx-auto rounded-sm text-sm font-medium bg-blue-500 hover:bg-blue-600 mt-4 focus:outline-none"
                   type="button"
                 >
                   Add more card
@@ -625,7 +625,7 @@ const SetEditLayout = (props: Props) => {
             {showModalRemoveAll ? (
               <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
                 <div className=" w-full absolute flex items-center justify-center bg-modal">
-                  <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
+                  <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
                     <div className="mb-8">
                       <p className="text-xl font-semibold">
                         Are you sure want to remove all all card of set?
@@ -642,7 +642,7 @@ const SetEditLayout = (props: Props) => {
                       </button>
                       <button
                         onClick={() => setShowModalRemoveAll(false)}
-                        className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600 focus:outline-none"
+                        className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600 focus:outline-none"
                       >
                         Cancel
                       </button>
@@ -684,7 +684,7 @@ const SetEditLayout = (props: Props) => {
                           Cancel
                         </button>
                         <button
-                          className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                          className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
                           type="button"
                           onClick={handleCardSave}
                         >
@@ -719,7 +719,7 @@ const SetEditLayout = (props: Props) => {
                   </button>
                   <button
                     onClick={handleSubmit}
-                    className="text-white w-32 rounded mx-4 bg-green-500 hover:bg-green-600 focus:outline-none"
+                    className="text-white w-32 rounded mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
                   >
                     Save
                   </button>
