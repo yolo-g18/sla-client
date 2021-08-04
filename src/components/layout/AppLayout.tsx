@@ -332,7 +332,7 @@ const AppLayout = (props: Props) => {
                           <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white overflow-auto">
                             <div
                               id="notificationTable"
-                              className="py-1 overflow-y-scroll"
+                              className="py-1 overflow-y-scroll h-96"
                               role="menu"
                               aria-orientation="vertical"
                               aria-labelledby="options-menu"
