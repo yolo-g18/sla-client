@@ -52,6 +52,8 @@ const AppLayout = (props: Props) => {
 
   const [getCurrentPage, setCurrentPage] = React.useState(0);
 
+  const [totalPages, setTotalPages] = useState(0);
+
   React.useEffect(() => {
     async function excute() {
       try {
@@ -59,15 +61,18 @@ const AppLayout = (props: Props) => {
         const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=${0}`);
         dispatch({ type: ALERT, payload: { loading: false } });
         setNotificationList(res.data.content);
+        setTotalPages(res.data.totalPages);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
 
     excute();
-  }, [alert.success]);
+  }, [alert.success,getNotReadNewsNumber]);
 
   React.useEffect(() => {
+
+    setClickShowMore(false);
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -102,7 +107,11 @@ const AppLayout = (props: Props) => {
       }
     }
 
-    excute();
+    const interval = setInterval(() => excute(), 10000)
+    
+    return () => {
+      clearInterval(interval);}
+
   }, [alert.success, auth.userResponse?._id]);
 
   useEffect(() => {
@@ -136,6 +145,7 @@ const AppLayout = (props: Props) => {
   };
 
   function handleBellNotifications() {
+    
     setIsMenuOpen(!isMenuOpen);
   }
 
@@ -156,6 +166,7 @@ const AppLayout = (props: Props) => {
   }
 
   async function readAllNews() {
+    setNotReadNewsNumber(0);
     const data = {
       userId: auth.userResponse?._id,
     };
@@ -175,6 +186,7 @@ const AppLayout = (props: Props) => {
     setCurrentPage(getCurrentPage + 1);
   }
 
+  console.log("not read new: "+getNotReadNewsNumber);
   const listNotification = notificationList.map((item) => {
     return (
       <li>
@@ -318,11 +330,11 @@ const AppLayout = (props: Props) => {
                           <button
                             onClick={() => handleBellNotifications()}
                             type="button"
-                            className="text-md text-white text-4xl relative focus:outline-none "
+                            className="text-md text-white text-4xl relative focus:outline-none"
                           >
                             {listNotification.length !== 0 ? (
                               getNotReadNewsNumber !== 0 ? (
-                                <span className="w-2 h-2 rounded-full absolute left-6 top-2 leading text-xs bg-red-500"></span>
+                                <span className="w-2 h-2 rounded-full absolute left-4 top-2 leading text-xs bg-red-500"></span>
                               ) : null
                             ) : null}
                             <NotificationsIcon />
@@ -332,7 +344,7 @@ const AppLayout = (props: Props) => {
                           <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white overflow-auto">
                             <div
                               id="notificationTable"
-                              className="py-1 overflow-y-scroll"
+                              className="py-1 overflow-y-scroll h-96"
                               role="menu"
                               aria-orientation="vertical"
                               aria-labelledby="options-menu"
@@ -359,7 +371,7 @@ const AppLayout = (props: Props) => {
                                   listNotification
                                 )}
                               </ul>
-                              {listNotification.length !== 0 ? (
+                              {listNotification.length !== 0 && getCurrentPage < totalPages-1? (
                                 <p
                                   onClick={showMoreNotification}
                                   className="px-4 py-4 sm:px-6 text-center text-xs font-light text-blue-500 cursor-pointer hover:text-gray-600"

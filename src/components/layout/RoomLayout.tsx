@@ -195,12 +195,13 @@ const RoomLayout = (props: Props) => {
 
         if (btn) {
           if (res.data === true) {
-            btn.style.backgroundColor = "#607D8B";
+            
             btn.textContent = "Cancel request";
+            btn.className ="w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none";
           } else {
-            btn.style.backgroundColor =
-              "rgba(16, 185, 129, var(--tw-bg-opacity)";
+           
             btn.textContent = "Request to join";
+            btn.className ="w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white focus:outline-none";
           }
         }
       } catch (err) {
