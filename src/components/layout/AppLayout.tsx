@@ -216,7 +216,10 @@ const AppLayout = (props: Props) => {
         className="flex flex-col  overflow-hidden relative min-h-screen "
         style={{ background: "#F3F4F5" }}
       >
-        <header className=" z-40 top-0 sticky h-20 sm:h-16 flex items-center border-b-2 bg-blue-500">
+        <header
+          className=" z-40 top-0 sticky h-20 sm:h-16 flex items-center border-b-2 "
+          style={{ background: "#3273de" }}
+        >
           {auth.userResponse ? (
             <div className="w-full mx-auto px-4 flex items-center justify-between">
               <div className="   dark:text-white  flex items-center">
@@ -236,9 +239,10 @@ const AppLayout = (props: Props) => {
                     </svg>
                     <input
                       type="text"
-                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-sm focus:border-transparent 
-                      focus:outline-none focus:ring-2 focus:ring-blue-200 ring-opacity-90 bg-blue-400 text-white placeholder-gray-200"
-                      placeholder="Search"
+                      className="block w-full py-1.5 pl-10 pr-4 rounded-md f
+                      focus:outline-none focus:ring-2  ring-opacity-90 hover:bg-blue-400 text-white placeholder-gray-100"
+                      style={{ background: "#4b8cf7" }}
+                      placeholder="Search..."
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
                     />
@@ -263,7 +267,7 @@ const AppLayout = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:underline  ${
                         router.pathname.indexOf("/home") !== -1
-                          ? "text-white"
+                          ? "text-white font-bold"
                           : "text-gray-200"
                       }`}
                     >
@@ -274,7 +278,7 @@ const AppLayout = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:underline ${
                         router.pathname.indexOf("/schedule") !== -1
-                          ? "text-white"
+                          ? "text-white font-bold"
                           : "text-gray-200"
                       }`}
                     >
@@ -290,7 +294,7 @@ const AppLayout = (props: Props) => {
                     <a
                       className={`py-2 px-4 flex hover:underline ${
                         router.pathname.indexOf("/library") !== -1
-                          ? "text-white"
+                          ? "text-white font-bold"
                           : "text-gray-200"
                       }`}
                     >
@@ -301,7 +305,7 @@ const AppLayout = (props: Props) => {
                     <a
                       className={`py-2 px-4 hover:underline ${
                         router.pathname.indexOf("/invitation") !== -1
-                          ? "text-white"
+                          ? "text-white font-bold"
                           : "text-gray-200"
                       }`}
                     >

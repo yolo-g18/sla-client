@@ -6,15 +6,16 @@ import { useEffect, useState } from "react";
 
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import { IEventRes, RootStore } from "../../utils/TypeScript";
-import { convertTime, convertTimeToMySQl } from "./convertTime";
+import { FormSubmit, IEventRes, RootStore } from "../../utils/TypeScript";
+import { convertTime, convertTimeToMySQl, getTimeInDay } from "./convertTime";
 
 import EditIcon from "@material-ui/icons/Edit";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+
 import { useDispatch, useSelector } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
-import { getAPI } from "../../utils/FetchData";
+import { getAPI, postAPI } from "../../utils/FetchData";
 
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
@@ -23,10 +24,18 @@ import InputGroup from "../input/InputGroup";
 import TocRoundedIcon from "@material-ui/icons/TocRounded";
 import EventNoteRoundedIcon from "@material-ui/icons/EventNoteRounded";
 import LocalOfferOutlinedIcon from "@material-ui/icons/LocalOfferOutlined";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
 import { useClickOutside } from "../../hook/useClickOutside";
 import { putEvent } from "../../redux/actions/eventAction";
 
 interface Props {}
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const monthNames = [
@@ -54,29 +63,19 @@ const Calendar = (props: Props) => {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<IEventRes | any>({});
   const [caledarChange, setCalendarChange] = useState(false);
+
+  const [listColors, setListColors] = useState<string[]>([]);
+
   const [eventName, setEventName] = useState("");
   const [eventDesc, setEventDesc] = useState("");
   const [fromTime, setFromTime] = useState();
   const [toTime, setToTime] = useState();
   const [isLearnEvent, setIsLearnEvent] = useState(false);
   const [eventColor, setEventColor] = useState("BLUE");
-  const [listColors, setListColors] = useState<string[]>([]);
+
+  const [isSuccess, setIsSuccess] = useState(false);
 
   //click out side
-  let domNode = useClickOutside(() => {
-    setShowModalEdit(false);
-  });
-
-  //to check number of event display each day
-  const [weekDayOf1Evn, setWeekDayOf1Evn] = useState<
-    { i: number; evn: number }[]
-  >([]);
-  const [dayInMonthtEvn, setDayInMonthtEvn] = useState<
-    { i: number; evn: number }[]
-  >([]);
-  const [weekDayOfLastEvn, setWeekDayOfLastEvn] = useState<
-    { i: number; evn: number }[]
-  >([]);
 
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
 
@@ -95,24 +94,34 @@ const Calendar = (props: Props) => {
   const handlePrev = () => {
     setDayObj(dayObj.subtract(1, "month"));
     setCalendarChange(true);
-    setWeekDayOf1Evn([]);
-    setDayInMonthtEvn([]);
-    setWeekDayOfLastEvn([]);
   };
 
   const handleNext = () => {
     setDayObj(dayObj.add(1, "month"));
     setCalendarChange(true);
-    setWeekDayOf1Evn([]);
-    setDayInMonthtEvn([]);
-    setWeekDayOfLastEvn([]);
   };
 
   const jumToToday = () => {
     setDayObj(todayObj);
     setCalendarChange(true);
-  };
 
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
+            todayObj.startOf("day")
+          )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        dispatch(putEvent(res.data));
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    };
+
+    fetchData();
+  };
   const showModalEditHandle = (evn: IEventRes) => {
     setShowModalEdit(true);
     setCurrentEvent(evn);
@@ -120,9 +129,6 @@ const Calendar = (props: Props) => {
 
   //get all event for calendar
   useEffect(() => {
-    setWeekDayOf1Evn([]);
-    setDayInMonthtEvn([]);
-    setWeekDayOfLastEvn([]);
     setCalendarChange(false);
     const fetchData = async () => {
       try {
@@ -143,7 +149,7 @@ const Calendar = (props: Props) => {
     };
 
     fetchData();
-  }, [caledarChange]);
+  }, [caledarChange, isSuccess]);
 
   //init color list
   useEffect(() => {
@@ -170,8 +176,6 @@ const Calendar = (props: Props) => {
     return { day, month, year };
   };
 
-  const [listEvnByDay, setListEvnByDay] = useState<IEventRes[]>([]);
-
   const showMoreHandle = (dateFrom: any, dateTo: any) => {
     console.log("from: " + convertTimeToMySQl(dateFrom));
     console.log("to: " + convertTimeToMySQl(dateTo));
@@ -184,25 +188,82 @@ const Calendar = (props: Props) => {
           )}&to=${convertTimeToMySQl(dateTo)}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
-        setListEvnByDay(res.data);
-        console.log("by day: " + JSON.stringify(res.data));
+        dispatch(putEvent(res.data));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
     fetchData();
-    dispatch(putEvent(listEvnByDay));
   };
 
-  // const learnByDay = (id: string) => {
-  //   console.log("id of ss: " + id);
-  //   rou
-  // };
+  const [timeFromPick, setTimeFromPick] = useState<string>(
+    todayObj.format("HH:MM").toString()
+  );
+  const [timeToPick, setTimeToPick] = useState<string>(
+    todayObj.format("HH:MM").toString()
+  );
+  const [dateEventPick, setDateEventPick] = useState<string>(
+    todayObj.format("YYYY-MM-DD").toString()
+  );
+
+  //handle open add modal
+  const addClickHandle = (date: any) => {
+    setDateEventPick(date.format("YYYY-MM-DD").toString());
+    console.log("dd curr: " + date);
+    setShowModalAdd(true);
+  };
+
+  const [evnNameErr, setEvnNameErr] = useState("");
+  const [descErr, setDescNameErr] = useState("");
+
+  //state of alert
+  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [typeToast, setTypeToast] = useState("success");
+  const [messageToast, setMessageToast] = useState("");
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
+
+  const addEventHandle = () => {
+    const dataEvn = {
+      color: eventColor,
+      name: eventName,
+      description: eventDesc,
+      fromTime: new Date(dateEventPick + " " + timeFromPick).toISOString(),
+      toTime: new Date(dateEventPick + " " + timeFromPick).toISOString(),
+      isLearnEvent: false,
+    };
+
+    const fetchDate = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(`${PARAMS.ENDPOINT}event`, dataEvn);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setIsToastOpen(true);
+        setTypeToast("success");
+        setShowModalAdd(false);
+        setMessageToast("😎 Added");
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { errors: err.response.data } });
+        setIsToastOpen(true);
+        setTypeToast("error");
+        setMessageToast("An error occurred");
+      }
+    };
+
+    fetchDate();
+  };
 
   return (
     <div>
-      <div className="mx-auto pt-2 pb-10 px-4">
-        <div className="w-full flex items-cente justify-between">
+      <div className="mx-auto pt-2 pb-10">
+        <div className="w-full flex items-center justify-between">
           <div className="flex flex-wrap">
             <button
               onClick={handlePrev}
@@ -260,12 +321,6 @@ const Calendar = (props: Props) => {
                   >
                     <div className="justify-between flex px-2">
                       <p
-                        onClick={() =>
-                          showMoreHandle(
-                            dayObjOf1.subtract(weekDayOf1 - i, "day"),
-                            dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
-                          )
-                        }
                         className={`text-xs text-gray-400  pt-2 ${
                           dayObjOf1.subtract(weekDayOf1 - i, "day").date() ===
                             todayObj.date() &&
@@ -293,11 +348,27 @@ const Calendar = (props: Props) => {
                       )
                       .slice(0, 4)
                       .map((evn) => {
-                        return (
+                        return evn.isLearnEvent ? (
                           <button
                             key={evn.id}
                             onClick={() => showModalEditHandle(evn)}
-                            className="flex  px-2 w-full my-1.5"
+                            className="flex px-2 w-full my-1.5"
+                          >
+                            <img
+                              src="draft.svg"
+                              className="h-4 w-4 my-auto mr-2"
+                              alt=""
+                            />
+                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                              {evn.name}
+                            </div>
+                            <div className=" hidden xl:block"></div>
+                          </button>
+                        ) : (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className={`flex px-2 w-full my-1.5 bg-${evn.color}-100`}
                           >
                             <img
                               src="draft.svg"
@@ -339,7 +410,11 @@ const Calendar = (props: Props) => {
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
-                      onClick={() => setShowModalAdd(true)}
+                      onClick={() =>
+                        addClickHandle(
+                          dayjs(`${dayObjOf1.subtract(weekDayOf1 - i, "day")}`)
+                        )
+                      }
                       className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none "
                     >
                       +
@@ -351,7 +426,7 @@ const Calendar = (props: Props) => {
               {_.range(daysInMonth).map((i: number) => (
                 <div className={`relative`}>
                   <div
-                    className={`h-36 col-span-1 border-r border-b border-gray-200   hover:bg-gray-200 cellDay  
+                    className={`h-36 col-span-1 border-r border-b border-gray-200 hover:bg-gray-200 cellDay  
                      ${
                        (i + _.range(weekDayOf1).length) % 7 === 0 ||
                        (i + _.range(weekDayOf1).length) % 7 === 6
@@ -362,12 +437,6 @@ const Calendar = (props: Props) => {
                   >
                     <div className={`justify-between flex px-2 `}>
                       <p
-                        onClick={() =>
-                          showMoreHandle(
-                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
-                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
-                          )
-                        }
                         className={`text-xs text-gray-800  pt-2 ${
                           i + 1 === todayObj.date() &&
                           thisMonth === todayObj.month() &&
@@ -388,11 +457,11 @@ const Calendar = (props: Props) => {
                       )
                       .slice(0, 4)
                       .map((evn) => {
-                        return (
+                        return evn.isLearnEvent ? (
                           <button
                             key={evn.id}
                             onClick={() => showModalEditHandle(evn)}
-                            className="flex  px-2 w-full my-1.5"
+                            className="flex px-2 w-full my-1.5"
                           >
                             <img
                               src="draft.svg"
@@ -403,6 +472,20 @@ const Calendar = (props: Props) => {
                               {evn.name}
                             </div>
                             <div className=" hidden xl:block"></div>
+                          </button>
+                        ) : (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className={`flex w-full my-1.5 bg-${evn.color?.toLocaleLowerCase()}-200
+                             px-2 rounded justify-between`}
+                          >
+                            <div className="text-xs font-medium text-gray-800 truncate">
+                              {evn.name}
+                            </div>
+                            <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
+                              {getTimeInDay(evn.fromTime)}
+                            </div>
                           </button>
                         );
                       })}
@@ -428,7 +511,11 @@ const Calendar = (props: Props) => {
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
-                      onClick={() => setShowModalAdd(true)}
+                      onClick={() =>
+                        addClickHandle(
+                          dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`)
+                        )
+                      }
                       className=" tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none "
                     >
                       +
@@ -453,12 +540,6 @@ const Calendar = (props: Props) => {
                   >
                     <div className="justify-between flex px-2">
                       <p
-                        onClick={() =>
-                          showMoreHandle(
-                            dayObjOfLast.add(i + 1, "day"),
-                            dayObjOfLast.add(i + 2, "day")
-                          )
-                        }
                         className={`text-xs text-gray-500 dark:text-gray-100 pt-2 ${
                           dayObjOfLast.add(i + 1, "day").date() ===
                             todayObj.date() &&
@@ -617,17 +698,20 @@ const Calendar = (props: Props) => {
       ) : null}
 
       {showModalAdd ? (
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-          <div className="w-full flex justify-center h-screen items-center">
-            <div className="rounded-xl bg-white w-full md:w-2/3 lg:w-1/3 ">
-              <div className="px-5 py-3 flex items-center border-b float-right">
+        <div
+          className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0
+         z-50 backdrop-filter backdrop-brightness-50 -mt-12"
+        >
+          <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+            <div className="bg-white rounded-md shadow p-2 m-4 max-w-md max-h-full">
+              <div className="px-2 py-2 flex items-center float-right">
                 <button onClick={() => setShowModalAdd(false)}>
                   <CloseIcon />
                 </button>
               </div>
-              <div className="p-6">
+              <form className="p-4">
                 <div className=" flex flex-col w-full">
-                  <div className="flex w-full ">
+                  <div className="flex">
                     <TocRoundedIcon className="my-auto mr-4" />
                     <InputGroup
                       type="text"
@@ -635,7 +719,7 @@ const Calendar = (props: Props) => {
                       placeholder="add title"
                       value={eventName}
                       label="Title"
-                      // error={titleErr}
+                      error={evnNameErr}
                       required
                     />
                   </div>
@@ -645,9 +729,8 @@ const Calendar = (props: Props) => {
                     <InputArea
                       setValue={setEventDesc}
                       placeholder="add description"
-                      // error={alert.errors?.errors?.bio}
                       value={eventDesc}
-                      // error={descErr}
+                      error={descErr}
                       label="Description"
                     />
                   </div>
@@ -655,13 +738,13 @@ const Calendar = (props: Props) => {
                     <LocalOfferOutlinedIcon className="my-auto" />
                     <div className="w-full flex relative ml-4">
                       <div>
-                        <button
+                        <div
                           onClick={() =>
                             setShowModalColorPicker(!showModalColorPicker)
                           }
                           className={`w-6 h-6 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
-                                bg-${eventColor.toLocaleLowerCase()}-400`}
-                        ></button>
+                                bg-${eventColor.toLocaleLowerCase()}-400 cursor-pointer hover:bg-${eventColor.toLocaleLowerCase()}-300`}
+                        ></div>
                         {showModalColorPicker ? (
                           <div className="origin-top-right absolute z-50  mt-6 w-40 rounded-md shadow-lg hover:shadow-xl">
                             <div className="rounded-md bg-white shadow-xs px-4 py-3">
@@ -676,7 +759,9 @@ const Calendar = (props: Props) => {
                                         ></div>
                                       ) : (
                                         <div
-                                          onClick={() => setColorhandle(color)}
+                                          onClick={() => {
+                                            setColorhandle(color);
+                                          }}
                                           className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
                                                 bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
                                         ></div>
@@ -691,34 +776,58 @@ const Calendar = (props: Props) => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-around">
+                  <div className="flex mb-2">
+                    <div className="w-10"></div>
                     <TextField
-                      id="datetime-local"
-                      label="From"
-                      type="datetime-local"
-                      defaultValue={todayObj}
-                      className="text-gray-600 mx-1"
+                      id="date"
+                      label="Birthday"
+                      type="date"
+                      value={dateEventPick}
                       InputLabelProps={{
                         shrink: true,
                       }}
-                    />
-                    <TextField
-                      id="datetime-local"
-                      label="To"
-                      type="datetime-local"
-                      defaultValue={todayObj}
-                      className="text-gray-600 mx-1"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
+                      onChange={(e) => setDateEventPick(e.target.value)}
                     />
                   </div>
+                  <div className="flex">
+                    <div className="w-10"></div>
+                    <div>
+                      <TextField
+                        id="time"
+                        label="From"
+                        type="time"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          step: 300, // 5 min
+                        }}
+                        value={timeFromPick}
+                        onChange={(e) => setTimeFromPick(e.target.value)}
+                      />
+                    </div>
+                    <div className="ml-4">
+                      <TextField
+                        id="time"
+                        label="To"
+                        type="time"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          step: 300, // 5 min
+                        }}
+                        value={timeToPick}
+                        onChange={(e) => setTimeToPick(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center text-blue-400 justify-between py-6 px-4 border-t float-right">
+              </form>
+              <div className="flex items-center text-blue-400 justify-between py-3 px-2 border-t float-right">
                 <button
-                  // onClick={() => setShowModalEdit(false)}
-                  className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
+                  onClick={() => addEventHandle()}
+                  className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                 >
                   Save
                 </button>
@@ -727,6 +836,24 @@ const Calendar = (props: Props) => {
           </div>
         </div>
       ) : null}
+      <Snackbar
+        open={isToastOpen}
+        autoHideDuration={1000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={
+            typeToast === "success"
+              ? "success"
+              : typeToast === "error"
+              ? "error"
+              : "warning"
+          }
+        >
+          {messageToast}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

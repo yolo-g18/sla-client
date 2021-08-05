@@ -22,7 +22,6 @@ import "react-quill/dist/quill.bubble.css";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import { id } from "date-fns/locale";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -249,7 +248,7 @@ const SetEditLayout = (props: Props) => {
 
         setIsToastOpen(true);
         setTypeToast("success");
-        setMessageToast("😎 Your study set updated!");
+        setMessageToast("😎 Your study set created!");
 
         router.push({
           pathname: "/set/[id]",

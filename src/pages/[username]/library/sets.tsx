@@ -114,7 +114,7 @@ const sets = (props: any) => {
                       </div>
                       <div>
                         <p className="text-gray-500 text-sm">
-                          Progress: {set.progress * 100}%
+                          Progress: {Math.round(set.progress * 100)}%
                         </p>
                       </div>
                       <div className="row-span-1 mt-1">

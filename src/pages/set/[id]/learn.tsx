@@ -528,7 +528,7 @@ const learn = () => {
                       <button
                         onClick={() => handelResultUserSelect(index)}
                         key={index}
-                        className={`flex-wrap w-1/6 mx-2 h-8 px-2 py-1 rounded-md transition duration-300 hover:bg-gray-200 bg-green-${
+                        className={`flex-wrap w-1/6 mx-2 h-8 px-2 py-1 rounded-md transition duration-300 hover:bg-gray-200 bg-blue-${
                           index + 3
                         }00 focus:outline-none text-white text-sm hover:text-gray-900`}
                       >

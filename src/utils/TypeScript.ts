@@ -264,8 +264,8 @@ export interface INewRoom {
         name: string
         description?: string
         isLearnEvent: boolean
-        fromTime: number
-        toTime: number
+        fromTime: Date
+        toTime: Date
         color?: string | null
         createdTime: number
         updateTime: number
