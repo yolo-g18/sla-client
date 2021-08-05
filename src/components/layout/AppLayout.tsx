@@ -363,7 +363,7 @@ const AppLayout = (props: Props) => {
                                 {listNotification.length === 0 ? (
                                   <li>
                                     <div className="px-4 py-4 sm:px-6">
-                                      <p className="text-center">
+                                      <p className="text-sm font-thin text-center text-gray-400 m-20">
                                         You have no notification
                                       </p>
                                     </div>

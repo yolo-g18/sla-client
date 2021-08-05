@@ -193,14 +193,14 @@ const requests = () => {
       
       
       {isMember === true && room.ownerName !== auth.userResponse?.username ? 
-      (<p className="text-lg text-center text-yellow-600 m-16">You have no permission to see this content</p>):null}
+      (<p className="text-lg font-thin text-center text-yellow-600 m-16">You have no permission to see this content</p>):null}
       
       {guestRooms.length === 0 ? (
         room.ownerName === auth.userResponse?.username ? (
           <div>
 
             {guestRooms.length === 0 ? (
-             <p className="text-lg text-center text-gray-400 m-16">You have no request</p>
+             <p className="text-lg font-thin text-center text-gray-400 m-16">You have no request</p>
             ) :
             null}
 
