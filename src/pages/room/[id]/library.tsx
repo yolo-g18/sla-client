@@ -64,6 +64,7 @@ const library = () => {
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
 
+  const [isMember, setIsMember] = React.useState(false);
   React.useEffect(() => {
     // load detail data of room
 
@@ -187,18 +188,35 @@ const library = () => {
 
     setIsToastOpen(false);
   };
+
+  React.useEffect(() => {
+    // check member permisson
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/isMemberOfRoom/${id}`);
+        setIsMember(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+       
+      }
+    }
+    excute();
+  }, [alert.success, id]);
   return (
     <RoomLayout>
       <div className="mt-6">
-        {room.setNumbers === 0 ? (
+        {room.setNumbers === 0 && room.folderNumbers ===0 ? (
           <div className="col-span-2 text-center mx-auto">
             {auth.userResponse?.username === room.ownerName ? (
               <>
                 <p className="text-3xl font-semibold text-gray-700">
-                  This room doesn't have any sets yet
+                  This room doesn't have any data yet
             </p>
+            <br/>
                 <p className="text-md text-gray-600">
-                  Add an existing set or create a new one to share.
+                  Add an existing set or folder and maybe create a new one to share.
                 </p>
                 <div className="mt-4 text-center">
                   <Link
@@ -223,9 +241,9 @@ const library = () => {
             <div>
               {/* sets */}
               <div className="mb-4">
-                {auth.userResponse?.username === room.ownerName ? (
-                  <p className="text-lg font-bold text-gray-500">
-                    {room.setNumbers} Sets
+                {isMember === true ? (
+                  <p className="text-lg text-gray-500">
+                    Sets
                   </p>
                 ) : null}
 
@@ -302,9 +320,9 @@ const library = () => {
 
               {/* folders */}
               <div className="mt-8 mb-4">
-                {auth.userResponse?.username === room.ownerName ? (
-                  <p className="text-lg font-bold text-gray-500">
-                    {room.folderNumbers} Folders
+                {isMember === true ? (
+                  <p className="text-lg text-gray-500">
+                    Folders
                   </p>
                 ) : null}
 

@@ -51,6 +51,7 @@ const requests = () => {
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
 
+  const [isMember, setIsMember] = React.useState(false);
   //handel close toast
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
@@ -170,15 +171,48 @@ const requests = () => {
       dispatch({ type: ALERT, payload: { loading: false } });
     }
   }
+
+  React.useEffect(() => {
+    // check member permisson
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/isMemberOfRoom/${id}`);
+        setIsMember(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        
+      }
+    }
+    excute();
+  }, [alert.success, id]);
+  
   return (
     <RoomLayout>
+      
+      
+      {isMember === true && room.ownerName !== auth.userResponse?.username ? 
+      (<p className="text-lg text-center text-yellow-600 m-16">You have no permission to see this content</p>):null}
+      
       {guestRooms.length === 0 ? (
-        <div></div>
+        room.ownerName === auth.userResponse?.username ? (
+          <div>
+
+            {guestRooms.length === 0 ? (
+             <p className="text-lg text-center text-gray-400 m-16">You have no request</p>
+            ) :
+            null}
+
+
+          </div>
+        ) : null
+
       ) : room.ownerName === auth.userResponse?.username ? (
         <div>
           <div className="mt-8 mb-6">
-            <p className="text-lg font-bold text-gray-500">
-              {guestRooms.length} users are waiting for approval
+            <p className="text-lg text-gray-500">
+              Some users command attend your room
             </p>
             <hr />
           </div>
@@ -200,10 +234,8 @@ const requests = () => {
                       <div className="cursor-pointer flex flex-1 items-center p-4">
                         <FaceOutlinedIcon style={{ fontSize: 65 }} />
                         <div className="flex-1 pl-1 mr-16">
-                          {room.ownerName === item.userName
-                            ? "host"
-                            : "request"}
-                          <div className="font-medium hover:underline flex">
+                          <p className="text-sm text-gray-400">user</p>
+                          <div className="text-lg font-bold hover:underline flex">
                             <p>{item.userName}</p>
                           </div>
                         </div>

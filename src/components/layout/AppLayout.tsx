@@ -67,7 +67,7 @@ const AppLayout = (props: Props) => {
       }
     }
     excute();
-    const interval = setInterval(() => excute(), 10000)
+    const interval = setInterval(() => excute(), 5000)
     
     return () => {
       clearInterval(interval);}

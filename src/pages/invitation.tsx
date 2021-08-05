@@ -129,13 +129,13 @@ const invitation = () => {
       {
           invitationList.length > 0 ? (
           invitationList.length === 1 ? (
-            <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitation</p>)
+            <p className="text-lg text-gray-400 m-16">You received {invitationList.length} invitation</p>)
             : (
-              <p className="text-lg font-bold text-gray-700 m-16">You received {invitationList.length} invitations</p>
+              <p className="text-lg text-gray-400 m-16">You received {invitationList.length} invitations</p>
             )
         ) :
           (
-            <p className="text-lg font-bold text-gray-700 m-16">You have no invitation</p>)
+            <p className="text-lg text-gray-400 m-16">You have no invitation</p>)
         
       }
 
