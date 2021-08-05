@@ -455,12 +455,9 @@ const Folder = () => {
                     Organize all your study sets with folders.
                   </p>
                   <div className="mt-4 text-center">
-                    <Link
-                      href={{
-                        pathname: "/set/add",
-                      }}
-                    >
+                    
                       <button
+                        onClick={setIsShowAddModal(true)}
                         type="button"
                         className="w-40 text-md rounded-sm px-4 mx-2 py-2
                       text-md font-bold bg-blue-500 hover:bg-blue-600 
@@ -468,7 +465,7 @@ const Folder = () => {
                       >
                         Create a new set
                       </button>
-                    </Link>
+                    
                   </div>
                 </div>
               ) : (
