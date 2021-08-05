@@ -213,8 +213,8 @@ const AppLayout = (props: Props) => {
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
       <main
-        className="flex flex-col  overflow-hidden relative min-h-screen "
-        style={{ background: "#F3F4F5" }}
+        className="flex flex-col  overflow-hidden relative min-h-screen bg-white"
+        // style={{ background: "#F3F4F5" }}
       >
         <header
           className=" z-40 top-0 sticky h-20 sm:h-16 flex items-center border-b-2 "

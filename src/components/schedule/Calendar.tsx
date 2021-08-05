@@ -1,13 +1,19 @@
 import dayjs from "dayjs";
 import _, { stubFalse } from "lodash";
 import Link from "next/link";
+import "date-fns";
 
 import { useEffect, useState } from "react";
 
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { FormSubmit, IEventRes, RootStore } from "../../utils/TypeScript";
-import { convertTime, convertTimeToMySQl, getTimeInDay } from "./convertTime";
+import {
+  convertTime,
+  convertTimeToMySQl,
+  formatDate2,
+  getTimeInDay,
+} from "./convertTime";
 
 import EditIcon from "@material-ui/icons/Edit";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
@@ -26,6 +32,12 @@ import EventNoteRoundedIcon from "@material-ui/icons/EventNoteRounded";
 import LocalOfferOutlinedIcon from "@material-ui/icons/LocalOfferOutlined";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
 
 import { useClickOutside } from "../../hook/useClickOutside";
 import { putEvent } from "../../redux/actions/eventAction";
@@ -66,7 +78,7 @@ const Calendar = (props: Props) => {
 
   const [listColors, setListColors] = useState<string[]>([]);
 
-  const [eventName, setEventName] = useState("");
+  const [eventName, setEventName] = useState("New event");
   const [eventDesc, setEventDesc] = useState("");
   const [fromTime, setFromTime] = useState();
   const [toTime, setToTime] = useState();
@@ -129,6 +141,7 @@ const Calendar = (props: Props) => {
 
   //get all event for calendar
   useEffect(() => {
+    setIsSuccess(false);
     setCalendarChange(false);
     const fetchData = async () => {
       try {
@@ -177,8 +190,10 @@ const Calendar = (props: Props) => {
   };
 
   const showMoreHandle = (dateFrom: any, dateTo: any) => {
-    console.log("from: " + convertTimeToMySQl(dateFrom));
-    console.log("to: " + convertTimeToMySQl(dateTo));
+    console.log(
+      convertTimeToMySQl(dateFrom) + " to " + convertTimeToMySQl(dateTo)
+    );
+
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -187,6 +202,11 @@ const Calendar = (props: Props) => {
             dateFrom
           )}&to=${convertTimeToMySQl(dateTo)}`
         );
+
+        console.log(
+          convertTimeToMySQl(dateFrom) + " to " + convertTimeToMySQl(dateTo)
+        );
+
         dispatch({ type: ALERT, payload: { loading: false } });
         dispatch(putEvent(res.data));
       } catch (err) {
@@ -196,25 +216,35 @@ const Calendar = (props: Props) => {
     fetchData();
   };
 
-  const [timeFromPick, setTimeFromPick] = useState<string>(
-    todayObj.format("HH:MM").toString()
+  const [dateEventPick, setDateEventPick] = useState<Date | null>(
+    new Date(todayObj.toString())
   );
-  const [timeToPick, setTimeToPick] = useState<string>(
-    todayObj.format("HH:MM").toString()
+  const [timeFromPick, setTimeFromPick] = useState<Date | null>(
+    dateEventPick
+      ? new Date(dateEventPick.toString())
+      : new Date(todayObj.toString())
   );
-  const [dateEventPick, setDateEventPick] = useState<string>(
-    todayObj.format("YYYY-MM-DD").toString()
+  const [timeToPick, setTimeToPick] = useState<Date | null>(
+    dateEventPick
+      ? new Date(dateEventPick.toString())
+      : new Date(todayObj.toString())
   );
 
   //handle open add modal
   const addClickHandle = (date: any) => {
-    setDateEventPick(date.format("YYYY-MM-DD").toString());
-    console.log("dd curr: " + date);
+    setDateEventPick(new Date(date.toString()));
+    setTimeFromPick(new Date(date.toString()));
+
+    const d = new Date(dateEventPick ? dateEventPick : "");
+    d?.setDate(d.getDate() + 1);
+    console.log(convertTimeToMySQl(d));
+
     setShowModalAdd(true);
   };
 
   const [evnNameErr, setEvnNameErr] = useState("");
   const [descErr, setDescNameErr] = useState("");
+  const [timePickerErr, setTimePickerErr] = useState("");
 
   //state of alert
   const [isToastOpen, setIsToastOpen] = useState(false);
@@ -226,21 +256,66 @@ const Calendar = (props: Props) => {
     if (reason === "clickaway") {
       return;
     }
-
     setIsToastOpen(false);
   };
 
+  //change time to, time from when user change date evn
+  useEffect(() => {
+    setTimeFromPick(dateEventPick);
+  }, [dateEventPick]);
+
+  //change totime when from time change
+  useEffect(() => {
+    const time = new Date(timeFromPick ? timeFromPick : "");
+    if (time) {
+      time.setTime(time.getTime() + 60 * 60 * 1000);
+      setTimeToPick(time);
+    }
+  }, [timeFromPick]);
+
+  //validate input
+  useEffect(() => {
+    if (eventName.length <= 0) {
+      setEvnNameErr("Title is required.");
+    } else if (eventName.length > 50) {
+      setEvnNameErr("Title cannot exceed 50 character.");
+    } else {
+      setEvnNameErr("");
+    }
+
+    if (eventDesc.length > 150) {
+      setDescNameErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescNameErr("");
+    }
+    if (timeFromPick && timeToPick) {
+      if (timeFromPick > timeToPick) {
+        setTimePickerErr("Invalid time");
+      } else {
+        setTimePickerErr("");
+      }
+    }
+  }, [eventName, eventDesc, timeToPick, timeFromPick]);
+
   const addEventHandle = () => {
+    //check error
+    if (evnNameErr || descErr || timePickerErr) return;
+
     const dataEvn = {
       color: eventColor,
       name: eventName,
       description: eventDesc,
-      fromTime: new Date(dateEventPick + " " + timeFromPick).toISOString(),
-      toTime: new Date(dateEventPick + " " + timeFromPick).toISOString(),
+      fromTime: timeFromPick?.toISOString(),
+      toTime: timeToPick?.toISOString(),
       isLearnEvent: false,
     };
 
+    if (eventName.length === 0) {
+      setEvnNameErr("");
+    }
+
     const fetchDate = async () => {
+      const t = new Date(dateEventPick ? dateEventPick : "");
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await postAPI(`${PARAMS.ENDPOINT}event`, dataEvn);
@@ -249,15 +324,32 @@ const Calendar = (props: Props) => {
         setTypeToast("success");
         setShowModalAdd(false);
         setMessageToast("😎 Added");
+        setIsSuccess(true);
+        setEventName("New event");
+        setEventDesc("");
+        setEventColor("BLUE");
+
+        // convert date
+        await t?.setDate(t.getDate() + 1);
+
+        showMoreHandle(dateEventPick, t);
       } catch (err) {
-        dispatch({ type: ALERT, payload: { errors: err.response.data } });
+        dispatch({ type: ALERT, payload: { loading: false } });
         setIsToastOpen(true);
         setTypeToast("error");
         setMessageToast("An error occurred");
+        setIsSuccess(false);
       }
     };
 
     fetchDate();
+  };
+
+  const handleCloseModalAdd = () => {
+    setShowModalAdd(false);
+    setEventName("New event");
+    setEventDesc("");
+    setEventColor("BLUE");
   };
 
   return (
@@ -368,17 +460,15 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalEditHandle(evn)}
-                            className={`flex px-2 w-full my-1.5 bg-${evn.color}-100`}
+                            className={`flex w-full my-1.5 bg-${evn.color?.toLocaleLowerCase()}-200
+                             px-2 rounded justify-between`}
                           >
-                            <img
-                              src="draft.svg"
-                              className="h-4 w-4 my-auto mr-2"
-                              alt=""
-                            />
-                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                            <div className="text-xs font-medium text-gray-800 truncate">
                               {evn.name}
                             </div>
-                            <div className=" hidden xl:block"></div>
+                            <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
+                              {getTimeInDay(evn.fromTime)}
+                            </div>
                           </button>
                         );
                       })}
@@ -424,7 +514,15 @@ const Calendar = (props: Props) => {
                 </div>
               ))}
               {_.range(daysInMonth).map((i: number) => (
-                <div className={`relative`}>
+                <div
+                  onClick={() =>
+                    showMoreHandle(
+                      dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
+                      dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                    )
+                  }
+                  className={`relative`}
+                >
                   <div
                     className={`h-36 col-span-1 border-r border-b border-gray-200 hover:bg-gray-200 cellDay  
                      ${
@@ -567,11 +665,11 @@ const Calendar = (props: Props) => {
                       )
                       .slice(0, 4)
                       .map((evn) => {
-                        return (
+                        return evn.isLearnEvent ? (
                           <button
                             key={evn.id}
                             onClick={() => showModalEditHandle(evn)}
-                            className="flex  px-2 w-full my-2"
+                            className="flex px-2 w-full my-1.5"
                           >
                             <img
                               src="draft.svg"
@@ -582,6 +680,20 @@ const Calendar = (props: Props) => {
                               {evn.name}
                             </div>
                             <div className=" hidden xl:block"></div>
+                          </button>
+                        ) : (
+                          <button
+                            key={evn.id}
+                            onClick={() => showModalEditHandle(evn)}
+                            className={`flex w-full my-1.5 bg-${evn.color?.toLocaleLowerCase()}-200
+                             px-2 rounded justify-between`}
+                          >
+                            <div className="text-xs font-medium text-gray-800 truncate">
+                              {evn.name}
+                            </div>
+                            <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
+                              {getTimeInDay(evn.fromTime)}
+                            </div>
                           </button>
                         );
                       })}
@@ -613,7 +725,11 @@ const Calendar = (props: Props) => {
                   </div>
                   <div className="hide absolute top-1 right-2">
                     <button
-                      onClick={() => setShowModalAdd(true)}
+                      onClick={() =>
+                        addClickHandle(
+                          dayjs(`${dayObjOfLast.add(i + 1, "day")}`)
+                        )
+                      }
                       className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none "
                     >
                       +
@@ -705,7 +821,7 @@ const Calendar = (props: Props) => {
           <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
             <div className="bg-white rounded-md shadow p-2 m-4 max-w-md max-h-full">
               <div className="px-2 py-2 flex items-center float-right">
-                <button onClick={() => setShowModalAdd(false)}>
+                <button onClick={handleCloseModalAdd}>
                   <CloseIcon />
                 </button>
               </div>
@@ -776,52 +892,64 @@ const Calendar = (props: Props) => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex mb-2">
-                    <div className="w-10"></div>
-                    <TextField
-                      id="date"
-                      label="Birthday"
-                      type="date"
-                      value={dateEventPick}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) => setDateEventPick(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex">
-                    <div className="w-10"></div>
-                    <div>
-                      <TextField
-                        id="time"
-                        label="From"
-                        type="time"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        inputProps={{
-                          step: 300, // 5 min
-                        }}
-                        value={timeFromPick}
-                        onChange={(e) => setTimeFromPick(e.target.value)}
-                      />
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <div className="flex mb-2">
+                      <div className="w-10"></div>
+                      <div className="grid grid-cols-1">
+                        <div className="col-span-1">
+                          <KeyboardDatePicker
+                            disableToolbar
+                            variant="inline"
+                            format="MM/dd/yyyy"
+                            margin="normal"
+                            id="date-picker-inline"
+                            label="Date"
+                            value={dateEventPick}
+                            onChange={setDateEventPick}
+                            KeyboardButtonProps={{
+                              "aria-label": "change date",
+                            }}
+                            className="w-52"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="ml-4">
-                      <TextField
-                        id="time"
-                        label="To"
-                        type="time"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        inputProps={{
-                          step: 300, // 5 min
-                        }}
-                        value={timeToPick}
-                        onChange={(e) => setTimeToPick(e.target.value)}
-                      />
+                    <div className="flex">
+                      <div className="w-16"></div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="col-span-1">
+                          <KeyboardTimePicker
+                            margin="normal"
+                            id="time-picker"
+                            label="From"
+                            ampm={false}
+                            value={timeFromPick}
+                            onChange={setTimeFromPick}
+                            KeyboardButtonProps={{
+                              "aria-label": "change time",
+                            }}
+                          />
+                        </div>
+                        <div className="ml-4 col-span-1">
+                          <KeyboardTimePicker
+                            margin="normal"
+                            id="time-picker"
+                            label="To"
+                            ampm={false}
+                            value={timeToPick}
+                            onChange={setTimeToPick}
+                            KeyboardButtonProps={{
+                              "aria-label": "change time",
+                            }}
+                            minDateMessage={setTimePickerErr}
+                          />
+                          <small className="font-medium text-red-600">
+                            {timePickerErr}
+                          </small>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </MuiPickersUtilsProvider>
                 </div>
               </form>
               <div className="flex items-center text-blue-400 justify-between py-3 px-2 border-t float-right">

@@ -2,7 +2,6 @@ import AppLayout2 from "../components/layout/AppLayout";
 import { useEffect, useState } from "react";
 import Calendar from "../components/schedule/Calendar";
 import EventIcon from "@material-ui/icons/Event";
-import AddRoundedIcon from "@material-ui/icons/AddRounded";
 import dayjs from "dayjs";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -11,25 +10,12 @@ import { ALERT } from "../redux/types/alertType";
 import { getAPI } from "../utils/FetchData";
 
 import {
+  convertTime,
   convertTimeToMySQl,
+  formatUTCToDate,
   getTimeInDay,
 } from "../components/schedule/convertTime";
 import { PARAMS } from "../common/params";
-
-const monthNames = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sept",
-  "Oct",
-  "Nov",
-  "Dec",
-];
 
 const todayObj = dayjs();
 
@@ -38,11 +24,12 @@ const schedule = () => {
   const { alert, event } = useSelector((state: RootStore) => state);
 
   const [listEvnDisplay, setListEvnDisplay] = useState<IEventRes[]>([]);
+  const [currentDate, setCurrentDate] = useState<Date>();
+
+  console.log(alert.success);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("start: " + convertTimeToMySQl(todayObj.startOf("day")));
-
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
@@ -51,24 +38,27 @@ const schedule = () => {
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
-
-        console.log("ls today: " + JSON.stringify(res.data));
-        if (event.length === 0) setListEvnDisplay(res.data);
-        else setListEvnDisplay(event);
+        setListEvnDisplay(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
+    if (event.length === 0) fetchData();
+    else setListEvnDisplay(event);
+    setCurrentDate(event[0]?.fromTime);
+  }, [event, alert.success]);
 
-    fetchData();
-  }, [event]);
+  console.log("dd: " + currentDate);
 
   return (
     <div>
       <AppLayout2 title="Schedule" desc="Schedule">
         <div className=" grid grid-cols-1 lg:grid-cols-5 w-full px-4 mb-36">
-          <div className="col-span-1 px-2 mt-6">
-            <div className="shadow-lg rounded-xl w-full p-4 bg-white lg:h-screen overflow-auto mb-6">
+          <div className="col-span-1 px-2 mt-2">
+            <div
+              className="shadow-lg rounded-md w-full p-4 bg-white overflow-auto mb-6"
+              style={{ height: "780px" }}
+            >
               <div className="w-full flex items-center justify-between">
                 <p className="text-gray-800 dark:text-white text-xl font-medium">
                   Calendar
@@ -78,11 +68,12 @@ const schedule = () => {
                 </button>
               </div>
               <p className="text-gray-800 dark:text-white text-md font-medium mb-4">
-                23 Jun
+                {formatUTCToDate(listEvnDisplay[0]?.fromTime)}
               </p>
               {listEvnDisplay.map((evn, index) => {
                 return (
                   <div
+                    key={index}
                     className={`flex items-center mb-2 rounded justify-between p-3 bg-${
                       evn.color ? evn.color.toLocaleLowerCase() : "green"
                     }-100`}

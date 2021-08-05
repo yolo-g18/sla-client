@@ -1,3 +1,18 @@
+const monthNames = [
+   "Jan",
+   "Feb",
+   "Mar",
+   "Apr",
+   "May",
+   "Jun",
+   "Jul",
+   "Aug",
+   "Sept",
+   "Oct",
+   "Nov",
+   "Dec",
+ ];
+
 
 export const convertTime = (timeEvent: any) => {
    return {
@@ -20,7 +35,9 @@ export const convertTimeToMySQl = (timeEvent: any) => {
 }
 
 export const getTimeInDay = (time: any) => {
-      return new Date(time).getHours() + ": " + new Date(time).getMinutes()
+   let t = new Date(time);
+   let datetext = t.toTimeString();
+   return datetext = datetext.split(' ')[0].slice(0, 5);
 }
 
 export const formatDate = (oj: any) => {
@@ -35,3 +52,8 @@ export const formatDate2 = (oj: any) => {
 //     if(-10 < d && d < 0) return "-0" + (-1*d).toString();
 //     return d.toString();
 // }
+
+export const formatUTCToDate = (date: any) => {
+   return new Date(date).getDate() + " "
+   + monthNames[(new Date(date).getMonth() +1)];
+}
