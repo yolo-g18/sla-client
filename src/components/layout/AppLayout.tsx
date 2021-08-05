@@ -66,7 +66,7 @@ const AppLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
-
+    excute();
     const interval = setInterval(() => excute(), 10000)
     
     return () => {
@@ -333,11 +333,11 @@ const AppLayout = (props: Props) => {
                             type="button"
                             className="text-md text-white text-4xl relative focus:outline-none"
                           >
-                            {listNotification.length !== 0 ? (
-                              getNotReadNewsNumber !== 0 ? (
+                           
+                             {getNotReadNewsNumber !== 0 ? (
                                 <span className="w-2 h-2 rounded-full absolute left-4 top-2 leading text-xs bg-red-500"></span>
-                              ) : null
-                            ) : null}
+                              ) : null}
+                          
                             <NotificationsIcon />
                           </button>
                         </div>
