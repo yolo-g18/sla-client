@@ -129,73 +129,69 @@ const members = () => {
       {members.length === 0 ? (
         <div></div>
       ) : (
-        <div>
-          <div className="mt-8 mb-6">
-            <p className="text-lg font-bold text-gray-500">
-              {members.length} Members
+          <div>
+            <div className="mt-8 mb-6">
+              <p className="text-lg font-bold text-gray-500">
+                {members.length} Members
             </p>
-            <hr />
-          </div>
-          {members.map((item, index) => {
-            return (
-              <div>
-                <div
-                  className=" bg-white dark:bg-gray-800 mt-6 border-b-2  
+              <hr />
+            </div>
+            {members.map((item, index) => {
+              return (
+                <div>
+                  <div
+                    className=" bg-white dark:bg-gray-800 mt-6 border-b-2  
              hover:border-gray-300 hover:shadow-lg rounded-md shadow-md flex justify-between"
-                  key={index}
-                >
-                  <div className="w-full">
-                    <Link
-                      href={{
-                        pathname: "/[username]/library/sets",
-                        query: { username: item.userName },
-                      }}
-                    >
-                      <div className="cursor-pointer flex flex-1 items-center p-4">
-                        <FaceOutlinedIcon style={{ fontSize: 65 }} />
-                        <div className="flex-1 pl-1 mr-16">
-                          {room.ownerName === item.userName ? "host" : "member"}
-                          <div className="font-medium hover:underline flex">
-                            <p>{item.userName}</p>
+                    key={index}
+                  >
+                    <div className="w-full">
+                      <Link
+                        href={{
+                          pathname: "/[username]/library/sets",
+                          query: { username: item.userName },
+                        }}
+                      >
+                        <div className="cursor-pointer flex flex-1 items-center p-4">
+                          <FaceOutlinedIcon style={{ fontSize: 65 }} />
+                          <div className="flex-1 pl-1 mr-16">
+                            {room.ownerName === item.userName ? "admin room" : "member"}
+                            <div className="font-medium hover:underline flex">
+                              <p>{item.userName}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  </div>
-                  {room.ownerName === auth.userResponse?.username ? (
-                    <div className="my-auto px-4">
-                      <button
-                        onClick={() => handleRemoveMember(item.member_id)}
-                        className={`tooltip text-right flex justify-end focus:outline-none 
+                      </Link>
+                    </div>
+                    {room.ownerName === auth.userResponse?.username ? (
+                      <div className="my-auto px-4">
+                        <button
+                          onClick={() => handleRemoveMember(item.member_id)}
+                          className={`tooltip text-right flex justify-end focus:outline-none 
                         `}
-                        disabled={item.userName === auth.userResponse?.username} //check host
-                      >
-                        <HighlightOffOutlinedIcon
-                          className={`
+                          style={item.userName === auth.userResponse?.username ? { display: "none" } : {}} //check host
+                        >
+                          <HighlightOffOutlinedIcon
+                            className={`
                         ${
-                          item.userName === auth.userResponse?.username
-                            ? "text-gray-300"
-                            : "hover:text-yellow-500 text-gray-700"
-                        }`}
-                        />
-                        {item.userName === auth.userResponse?.username ? (
-                          <span className="tooltiptext w-44">
-                            cannot remove host
-                          </span>
-                        ) : (
+                              item.userName === auth.userResponse?.username
+                                ? "text-gray-300"
+                                : "hover:text-yellow-500 text-gray-700"
+                              }`}
+                          />
+
                           <span className="tooltiptext w-44">
                             remove this member
                           </span>
-                        )}
-                      </button>
-                    </div>
-                  ) : null}
+
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
       {isShowRemoveMemberModal ? (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
           <div className=" w-full absolute flex items-center justify-center bg-modal">
@@ -229,8 +225,8 @@ const members = () => {
                       </svg>
                     </div>
                   ) : (
-                    "Remove"
-                  )}
+                      "Remove"
+                    )}
                 </button>
                 <button
                   onClick={closeRemoveMemberModal}

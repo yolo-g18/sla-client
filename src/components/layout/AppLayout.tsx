@@ -53,7 +53,27 @@ const AppLayout = (props: Props) => {
   const [getCurrentPage, setCurrentPage] = React.useState(0);
 
   const [totalPages, setTotalPages] = useState(0);
+  React.useEffect(() => {
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}notify/getNotReadNewsNumber/${auth.userResponse?._id}`
+        );
+        setNotReadNewsNumber(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    }
 
+    const interval = setInterval(() => excute(), 10000)
+    
+    return () => {
+      clearInterval(interval);}
+
+  }, [alert.success, auth.userResponse?._id]);
+  
   React.useEffect(() => {
     async function excute() {
       try {
@@ -68,7 +88,7 @@ const AppLayout = (props: Props) => {
     }
 
     excute();
-  }, [alert.success,getNotReadNewsNumber]);
+  }, [getNotReadNewsNumber]);
 
   React.useEffect(() => {
 
@@ -93,26 +113,7 @@ const AppLayout = (props: Props) => {
     excute();
   }, [isClickShowMore]);
 
-  React.useEffect(() => {
-    async function excute() {
-      try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(
-          `${PARAMS.ENDPOINT}notify/getNotReadNewsNumber/${auth.userResponse?._id}`
-        );
-        setNotReadNewsNumber(res.data);
-        dispatch({ type: ALERT, payload: { loading: false } });
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
-    }
 
-    const interval = setInterval(() => excute(), 10000)
-    
-    return () => {
-      clearInterval(interval);}
-
-  }, [alert.success, auth.userResponse?._id]);
 
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
