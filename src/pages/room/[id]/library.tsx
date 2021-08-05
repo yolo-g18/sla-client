@@ -378,9 +378,12 @@ const library = () => {
                         <div className="my-auto px-4">
                           <button
                             onClick={() => handleRemoveFolder(item.folder_id)}
-                            className="text-right flex justify-end focus:outline-none"
+                            className="tooltip text-right flex justify-end focus:outline-none"
                           >
-                            <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
+                            <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
+                                <span className="tooltiptext w-32">
+                                  remove this folder
+                              </span>
                           </button>
                         </div>
                       ) : null}

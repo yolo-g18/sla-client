@@ -14,7 +14,7 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../../redux/types/alertType";
 import { PARAMS } from "../../../common/params";
 import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
-
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -172,9 +172,12 @@ const folder = () => {
                 <div className="my-auto px-4">
                   <button
                     onClick={() => handleRemoveFolder(item.folder_id)}
-                    className="text-right flex justify-end focus:outline-none"
+                    className="tooltip text-right flex justify-end focus:outline-none"
                   >
-                    <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
+                    <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
+                                <span className="tooltiptext w-32">
+                                  delete this folder
+                              </span>
                   </button>
                 </div>
               ) : null}
