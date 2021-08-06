@@ -288,3 +288,9 @@ export interface INotification {
   createdTime: string
   read:boolean
 }
+
+export interface IEventHandle {
+  typeAction?: number
+  currentEvn?: IEventRes | undefined
+  time?: Date
+}

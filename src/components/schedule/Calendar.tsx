@@ -44,6 +44,7 @@ import AccessAlarmOutlinedIcon from "@material-ui/icons/AccessAlarmOutlined";
 
 import { useClickOutside } from "../../hook/useClickOutside";
 import { putEvent } from "../../redux/actions/eventAction";
+import { eventHandleDispatch } from "../../redux/actions/eventHandleAction";
 
 interface Props {}
 
@@ -71,7 +72,9 @@ const todayObj = dayjs();
 
 const Calendar = (props: Props) => {
   const dispatch = useDispatch();
-  const { auth, alert, event } = useSelector((state: RootStore) => state);
+  const { auth, alert, event, eventHandle } = useSelector(
+    (state: RootStore) => state
+  );
 
   const [dayObj, setDayObj] = useState(dayjs());
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -117,6 +120,7 @@ const Calendar = (props: Props) => {
     setCalendarChange(true);
   };
 
+  //jump today
   const jumToToday = () => {
     setDayObj(todayObj);
     setCalendarChange(true);
@@ -168,6 +172,16 @@ const Calendar = (props: Props) => {
     fetchData();
   }, [caledarChange, isSuccess]);
 
+  useEffect(() => {
+    if (eventHandle.typeAction === 1) {
+      addClickHandle(eventHandle.time);
+    }
+    if (eventHandle.typeAction === 2) {
+      setshowModalView(true);
+      setCurrentEvent(eventHandle.currentEvn);
+    }
+  }, [eventHandle.typeAction]);
+
   //init color list
   useEffect(() => {
     const fetchData = async () => {
@@ -194,6 +208,12 @@ const Calendar = (props: Props) => {
   };
 
   const showMoreHandle = (dateFrom: any, dateTo: any) => {
+    console.log(
+      JSON.stringify(convertTime(dateFrom)) +
+        ": " +
+        JSON.stringify(convertTime(dateTo))
+    );
+
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -230,6 +250,10 @@ const Calendar = (props: Props) => {
   const addClickHandle = (date: any) => {
     setDateEventPick(new Date(date.toString()));
     setTimeFromPick(new Date(date.toString()));
+    const time = new Date();
+    setTimeFromPick(time);
+    setDateEventPick(time);
+    setTimeToPick(time);
 
     setShowModalAdd(true);
   };
@@ -254,16 +278,12 @@ const Calendar = (props: Props) => {
   //change time to, time from when user change date evn
   useEffect(() => {
     setTimeFromPick(dateEventPick);
-  }, [dateEventPick]);
-
-  //change totime when from time change
-  useEffect(() => {
-    const time = new Date(timeFromPick ? timeFromPick : "");
+    const time = new Date(dateEventPick ? dateEventPick : "");
     if (time) {
       time.setTime(time.getTime() + 60 * 60 * 1000);
       setTimeToPick(time);
     }
-  }, [timeFromPick]);
+  }, [dateEventPick]);
 
   //validate input
   useEffect(() => {
@@ -300,7 +320,6 @@ const Calendar = (props: Props) => {
     }
 
     const fetchDate = async () => {
-      const t = new Date(dateEventPick ? dateEventPick : "");
       try {
         if (isEditing) {
           const dataEvnUpdate = {
@@ -338,16 +357,17 @@ const Calendar = (props: Props) => {
         setIsToastOpen(true);
         setTypeToast("success");
         setShowModalAdd(false);
+        dispatch(eventHandleDispatch({ typeAction: 0 }));
 
         setIsSuccess(true);
         setEventName("New event");
         setEventDesc("");
         setEventColor("BLUE");
 
-        // convert date
-        await t?.setDate(t.getDate() + 1);
-
-        showMoreHandle(dateEventPick, t);
+        showMoreHandle(
+          dayjs(dateEventPick).startOf("day"),
+          dayjs(dateEventPick).endOf("day")
+        );
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -363,6 +383,7 @@ const Calendar = (props: Props) => {
 
   const handleCloseModalAdd = () => {
     setShowModalAdd(false);
+    dispatch(eventHandleDispatch({ typeAction: 0 }));
     setIsEditing(false);
     setEventName("New event");
     setEventDesc("");
@@ -373,34 +394,37 @@ const Calendar = (props: Props) => {
     setshowModalView(false);
     setShowModalAdd(true);
     setIsEditing(true);
+    dispatch(eventHandleDispatch({ typeAction: 0 }));
 
     setEventColor(currentEvent.color);
     setEventName(currentEvent.name);
     setEventDesc(currentEvent.description);
-    setTimeToPick(currentEvent.fromTime);
-    setTimeFromPick(currentEvent.toTime);
+    setDateEventPick(currentEvent.fromTime);
+    setTimeToPick(currentEvent.toTime);
+    setTimeFromPick(currentEvent.fromTime);
   };
 
   const [showModalCfDelete, setShowModalCfDelete] = useState(false);
 
   //delete event
   const deleteEventHandle = async () => {
-    const t = new Date(dateEventPick ? dateEventPick : "");
-
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
-      const res = await deleteAPI(
-        `${PARAMS.ENDPOINT}event?id=${currentEvent.id}`
-      );
-      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await deleteAPI(`${PARAMS.ENDPOINT}event/${currentEvent.id}`);
+      dispatch({ type: ALERT, payload: { loading: false } });
 
+      setIsSuccess(true);
       setMessageToast("Deleted");
       setTypeToast("success");
       setIsToastOpen(true);
+      setShowModalCfDelete(false);
+      setshowModalView(false);
+      dispatch(eventHandleDispatch({ typeAction: 0 }));
 
-      // convert date
-      await t?.setDate(t.getDate() + 1);
-      showMoreHandle(dateEventPick, t);
+      showMoreHandle(
+        dayjs(currentEvent.fromTime).startOf("day"),
+        dayjs(currentEvent.fromTime).endOf("day")
+      );
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("An error occurred");
@@ -408,6 +432,7 @@ const Calendar = (props: Props) => {
       setIsToastOpen(true);
       setShowModalCfDelete(false);
       setshowModalView(false);
+      dispatch(eventHandleDispatch({ typeAction: 0 }));
     }
   };
 
@@ -420,6 +445,13 @@ const Calendar = (props: Props) => {
     setShowModalCfDelete(false);
     setshowModalView(true);
   };
+
+  const closeViewEvnModal = () => {
+    setshowModalView(false);
+    dispatch(eventHandleDispatch({ typeAction: 0 }));
+  };
+
+  console.log(dayjs(currentEvent.toTime) < todayObj);
 
   return (
     <div>
@@ -477,7 +509,7 @@ const Calendar = (props: Props) => {
                   onClick={() =>
                     showMoreHandle(
                       dayObjOf1.subtract(weekDayOf1 - i, "day"),
-                      dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                      dayObjOf1.subtract(weekDayOf1 - i, "day").endOf("day")
                     )
                   }
                   className="relative"
@@ -573,7 +605,9 @@ const Calendar = (props: Props) => {
                         onClick={() =>
                           showMoreHandle(
                             dayObjOf1.subtract(weekDayOf1 - i, "day"),
-                            dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                            dayObjOf1
+                              .subtract(weekDayOf1 - i, "day")
+                              .endOf("day")
                           )
                         }
                       >
@@ -603,7 +637,9 @@ const Calendar = (props: Props) => {
                   onClick={() =>
                     showMoreHandle(
                       dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
-                      dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                      dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`).endOf(
+                        "day"
+                      )
                     )
                   }
                   className={`relative`}
@@ -689,7 +725,9 @@ const Calendar = (props: Props) => {
                         onClick={() =>
                           showMoreHandle(
                             dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`),
-                            dayjs(`${thisYear}-${thisMonth + 1}-${i + 2}`)
+                            dayjs(
+                              `${thisYear}-${thisMonth + 1}-${i + 1}`
+                            ).endOf("day")
                           )
                         }
                         className="flex px-2 w-full my-1.5"
@@ -722,7 +760,7 @@ const Calendar = (props: Props) => {
                   onClick={() =>
                     showMoreHandle(
                       dayObjOfLast.add(i + 1, "day"),
-                      dayObjOfLast.add(i + 2, "day")
+                      dayObjOfLast.add(i + 1, "day").endOf("day")
                     )
                   }
                   className="relative"
@@ -821,7 +859,7 @@ const Calendar = (props: Props) => {
                         onClick={() =>
                           showMoreHandle(
                             dayObjOfLast.add(i + 1, "day"),
-                            dayObjOfLast.add(i + 2, "day")
+                            dayObjOfLast.add(i + 1, "day").endOf("day")
                           )
                         }
                         className="flex px-2 w-full my-1.5"
@@ -873,7 +911,7 @@ const Calendar = (props: Props) => {
           <div className=" w-full absolute flex items-center justify-center bg-modal">
             <div className="bg-white rounded shadow p-2 m-4 max-w-xs max-h-full">
               <div className="px-2 py-2 flex items-center float-right">
-                <button onClick={() => setshowModalView(false)}>
+                <button onClick={closeViewEvnModal}>
                   <CloseIcon />
                 </button>
               </div>
@@ -1038,7 +1076,7 @@ const Calendar = (props: Props) => {
                           <KeyboardDatePicker
                             disableToolbar
                             variant="inline"
-                            format="MM/dd/yyyy"
+                            format="dd/MM/yyyy"
                             margin="normal"
                             id="date-picker-inline"
                             label="Date"
@@ -1137,7 +1175,7 @@ const Calendar = (props: Props) => {
                       </svg>
                     </div>
                   ) : (
-                    "Remove"
+                    "Delete"
                   )}
                 </button>
                 <button

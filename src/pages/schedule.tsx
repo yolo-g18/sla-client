@@ -18,6 +18,7 @@ import {
 } from "../components/schedule/convertTime";
 import { PARAMS } from "../common/params";
 import { putEvent } from "../redux/actions/eventAction";
+import { eventHandleDispatch } from "../redux/actions/eventHandleAction";
 
 const todayObj = dayjs();
 
@@ -43,6 +44,19 @@ const schedule = () => {
     fetchData();
   }, []);
 
+  const addEventHandle = () => {
+    dispatch(
+      eventHandleDispatch({
+        typeAction: 1,
+        time: new Date(todayObj.format("MM/dd/yyyy")),
+      })
+    );
+  };
+
+  const viewEventhandle = (evn: IEventRes) => {
+    dispatch(eventHandleDispatch({ typeAction: 2, currentEvn: evn }));
+  };
+
   return (
     <div>
       <AppLayout2 title="Schedule" desc="Schedule">
@@ -56,7 +70,10 @@ const schedule = () => {
                 <p className="text-gray-800 dark:text-white text-xl font-medium">
                   Calendar
                 </p>
-                <button className="flex items-center text-3xl text-gray-800 hover:text-gray-400 focus:outline-none">
+                <button
+                  onClick={addEventHandle}
+                  className="flex items-center text-3xl text-gray-800 hover:text-gray-400 focus:outline-none"
+                >
                   +
                 </button>
               </div>
@@ -71,6 +88,7 @@ const schedule = () => {
                     key={index}
                     className={`cursor-pointer border rounded-md p-1 bg-white flex text-gray-700 mb-2 
                     focus:outline-none`}
+                    onClick={() => viewEventhandle(evn)}
                   >
                     <span className="flex-none pr-2 my-auto">
                       <div>
@@ -89,8 +107,10 @@ const schedule = () => {
                       ></div>
                     </span>
                     <div className="flex-1 relative">
-                      <header className="mb-1 text-sm truncate">
-                        <span className="font-semibold">{evn.name}</span>
+                      <header className="mb-1 text-sm flex w-full">
+                        <span className="font-semibold truncate">
+                          {evn.name}
+                        </span>
                       </header>
                       <p className="text-gray-600 text-sm">
                         {evn.isLearnEvent ? null : evn.description}

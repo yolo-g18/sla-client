@@ -159,7 +159,16 @@ const home = () => {
                         </span>
                         <div className="flex-1 relative">
                           <header className="mb-1 text-sm truncate">
-                            <span className="font-semibold">{evn.name}</span>
+                            {dayjs(evn.toTime) < todayObj &&
+                            !evn.isLearnEvent ? (
+                              <span className="font-semibold line-through">
+                                {evn.name}
+                              </span>
+                            ) : (
+                              <span className="font-semibold line-through">
+                                {evn.name}
+                              </span>
+                            )}
                           </header>
                           <p className="text-gray-600 text-sm">
                             {evn.isLearnEvent ? null : evn.description}

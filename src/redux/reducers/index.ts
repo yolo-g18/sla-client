@@ -4,6 +4,7 @@ import alert from './alertReducer'
 import user from './userReducer'
 import search from './searchReducer'
 import event from './eventReducer'
+import eventHandle from './eventHandleReducer'
 
 
 export default combineReducers({
@@ -11,5 +12,6 @@ export default combineReducers({
   alert,
   user,
   search,
-  event
+  event,
+  eventHandle
 })
