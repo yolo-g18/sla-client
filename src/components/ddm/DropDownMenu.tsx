@@ -68,7 +68,10 @@ const DropDownMenu = (props: Props) => {
       </div>
 
       {(props.forceOpen || isOpen) && (
-        <div className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+        <div
+          className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 
+          ring-1 ring-black ring-opacity-5 focus:ring-blue-400"
+        >
           <div
             className={`py-1 ${
               props.withDivider ? "divide-y divide-gray-100" : ""

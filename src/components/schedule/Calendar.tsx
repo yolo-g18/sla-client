@@ -17,11 +17,12 @@ import {
 
 import EditIcon from "@material-ui/icons/Edit";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import EventIcon from "@material-ui/icons/Event";
 
 import { useDispatch, useSelector } from "react-redux";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
-import { getAPI, postAPI } from "../../utils/FetchData";
+import { deleteAPI, getAPI, postAPI, putAPI } from "../../utils/FetchData";
 
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
@@ -38,6 +39,8 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import AccessAlarmOutlinedIcon from "@material-ui/icons/AccessAlarmOutlined";
 
 import { useClickOutside } from "../../hook/useClickOutside";
 import { putEvent } from "../../redux/actions/eventAction";
@@ -72,7 +75,8 @@ const Calendar = (props: Props) => {
 
   const [dayObj, setDayObj] = useState(dayjs());
   const [showModalAdd, setShowModalAdd] = useState(false);
-  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showModalView, setshowModalView] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<IEventRes | any>({});
   const [caledarChange, setCalendarChange] = useState(false);
 
@@ -134,8 +138,8 @@ const Calendar = (props: Props) => {
 
     fetchData();
   };
-  const showModalEditHandle = (evn: IEventRes) => {
-    setShowModalEdit(true);
+  const showModalViewEventHandle = (evn: IEventRes) => {
+    setshowModalView(true);
     setCurrentEvent(evn);
   };
 
@@ -190,10 +194,6 @@ const Calendar = (props: Props) => {
   };
 
   const showMoreHandle = (dateFrom: any, dateTo: any) => {
-    console.log(
-      convertTimeToMySQl(dateFrom) + " to " + convertTimeToMySQl(dateTo)
-    );
-
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -201,10 +201,6 @@ const Calendar = (props: Props) => {
           `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
             dateFrom
           )}&to=${convertTimeToMySQl(dateTo)}`
-        );
-
-        console.log(
-          convertTimeToMySQl(dateFrom) + " to " + convertTimeToMySQl(dateTo)
         );
 
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -234,10 +230,6 @@ const Calendar = (props: Props) => {
   const addClickHandle = (date: any) => {
     setDateEventPick(new Date(date.toString()));
     setTimeFromPick(new Date(date.toString()));
-
-    const d = new Date(dateEventPick ? dateEventPick : "");
-    d?.setDate(d.getDate() + 1);
-    console.log(convertTimeToMySQl(d));
 
     setShowModalAdd(true);
   };
@@ -295,20 +287,13 @@ const Calendar = (props: Props) => {
         setTimePickerErr("");
       }
     }
+
+    console.log(timeFromPick);
   }, [eventName, eventDesc, timeToPick, timeFromPick]);
 
   const addEventHandle = () => {
     //check error
     if (evnNameErr || descErr || timePickerErr) return;
-
-    const dataEvn = {
-      color: eventColor,
-      name: eventName,
-      description: eventDesc,
-      fromTime: timeFromPick?.toISOString(),
-      toTime: timeToPick?.toISOString(),
-      isLearnEvent: false,
-    };
 
     if (eventName.length === 0) {
       setEvnNameErr("");
@@ -317,13 +302,43 @@ const Calendar = (props: Props) => {
     const fetchDate = async () => {
       const t = new Date(dateEventPick ? dateEventPick : "");
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await postAPI(`${PARAMS.ENDPOINT}event`, dataEvn);
-        dispatch({ type: ALERT, payload: { loading: false } });
+        if (isEditing) {
+          const dataEvnUpdate = {
+            color: eventColor,
+            name: eventName,
+            description: eventDesc,
+            fromTime: timeFromPick,
+            toTime: timeToPick,
+            isLearnEvent: false,
+          };
+          dispatch({ type: ALERT, payload: { loading: true } });
+          const res = await putAPI(
+            `${PARAMS.ENDPOINT}event/${currentEvent.id}`,
+            dataEvnUpdate
+          );
+          dispatch({ type: ALERT, payload: { loading: false } });
+
+          setIsEditing(false);
+          setMessageToast("😎 Updated");
+        } else {
+          const dataEvn = {
+            color: eventColor,
+            name: eventName,
+            description: eventDesc,
+            fromTime: timeFromPick?.toISOString(),
+            toTime: timeToPick?.toISOString(),
+            isLearnEvent: false,
+          };
+          dispatch({ type: ALERT, payload: { loading: true } });
+          const res = await postAPI(`${PARAMS.ENDPOINT}event`, dataEvn);
+          dispatch({ type: ALERT, payload: { loading: false } });
+          setMessageToast("😎 Added");
+        }
+
         setIsToastOpen(true);
         setTypeToast("success");
         setShowModalAdd(false);
-        setMessageToast("😎 Added");
+
         setIsSuccess(true);
         setEventName("New event");
         setEventDesc("");
@@ -334,6 +349,7 @@ const Calendar = (props: Props) => {
 
         showMoreHandle(dateEventPick, t);
       } catch (err) {
+        console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
         setIsToastOpen(true);
         setTypeToast("error");
@@ -347,9 +363,62 @@ const Calendar = (props: Props) => {
 
   const handleCloseModalAdd = () => {
     setShowModalAdd(false);
+    setIsEditing(false);
     setEventName("New event");
     setEventDesc("");
     setEventColor("BLUE");
+  };
+
+  const eventEditHandle = () => {
+    setshowModalView(false);
+    setShowModalAdd(true);
+    setIsEditing(true);
+
+    setEventColor(currentEvent.color);
+    setEventName(currentEvent.name);
+    setEventDesc(currentEvent.description);
+    setTimeToPick(currentEvent.fromTime);
+    setTimeFromPick(currentEvent.toTime);
+  };
+
+  const [showModalCfDelete, setShowModalCfDelete] = useState(false);
+
+  //delete event
+  const deleteEventHandle = async () => {
+    const t = new Date(dateEventPick ? dateEventPick : "");
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}event?id=${currentEvent.id}`
+      );
+      dispatch({ type: ALERT, payload: { loading: true } });
+
+      setMessageToast("Deleted");
+      setTypeToast("success");
+      setIsToastOpen(true);
+
+      // convert date
+      await t?.setDate(t.getDate() + 1);
+      showMoreHandle(dateEventPick, t);
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+      setShowModalCfDelete(false);
+      setshowModalView(false);
+    }
+  };
+
+  const openModalCfDelete = () => {
+    setShowModalCfDelete(true);
+    setshowModalView(false);
+  };
+
+  const closeModalCfDelete = () => {
+    setShowModalCfDelete(false);
+    setshowModalView(true);
   };
 
   return (
@@ -404,7 +473,15 @@ const Calendar = (props: Props) => {
             </div>
             <div className="relative grid grid-cols-7 grid-rows-5 border-l border-gray-200">
               {_.range(weekDayOf1).map((i: number) => (
-                <div className="relative">
+                <div
+                  onClick={() =>
+                    showMoreHandle(
+                      dayObjOf1.subtract(weekDayOf1 - i, "day"),
+                      dayObjOf1.subtract(weekDayOf1 - i - 1, "day")
+                    )
+                  }
+                  className="relative"
+                >
                   <div
                     className={` h-36 col-span-1 border-r border-b border-gray-200 bg-gray-100 hover:bg-gray-200 cellDay
                     ${i === 0 || i === 6 ? "bg-indigo-50" : ""}
@@ -443,7 +520,7 @@ const Calendar = (props: Props) => {
                         return evn.isLearnEvent ? (
                           <button
                             key={evn.id}
-                            onClick={() => showModalEditHandle(evn)}
+                            onClick={() => showModalViewEventHandle(evn)}
                             className="flex px-2 w-full my-1.5"
                           >
                             <img
@@ -459,15 +536,23 @@ const Calendar = (props: Props) => {
                         ) : (
                           <button
                             key={evn.id}
-                            onClick={() => showModalEditHandle(evn)}
-                            className={`flex w-full my-1.5 bg-${evn.color?.toLocaleLowerCase()}-200
-                             px-2 rounded justify-between`}
+                            onClick={() => showModalViewEventHandle(evn)}
+                            className={`flex w-full my-1.5 px-2 items-center h-4`}
                           >
-                            <div className="text-xs font-medium text-gray-800 truncate">
-                              {evn.name}
+                            <div className="mr-1">
+                              <FiberManualRecordIcon
+                                className={`text-${evn.color?.toLowerCase()}-600`}
+                                style={{ width: "10px" }}
+                              />
                             </div>
-                            <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
-                              {getTimeInDay(evn.fromTime)}
+
+                            <div className="flex justify-between w-full overflow-clip overflow-hidden">
+                              <div className="text-xs font-medium text-gray-800 truncate">
+                                {evn.name}
+                              </div>
+                              <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
+                                {getTimeInDay(evn.fromTime)}
+                              </div>
                             </div>
                           </button>
                         );
@@ -558,7 +643,7 @@ const Calendar = (props: Props) => {
                         return evn.isLearnEvent ? (
                           <button
                             key={evn.id}
-                            onClick={() => showModalEditHandle(evn)}
+                            onClick={() => showModalViewEventHandle(evn)}
                             className="flex px-2 w-full my-1.5"
                           >
                             <img
@@ -574,15 +659,23 @@ const Calendar = (props: Props) => {
                         ) : (
                           <button
                             key={evn.id}
-                            onClick={() => showModalEditHandle(evn)}
-                            className={`flex w-full my-1.5 bg-${evn.color?.toLocaleLowerCase()}-200
-                             px-2 rounded justify-between`}
+                            onClick={() => showModalViewEventHandle(evn)}
+                            className={`flex w-full my-1.5 px-2 items-center h-4`}
                           >
-                            <div className="text-xs font-medium text-gray-800 truncate">
-                              {evn.name}
+                            <div className="mr-1">
+                              <FiberManualRecordIcon
+                                className={`text-${evn.color?.toLowerCase()}-600`}
+                                style={{ width: "10px" }}
+                              />
                             </div>
-                            <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
-                              {getTimeInDay(evn.fromTime)}
+
+                            <div className="flex justify-between w-full overflow-clip overflow-hidden">
+                              <div className="text-xs font-medium text-gray-800 truncate">
+                                {evn.name}
+                              </div>
+                              <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
+                                {getTimeInDay(evn.fromTime)}
+                              </div>
                             </div>
                           </button>
                         );
@@ -625,7 +718,15 @@ const Calendar = (props: Props) => {
                 </div>
               ))}
               {_.range(6 - weekDayOfLast).map((i) => (
-                <div className="relative">
+                <div
+                  onClick={() =>
+                    showMoreHandle(
+                      dayObjOfLast.add(i + 1, "day"),
+                      dayObjOfLast.add(i + 2, "day")
+                    )
+                  }
+                  className="relative"
+                >
                   <div
                     className={`h-36 col-span-1 border-r border-b border-gray-200 bg-gray-100  hover:bg-gray-200 cellDay
                     ${
@@ -668,7 +769,7 @@ const Calendar = (props: Props) => {
                         return evn.isLearnEvent ? (
                           <button
                             key={evn.id}
-                            onClick={() => showModalEditHandle(evn)}
+                            onClick={() => showModalViewEventHandle(evn)}
                             className="flex px-2 w-full my-1.5"
                           >
                             <img
@@ -684,15 +785,23 @@ const Calendar = (props: Props) => {
                         ) : (
                           <button
                             key={evn.id}
-                            onClick={() => showModalEditHandle(evn)}
-                            className={`flex w-full my-1.5 bg-${evn.color?.toLocaleLowerCase()}-200
-                             px-2 rounded justify-between`}
+                            onClick={() => showModalViewEventHandle(evn)}
+                            className={`flex w-full my-1.5 px-2 items-center h-4`}
                           >
-                            <div className="text-xs font-medium text-gray-800 truncate">
-                              {evn.name}
+                            <div className="mr-1">
+                              <FiberManualRecordIcon
+                                className={`text-${evn.color?.toLowerCase()}-600`}
+                                style={{ width: "10px" }}
+                              />
                             </div>
-                            <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
-                              {getTimeInDay(evn.fromTime)}
+
+                            <div className="flex justify-between w-full overflow-clip overflow-hidden">
+                              <div className="text-xs font-medium text-gray-800 truncate">
+                                {evn.name}
+                              </div>
+                              <div className="text-xs justify- hidden xl:block lg:hidden font-medium text-gray-800">
+                                {getTimeInDay(evn.fromTime)}
+                              </div>
                             </div>
                           </button>
                         );
@@ -759,26 +868,43 @@ const Calendar = (props: Props) => {
             }
         }`}
       </style>
-      {showModalEdit ? (
+      {showModalView ? (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
           <div className=" w-full absolute flex items-center justify-center bg-modal">
-            <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full">
-              <div className="mb-8">
-                <div className="grid grid-cols-8">
-                  <div className="col-span-7 grid grid-cols-1">
-                    <div>
-                      <img
-                        src="draft.svg"
-                        className="h-4 w-4 my-auto mr-2"
-                        alt=""
-                      />
-                      <p className="text-lg font-bold text-gray-600 dark:text-gray-100">
+            <div className="bg-white rounded shadow p-2 m-4 max-w-xs max-h-full">
+              <div className="px-2 py-2 flex items-center float-right">
+                <button onClick={() => setshowModalView(false)}>
+                  <CloseIcon />
+                </button>
+              </div>
+              <div className="mt-8 p-4">
+                <div className="h-44">
+                  <div className=" grid grid-cols-1">
+                    <div className="flex justify-between items-center">
+                      <p className="text-lg font-bold text-gray-600 dark:text-gray-100 my-auto truncate">
+                        {currentEvent.isLearnEvent ? (
+                          <img src="draft.svg" className="h-6 w-6" alt="" />
+                        ) : (
+                          <EventIcon className="mr-2" />
+                        )}
                         {currentEvent.name}
                       </p>
+                      {currentEvent.isLearnEvent ? null : (
+                        <button
+                          onClick={openModalCfDelete}
+                          className="tooltip focus:outline-none "
+                        >
+                          <DeleteOutlineIcon className="hover:text-yellow-500 text-gray-600" />
+                          <span className="tooltiptext w-20">delete</span>
+                        </button>
+                      )}
                     </div>
-
-                    <div className="flex justify-between mt-2">
-                      <p className="text-xs text-gray-600">
+                    <div className="flex mt-2 gap-2 w-72 items-center">
+                      <AccessAlarmOutlinedIcon
+                        fontSize="default"
+                        className="text-gray-600"
+                      />
+                      <p className="text-sm text-gray-700 font-bold my-auto">
                         {weekDays[new Date(currentEvent.fromTime).getDay()] +
                           " " +
                           convertTime(currentEvent.fromTime).day +
@@ -787,26 +913,38 @@ const Calendar = (props: Props) => {
                           ", " +
                           convertTime(currentEvent.fromTime).year}
                       </p>
+                      {currentEvent.isLearnEvent ? null : (
+                        <p className="text-sm text-gray-700 font-bold">
+                          {getTimeInDay(currentEvent.fromTime)} -{" "}
+                          {getTimeInDay(currentEvent.toTime)}
+                        </p>
+                      )}
                     </div>
-                    <p>Review</p>
+                    <div className=" mt-2 gap-2 w-72 px-1">
+                      <p className="mt-2">
+                        {currentEvent.isLearnEvent
+                          ? null
+                          : currentEvent.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <div className="flex justify-center">
-                <Link href={`/set/${currentEvent.description}/learn`}>
-                  <button className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600 focus:outline-none">
-                    Review
+              <div className="flex justify-center py-4">
+                {currentEvent.isLearnEvent ? (
+                  <Link href={`/set/${currentEvent.description}/learn`}>
+                    <button className=" text-white w-28 py-1 mx-3 rounded-sm bg-blue-500 hover:bg-blue-600 focus:outline-none">
+                      Review
+                    </button>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={eventEditHandle}
+                    className=" text-white w-28 py-1 mx-3 rounded-sm bg-blue-500 hover:bg-blue-600 focus:outline-none"
+                  >
+                    Edit
                   </button>
-                </Link>
-
-                <button
-                  onClick={() => setShowModalEdit(false)}
-                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
-                  type="button"
-                >
-                  Close
-                </button>
+                )}
               </div>
             </div>
           </div>
@@ -952,12 +1090,61 @@ const Calendar = (props: Props) => {
                   </MuiPickersUtilsProvider>
                 </div>
               </form>
-              <div className="flex items-center text-blue-400 justify-between py-3 px-2 border-t float-right">
+              <div
+                className="flex items-center text-blue-400 justify-between py-3
+               px-2 border-t float-right"
+              >
                 <button
                   onClick={() => addEventHandle()}
                   className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                 >
                   Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {showModalCfDelete ? (
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+          <div className=" w-full absolute flex items-center justify-center bg-modal">
+            <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="mb-8">
+                <p className="text-xl font-semibold">
+                  Are you sure want to delete this event?
+                </p>
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  onClick={deleteEventHandle}
+                  className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                >
+                  {alert.loading ? (
+                    <div className="flex justify-center items-center space-x-1">
+                      <svg
+                        fill="none"
+                        className="w-6 h-6 animate-spin"
+                        viewBox="0 0 32 32"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          clipRule="evenodd"
+                          d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                    "Remove"
+                  )}
+                </button>
+                <button
+                  onClick={() => closeModalCfDelete()}
+                  className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
+                >
+                  Cancel
                 </button>
               </div>
             </div>

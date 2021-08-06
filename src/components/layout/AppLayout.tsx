@@ -16,6 +16,7 @@ import { PARAMS } from "../../common/params";
 import { useClickOutside } from "../../hook/useClickOutside";
 import AddIcon from "@material-ui/icons/Add";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import dayjs from "dayjs";
 
 interface Props {
   title: string;
@@ -23,6 +24,8 @@ interface Props {
   children: React.ReactNode;
   search?: string;
 }
+
+const todayObj = dayjs();
 
 const AppLayout = (props: Props) => {
   const router = useRouter();
@@ -213,8 +216,8 @@ const AppLayout = (props: Props) => {
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
       <main
-        className="flex flex-col  overflow-hidden relative min-h-screen bg-white"
-        // style={{ background: "#F3F4F5" }}
+        className="flex flex-col  overflow-hidden relative min-h-screen "
+        style={{ background: "#F3F4F5" }}
       >
         <header
           className=" z-40 top-0 sticky h-20 sm:h-16 flex items-center border-b-2 "
@@ -231,7 +234,8 @@ const AppLayout = (props: Props) => {
                 <form onSubmit={handelSearchSubmit}>
                   <div className="relative text-gray-600 ml-6">
                     <svg
-                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-white pointer-events-none fill-current group-hover:text-white sm:block"
+                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-white pointer-events-none fill-current group-hover:text-white 
+                      sm:block"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                     >
@@ -240,8 +244,8 @@ const AppLayout = (props: Props) => {
                     <input
                       type="text"
                       className="block w-full py-1.5 pl-10 pr-4 rounded-md f
-                      focus:outline-none focus:ring-2  ring-opacity-90 hover:bg-blue-400 text-white placeholder-gray-100"
-                      style={{ background: "#4b8cf7" }}
+                      focus:outline-none focus:ring-2  bg-blue-500 hover:bg-blue-400 text-white placeholder-white"
+                      // style={{ background: "#4b8cf7" }}
                       placeholder="Search..."
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
@@ -420,7 +424,8 @@ const AppLayout = (props: Props) => {
                 </Link>
                 <div className="relative text-gray-600 ml-6">
                   <svg
-                    className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                    className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current
+                     group-hover:text-gray-400 sm:block"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                   >
@@ -428,7 +433,8 @@ const AppLayout = (props: Props) => {
                   </svg>
                   <input
                     type="text"
-                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
+                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
+                    focus:ring-2 focus:ring-gray-200 ring-opacity-90 bg-gray-100 dark:bg-gray-800 text-gray-400 aa-input"
                     placeholder="Search"
                   />
                 </div>

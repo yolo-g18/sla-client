@@ -55,5 +55,5 @@ export const formatDate2 = (oj: any) => {
 
 export const formatUTCToDate = (date: any) => {
    return new Date(date).getDate() + " "
-   + monthNames[(new Date(date).getMonth() +1)];
+   + monthNames[(new Date(date).getMonth())];
 }

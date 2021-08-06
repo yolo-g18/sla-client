@@ -1,5 +1,4 @@
 import Link from "next/link";
-import SimpleLevelsCard from "../components/card/SimpleLevelsCard";
 import AppLayout2 from "../components/layout/AppLayout";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -14,49 +13,50 @@ import { getAPI } from "../utils/FetchData";
 import { useState } from "react";
 
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import EventIcon from "@material-ui/icons/Event";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import TasksList from "../components/data/TaskList";
 
 import CircularProgress, {
   CircularProgressProps,
 } from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import dayjs from "dayjs";
+import {
+  convertTimeToMySQl,
+  formatUTCToDate,
+  getTimeInDay,
+} from "../components/schedule/convertTime";
+import { putEvent } from "../redux/actions/eventAction";
 
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number }
-) {
-  return (
-    <Box position="relative" display="inline-flex">
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="textSecondary"
-        >{`${Math.round(props.value)}%`}</Typography>
-      </Box>
-    </Box>
-  );
-}
+const todayObj = dayjs();
 
 const home = () => {
   const dispatch = useDispatch();
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, event } = useSelector((state: RootStore) => state);
 
   //get event today
   //get 6 study set learning
   //get 6 study set own
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
+            todayObj.startOf("day")
+          )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        dispatch(putEvent(res.data));
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    };
+    fetchData();
+  }, []);
 
   const [list4StudySetLeaning, setList4StudySetLearning] = useState<
     IStudySetLearning[]
@@ -110,11 +110,73 @@ const home = () => {
               <div className="flex flex-col">
                 <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
                 <p className="text-lg font-bold text-blue-600">
-                  Today Task
+                  Today Task ({event?.length})
                 </p>{" "}
               </div>
               <div className="mb-6">
-                <TasksList />
+                <div className="shadow-lg rounded-md w-full p-4 bg-white overflow-auto mb-6">
+                  <div className="w-full flex items-center justify-between">
+                    <p className="text-gray-800 dark:text-white text-xl font-medium">
+                      Calendar
+                    </p>
+                    <Link
+                      href={{
+                        pathname: "/schedule",
+                      }}
+                    >
+                      <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                        Show more <ChevronRightIcon fontSize="small" />
+                      </p>
+                    </Link>
+                  </div>
+                  <p className="text-gray-800 dark:text-white text-md font-medium mb-4">
+                    {event.length
+                      ? formatUTCToDate(event[0]?.fromTime)
+                      : "No task at this day"}
+                  </p>
+                  {event.slice(0, 9).map((evn, index) => {
+                    return (
+                      <article
+                        key={index}
+                        className={`cursor-pointer border rounded-md p-1 bg-white flex text-gray-700 mb-2 
+                    focus:outline-none`}
+                      >
+                        <span className="flex-none pr-2 my-auto">
+                          <div>
+                            {evn.isLearnEvent ? (
+                              <img
+                                src="draft.svg"
+                                className="h-6 w-6 my-auto mx-auto"
+                                alt=""
+                              />
+                            ) : (
+                              <EventIcon />
+                            )}
+                          </div>
+                          <div
+                            className={`bg-${evn.color?.toLowerCase()}-500 w-2 h-2 rounded-full mx-auto mt-2`}
+                          ></div>
+                        </span>
+                        <div className="flex-1 relative">
+                          <header className="mb-1 text-sm truncate">
+                            <span className="font-semibold">{evn.name}</span>
+                          </header>
+                          <p className="text-gray-600 text-sm">
+                            {evn.isLearnEvent ? null : evn.description}
+                          </p>
+                          <footer className="text-gray-500 mt-2 text-sm">
+                            {evn.isLearnEvent ? null : (
+                              <p>
+                                {getTimeInDay(evn.fromTime)} -{" "}
+                                {getTimeInDay(evn.toTime)}
+                              </p>
+                            )}
+                          </footer>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
               </div>
             </div>
             <div className="col-span-5 px-2">
