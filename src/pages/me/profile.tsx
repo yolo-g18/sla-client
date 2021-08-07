@@ -100,7 +100,9 @@ const profile = () => {
         <div className="grid grid-cols-3 h-full">
           <div className="col-span-2 px-2">
             <div>
-              <h1 className="text-xl mb-4">Public Profile</h1>
+              <p className="text-xl font-bold text-gray-600 mb-4">
+                Public Profile
+              </p>
               <form className="w-full max-w-lg">
                 <div className="flex flex-wrap my-1">
                   <div className="lg:w-1/2 px-1">
