@@ -45,10 +45,11 @@ const schedule = () => {
   }, []);
 
   const addEventHandle = () => {
+    console.log(new Date(todayObj.format("MM/dd/yyyy")));
+
     dispatch(
       eventHandleDispatch({
         typeAction: 1,
-        time: new Date(todayObj.format("MM/dd/yyyy")),
       })
     );
   };
@@ -72,9 +73,12 @@ const schedule = () => {
                 </p>
                 <button
                   onClick={addEventHandle}
-                  className="flex items-center text-3xl text-gray-800 hover:text-gray-400 focus:outline-none"
+                  className="tooltip flex items-center text-3xl text-gray-800 hover:text-gray-400 focus:outline-none"
                 >
                   +
+                  <span className="text-sm tooltiptext w-20 px-1">
+                    Add today
+                  </span>
                 </button>
               </div>
               <p className="text-gray-800 dark:text-white text-md font-medium mb-4">

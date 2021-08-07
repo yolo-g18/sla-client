@@ -29,8 +29,16 @@ const learningCustom = () => {
   const dispatch = useDispatch();
   const { auth, alert } = useSelector((state: RootStore) => state);
 
-  const [favourTimeFrom, setFavourTimeFrom] = useState<Date | null>();
-  const [favourTimeTo, setFavourTimeTo] = useState<Date | null>();
+  const [favourTimeFrom, setFavourTimeFrom] = useState<Date | null>(
+    auth.userResponse?.favourTimeFrom
+      ? auth.userResponse.favourTimeFrom
+      : new Date(todayObj.toString())
+  );
+  const [favourTimeTo, setFavourTimeTo] = useState<Date | null>(
+    auth.userResponse?.favourTimeTo
+      ? auth.userResponse.favourTimeTo
+      : new Date(todayObj.toString())
+  );
 
   const [timeInputErr, setTimeInputErr] = useState("");
 
@@ -46,7 +54,6 @@ const learningCustom = () => {
 
     setIsToastOpen(false);
   };
-
   useEffect(() => {
     setFavourTimeFrom(
       auth.userResponse?.favourTimeFrom
@@ -58,11 +65,10 @@ const learningCustom = () => {
         ? auth.userResponse?.favourTimeTo
         : new Date(todayObj.toString())
     );
-    console.log(favourTimeTo + ":" + favourTimeFrom);
+    console.log("init: " + favourTimeTo + ":" + favourTimeFrom);
   }, [auth.userResponse]);
 
   useEffect(() => {
-    console.log("onChange: " + favourTimeFrom + ":" + favourTimeTo);
     const from = new Date(
       favourTimeFrom?.toString() ? favourTimeFrom?.toString() : ""
     );
@@ -76,6 +82,7 @@ const learningCustom = () => {
         setTimeInputErr("");
       }
     }
+    console.log("changing...: " + favourTimeTo + ":" + favourTimeFrom);
   }, [favourTimeFrom, favourTimeTo]);
 
   const handleSubmit = async () => {
@@ -85,6 +92,9 @@ const learningCustom = () => {
       favourTimeFrom: favourTimeFrom,
       favourTimeTo: favourTimeTo,
     };
+
+    console.log(data);
+
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await putAPI(`${PARAMS.ENDPOINT}me/changeFavorTime`, data);
@@ -128,7 +138,7 @@ const learningCustom = () => {
                     }}
                   />
                 </div>
-                <div className="col-span-1">
+                <div className="col-span-1 w-full flex">
                   <KeyboardTimePicker
                     margin="normal"
                     id="time-picker"

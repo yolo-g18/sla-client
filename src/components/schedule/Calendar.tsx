@@ -174,7 +174,8 @@ const Calendar = (props: Props) => {
 
   useEffect(() => {
     if (eventHandle.typeAction === 1) {
-      addClickHandle(eventHandle.time);
+      setShowModalAdd(true);
+      setDateEventPick(new Date());
     }
     if (eventHandle.typeAction === 2) {
       setshowModalView(true);
@@ -248,12 +249,12 @@ const Calendar = (props: Props) => {
 
   //handle open add modal
   const addClickHandle = (date: any) => {
-    setDateEventPick(new Date(date.toString()));
-    setTimeFromPick(new Date(date.toString()));
-    const time = new Date();
-    setTimeFromPick(time);
+    // console.log("date: " + date);
+    let time = new Date(date);
+    time.setHours(todayObj.hour());
+    time.setMinutes(todayObj.minute());
     setDateEventPick(time);
-    setTimeToPick(time);
+    setTimeFromPick(time);
 
     setShowModalAdd(true);
   };
@@ -279,11 +280,15 @@ const Calendar = (props: Props) => {
   useEffect(() => {
     setTimeFromPick(dateEventPick);
     const time = new Date(dateEventPick ? dateEventPick : "");
-    if (time) {
+    if (time && !isEditing) {
       time.setTime(time.getTime() + 60 * 60 * 1000);
       setTimeToPick(time);
     }
   }, [dateEventPick]);
+
+  // useEffect(() => {
+  //   setDateEventPick(timeFromPick);
+  // }, [timeFromPick]);
 
   //validate input
   useEffect(() => {
@@ -390,7 +395,7 @@ const Calendar = (props: Props) => {
     setEventColor("BLUE");
   };
 
-  const eventEditHandle = () => {
+  const eventEditHandle = async () => {
     setshowModalView(false);
     setShowModalAdd(true);
     setIsEditing(true);
@@ -899,7 +904,6 @@ const Calendar = (props: Props) => {
                 width: 40rem;
             }
         }
-
         @media screen and (min-width: 1300px) {
             .custom-width {
                 width: 50%;
@@ -1091,8 +1095,8 @@ const Calendar = (props: Props) => {
                       </div>
                     </div>
                     <div className="flex">
-                      <div className="w-16"></div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="w-14"></div>
+                      <div className="grid grid-cols-2">
                         <div className="col-span-1">
                           <KeyboardTimePicker
                             margin="normal"
@@ -1191,7 +1195,7 @@ const Calendar = (props: Props) => {
       ) : null}
       <Snackbar
         open={isToastOpen}
-        autoHideDuration={1000}
+        autoHideDuration={3000}
         onClose={handleClose}
       >
         <Alert

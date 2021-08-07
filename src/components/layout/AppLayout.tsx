@@ -59,7 +59,7 @@ const AppLayout = (props: Props) => {
   React.useEffect(() => {
     async function excute() {
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
+        // dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
           `${PARAMS.ENDPOINT}notify/getNotReadNewsNumber/${auth.userResponse?._id}`
         );
@@ -70,13 +70,13 @@ const AppLayout = (props: Props) => {
       }
     }
     excute();
-    const interval = setInterval(() => excute(), 5000)
-    
-    return () => {
-      clearInterval(interval);}
+    const interval = setInterval(() => excute(), 5000);
 
+    return () => {
+      clearInterval(interval);
+    };
   }, [alert.success, auth.userResponse?._id]);
-  
+
   React.useEffect(() => {
     async function excute() {
       try {
@@ -94,7 +94,6 @@ const AppLayout = (props: Props) => {
   }, [getNotReadNewsNumber]);
 
   React.useEffect(() => {
-
     setClickShowMore(false);
     async function excute() {
       try {
@@ -116,8 +115,6 @@ const AppLayout = (props: Props) => {
     excute();
   }, [isClickShowMore]);
 
-
-
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
       dispatch(getUserProfile());
@@ -137,7 +134,6 @@ const AppLayout = (props: Props) => {
   const handelSearchSubmit = (e: FormSubmit) => {
     e.preventDefault();
 
-    console.log(searchValue);
     if (searchValue.length > 0)
       dispatch(
         putSearchKeyword(
@@ -149,7 +145,6 @@ const AppLayout = (props: Props) => {
   };
 
   function handleBellNotifications() {
-    
     setIsMenuOpen(!isMenuOpen);
   }
 
@@ -190,7 +185,6 @@ const AppLayout = (props: Props) => {
     setCurrentPage(getCurrentPage + 1);
   }
 
-  console.log("not read new: "+getNotReadNewsNumber);
   const listNotification = notificationList.map((item) => {
     return (
       <li>
@@ -341,11 +335,10 @@ const AppLayout = (props: Props) => {
                             type="button"
                             className="text-md text-white text-4xl relative focus:outline-none"
                           >
-                           
-                             {getNotReadNewsNumber !== 0 ? (
-                                <span className="w-2 h-2 rounded-full absolute left-4 top-2 leading text-xs bg-red-500"></span>
-                              ) : null}
-                          
+                            {getNotReadNewsNumber !== 0 ? (
+                              <span className="w-2 h-2 rounded-full absolute left-4 top-2 leading text-xs bg-red-500"></span>
+                            ) : null}
+
                             <NotificationsIcon />
                           </button>
                         </div>
@@ -380,7 +373,8 @@ const AppLayout = (props: Props) => {
                                   listNotification
                                 )}
                               </ul>
-                              {listNotification.length !== 0 && getCurrentPage < totalPages-1? (
+                              {listNotification.length !== 0 &&
+                              getCurrentPage < totalPages - 1 ? (
                                 <p
                                   onClick={showMoreNotification}
                                   className="px-4 py-4 sm:px-6 text-center text-xs font-light text-blue-500 cursor-pointer hover:text-gray-600"

@@ -458,17 +458,15 @@ const Folder = () => {
                     Organize all your study sets with folders.
                   </p>
                   <div className="mt-4 text-center">
-                    
-                      <button
-                        onClick={setIsShowAddModal(true)}
-                        type="button"
-                        className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                    <button
+                      onClick={() => setIsShowAddModal(true)}
+                      type="button"
+                      className="w-40 text-md rounded-sm px-4 mx-2 py-2
                       text-md font-bold bg-blue-500 hover:bg-blue-600 
                    text-white focus:outline-none"
-                      >
-                        Create a new set
-                      </button>
-                    
+                    >
+                      Create a new set
+                    </button>
                   </div>
                 </div>
               ) : (
