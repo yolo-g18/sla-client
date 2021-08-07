@@ -22,11 +22,11 @@ const SideBar = (props: Props) => {
   const withHeader = !!props.headerText || props.headerImg;
 
   return (
-    <div className="relative  dark:bg-gray-800">
+    <div className="relative">
       <div className="flex flex-col sm:flex-row sm:justify-around">
-        <div className="w-full h-screen">
+        <div className="w-full">
           {withHeader && (
-            <div className="flex items-center justify-start mx-6 mt-10">
+            <div className="flex items-center justify-start mx-6">
               {props.headerImg && (
                 <img className="h-10" src="/icons/rocket.svg" />
               )}
@@ -41,7 +41,7 @@ const SideBar = (props: Props) => {
           )}
 
           <nav
-            className={`mt-10 border-black${
+            className={`border-black${
               props.withDivider ? "divide-y divide-gray-200" : ""
             }`}
           >
@@ -49,14 +49,14 @@ const SideBar = (props: Props) => {
               return (
                 <Link href={link.link ? link.link : ""}>
                   <a
-                    className={`hover:text-gray-900 hover:bg-gray-100 bg-white flex py-1 my-3   transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
+                    className={`hover:text-gray-900 hover:bg-gray-100 bg-white flex py-1 my-3 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
                       router.pathname.indexOf(link.link ? link.link : "") !== -1
                         ? "justify-start border-l-2 border-yellow-500"
                         : ""
                     } `}
                   >
                     {link.icon}
-                    <span className="mx-4 text-md">{link.label}</span>
+                    <span className="mx-4 text-md w-40 ">{link.label}</span>
                   </a>
                 </Link>
               );

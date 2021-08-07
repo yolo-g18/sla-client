@@ -168,6 +168,9 @@ const Folder = () => {
       setIsToastOpen(true);
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
+      setIsToastOpen(true);
+      setTypeToast("error");
+      setMessageToast("An error occurred");
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);

@@ -10,7 +10,13 @@ import { PARAMS } from "../../common/params";
 import { ALERT } from "../../redux/types/alertType";
 import { getUserProfile } from "../../redux/actions/authAction";
 
-interface Props {}
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const profile = () => {
   const { auth, alert } = useSelector((state: RootStore) => state);
@@ -26,7 +32,20 @@ const profile = () => {
   const [avatar, setAvatar] = useState("");
   const [errors, setErrors] = useState({});
 
+  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [typeToast, setTypeToast] = useState("success");
+  const [messageToast, setMessageToast] = useState("");
+
   const dispatch = useDispatch();
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
 
   //int value to form
   useEffect(() => {
@@ -63,9 +82,15 @@ const profile = () => {
       const res = await putAPI(`${PARAMS.ENDPOINT}me`, data);
       dispatch({ type: ALERT, payload: { loading: false } });
       dispatch(getUserProfile());
+      setMessageToast("Updated");
+      setTypeToast("success");
+      setIsToastOpen(true);
     } catch (err: any) {
       dispatch({ type: ALERT, payload: { errors: err.response.data } });
       dispatch({ type: ALERT, payload: { loading: false } });
+      setIsToastOpen(true);
+      setTypeToast("error");
+      setMessageToast("An error occurred");
     }
   };
 
@@ -171,7 +196,7 @@ const profile = () => {
                 </div>
                 <div className="px-1">
                   <button
-                    className="w-36 mt-2 shadow bg-green-500 hover:bg-green-600 text-sm focus:outline-none text-white py-1 rounded-md"
+                    className="w-36 mt-2 shadow bg-blue-500 hover:bg-blue-600 text-sm focus:outline-none text-white py-2 rounded-sm"
                     type="button"
                     onClick={(e) => handleSubmit(e)}
                   >
@@ -201,6 +226,18 @@ const profile = () => {
           </div>
           <div className="col-span-1 bg-green-200"></div>
         </div>
+        <Snackbar
+          open={isToastOpen}
+          autoHideDuration={3000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={typeToast === "success" ? "success" : "error"}
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
       </ProfileSettingLayout>
     </div>
   );

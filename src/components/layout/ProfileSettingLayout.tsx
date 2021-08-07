@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../sidebar/SideBar";
 import { itemListProfile } from "../../common/listCommon";
 import Link from "next/link";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 interface Props {
   children: React.ReactNode;
@@ -14,8 +15,8 @@ const ProfileSettingLayout = (props: Props) => {
   return (
     <div>
       <AppLayput2 title="me" desc="me">
-        <div className="lg:w-2/3 mx-auto">
-          <div className="flex justify-around mt-4 b">
+        <div className="lg:w-2/3 mx-auto px-4">
+          <div className="flex justify-around mt-4 ">
             <div className="flex flex-grow">
               <svg
                 width="40"
@@ -38,13 +39,10 @@ const ProfileSettingLayout = (props: Props) => {
                   query: { username: auth.userResponse?.username },
                 }}
               >
-                <button
-                  className="w-40 h-8 text-md flex items-center justify-center rounded-md px-4 
-                   text-sm font-medium py-1 bg-white hover:text-gray-900 border-gray-300 border-2
-                text-gray-600 hover:bg-green-dark focus:outline-none"
-                >
+                <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                  <ChevronLeftIcon />
                   go to your library
-                </button>
+                </p>
               </Link>
             </div>
           </div>
@@ -52,7 +50,7 @@ const ProfileSettingLayout = (props: Props) => {
             <div className="col-span-1 w-50 inset-y-0 left-0">
               <Sidebar links={itemListProfile} />.
             </div>
-            <div className="col-span-4 mb-44">{props.children}</div>
+            <div className="col-span-4 mt-4 mb-44">{props.children}</div>
           </div>
         </div>
       </AppLayput2>

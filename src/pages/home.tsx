@@ -2,6 +2,7 @@ import Link from "next/link";
 import AppLayout2 from "../components/layout/AppLayout";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  IEventRes,
   IStudySetInfo2,
   IStudySetLearning,
   RootStore,
@@ -29,6 +30,9 @@ import {
   getTimeInDay,
 } from "../components/schedule/convertTime";
 import { putEvent } from "../redux/actions/eventAction";
+import { route } from "next/dist/next-server/server/router";
+import router from "next/router";
+import { eventHandleDispatch } from "../redux/actions/eventHandleAction";
 
 const todayObj = dayjs();
 
@@ -101,6 +105,11 @@ const home = () => {
     fetchData();
   }, []);
 
+  const viewEventhandle = (evn: IEventRes) => {
+    dispatch(eventHandleDispatch({ typeAction: 2, currentEvn: evn }));
+    router.push("/schedule");
+  };
+
   return (
     <div>
       <AppLayout2 title="home" desc="home">
@@ -137,6 +146,7 @@ const home = () => {
                   {event.slice(0, 9).map((evn, index) => {
                     return (
                       <article
+                        onClick={() => viewEventhandle(evn)}
                         key={index}
                         className={`cursor-pointer border rounded-md p-1 bg-white flex text-gray-700 mb-2 
                     focus:outline-none`}
@@ -194,7 +204,7 @@ const home = () => {
                   <div className="flex flex-col">
                     <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
                     <p className="text-lg font-bold text-blue-600">
-                      Created
+                      Learning
                     </p>{" "}
                   </div>
                   <div className="flex flex-col">
