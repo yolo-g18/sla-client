@@ -16,6 +16,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import InputArea from "../../../components/input/InputArea";
 
 //alert
 function Alert(props: AlertProps) {
@@ -296,7 +297,7 @@ const index = () => {
       const res = await deleteAPI(`${PARAMS.ENDPOINT}card/delete?id=${id}`);
       dispatch({ type: ALERT, payload: { loading: false } });
       setIsSuc(true);
-      setMessageToast("delete card successfully");
+      setMessageToast("Delete card successfully");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
@@ -315,6 +316,65 @@ const index = () => {
     setMessageToast("copied link");
     setTypeToast("success");
     setIsToastOpen(true);
+  };
+
+  const [showModalReport, setShowModalReport] = useState(false);
+  const [reportContent, setReportContent] = useState("");
+  const [reportContentErr, setReportContentErr] = useState("");
+  const [isReported, setisReported] = useState(false);
+
+  //check user report??
+  useEffect(() => {
+    console.log("dasbdhabs");
+
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(
+          `${PARAMS.ENDPOINT}studySet/checkReprotExistence/${id}`
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+        setisReported(res.data);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log("err: " + err);
+      }
+    };
+    fetchData();
+  }, [id]);
+  console.log(isReported);
+
+  //remove err when user typing
+  useEffect(() => {
+    setReportContentErr("");
+  }, [reportContent]);
+
+  const sendReportHandle = async () => {
+    if (reportContent.length === 0) {
+      setReportContentErr("Report content required");
+      return;
+    } else {
+      setReportContentErr("");
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(`${PARAMS.ENDPOINT}studySet/report/${id}`, {
+          content: reportContent,
+        });
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("Thanks for your report 🙏");
+        setTypeToast("success");
+        setIsToastOpen(true);
+        setShowModalReport(false);
+        setReportContent("  ");
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log(err);
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
+    }
   };
 
   return (
@@ -469,7 +529,7 @@ const index = () => {
                             role="menuitem"
                           >
                             <span className="flex flex-col">
-                              <span>fork</span>
+                              <span>Fork</span>
                             </span>
                           </a>
                           {auth.userResponse?.username === creatorName ? (
@@ -480,10 +540,21 @@ const index = () => {
                               onClick={() => setShowModalDelete(true)}
                             >
                               <span className="flex flex-col ">
-                                <span>delete</span>
+                                <span>Delete</span>
                               </span>
                             </a>
-                          ) : null}
+                          ) : (
+                            <a
+                              className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                          hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                              role="menuitem"
+                              onClick={() => setShowModalReport(true)}
+                            >
+                              <span className="flex flex-col">
+                                <span>Report</span>
+                              </span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -653,6 +724,64 @@ const index = () => {
                     Cancel
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {showModalReport ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal px-2">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-md ">
+                <div className="mb-2 text-gray-600 text-md font-semibold">
+                  <p>Report {title}</p>
+                </div>
+                {isReported ? (
+                  <div className="font-normal text-gray-600 text-sm mb-12">
+                    <h2>We have received a report from you</h2>
+                    <p>Thanks for your support 🙏</p>
+                  </div>
+                ) : (
+                  <div className="mb-4 items-center">
+                    <InputArea
+                      setValue={setReportContent}
+                      placeholder="Let us know what you think.."
+                      rows={10}
+                      value={reportContent}
+                      error={reportContentErr}
+                    />
+                  </div>
+                )}
+                {isReported ? (
+                  <div className="flex justify-center mt-4 -mb-2">
+                    <button
+                      onClick={() => setShowModalReport(false)}
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm 
+                    font-medium hover:bg-gray-300"
+                      type="button"
+                    >
+                      Close
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-center mt-4 gap-6">
+                    <button
+                      onClick={() => setShowModalReport(false)}
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm 
+                    font-medium hover:bg-gray-300"
+                      type="button"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={sendReportHandle}
+                      className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium 
+                    hover:bg-blue-600"
+                      type="button"
+                    >
+                      Send
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

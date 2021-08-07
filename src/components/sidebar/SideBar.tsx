@@ -49,11 +49,12 @@ const SideBar = (props: Props) => {
               return (
                 <Link href={link.link ? link.link : ""}>
                   <a
-                    className={`hover:text-gray-900 hover:bg-gray-100 bg-white flex py-1 my-3 transition-colors dark:hover:text-white dark:hover:bg-gray-600 duration-200 ${
+                    className={`hover:text-gray-900 hover:bg-gray-100 flex py-1 my-3 transition-colors dark:hover:text-white duration-200 ${
                       router.pathname.indexOf(link.link ? link.link : "") !== -1
                         ? "justify-start border-l-2 border-yellow-500"
                         : ""
                     } `}
+                    style={{ background: "#F3F4F5" }}
                   >
                     {link.icon}
                     <span className="mx-4 text-md w-40 ">{link.label}</span>

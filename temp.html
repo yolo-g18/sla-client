@@ -1,1427 +1,251 @@
-<!DOCTYPE html>
-<html class="h-full" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <link rel="stylesheet" href="./tailwind.css" />
-    <title>Chi Desk</title>
-    <style>
-      html {
-        font-size: 14px;
-        line-height: 1.285;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Arial,
-          sans-serif;
-      }
-      html, body {
-        width: 100%;
-        height: 100%;
-      }
 
-      /* can be configured in tailwind.config.js */
-      .group:hover .group-hover\:block {
-        display: block;
-      }
+ <style>
+  input[type="radio"]:checked+label {
+      /*   @apply ring-1 ring-indigo-400  border-indigo-400; */
+      --tw-border-opacity: 1;
+      border-color: rgba(129, 140, 248, var(--tw-border-opacity));
+      --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+      --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+      box-shadow: var(--tw-ring-offset-shadow),
+          var(--tw-ring-shadow),
+          var(--tw-shadow, 0 0 #0000);
+      --tw-ring-opacity: 1;
+      --tw-ring-color: rgba(129, 140, 248, var(--tw-ring-opacity));
+  }
 
-      .focus\:cursor-text:focus {
-        cursor: text;
-      }
+  .is-invalid,
+  .was-validated :invalid,
+  .was-validated :invalid~label {
+      border-color: #dc3545;
+  }
 
-      .focus\:w-64:focus {
-        width: 16rem;
-      }
+  .is-invalid,
+  .was-validated :invalid:focus {
+      --tw-ring-color: rgba(220, 53, 69, 0.2);
+  }
+</style>
 
-      /* zendesk styles */
-      .h-16 {
-        height: 50px;
-      }
-      .bg-teal-900 {
-        background: #03363d;
-      }
-      .bg-gray-100 {
-        background: #f8f9f9;
-      }
-      .hover\:border-green-500:hover {
-        border-color: #78a300;
-      }
-    </style>
-  </head>
 
-  <body class="antialiased h-full">
-  <!-- you can clone or fork the repo if you want -->
-<!-- https://github.com/bluebrown/tailwind-zendesk-clone   -->
 
-<div class="h-full w-full flex overflow-hidden antialiased text-gray-800 bg-white">
-  <!-- section body side nav -->
-  <nav aria-label="side bar" aria-orientation="vertical" class="flex-none flex flex-col items-center text-center bg-teal-900 text-gray-400 border-r">
-    <div class="h-16 flex items-center w-full">
-      <img class="h-6 w-6 mx-auto" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/leaves.png" />
-    </div>
+<script type="module" src="https://cdn.skypack.dev/twind/shim"></script>
 
-    <ul>
-      <li>
-        <a title="Home" href="#home" class="h-16 px-6 flex items-center text-white bg-teal-700 w-full">
-          <i class="mx-auto">
-            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M12 6.453l9 8.375v9.172h-6v-6h-6v6h-6v-9.172l9-8.375zm12 5.695l-12-11.148-12 11.133 1.361 1.465 10.639-9.868 10.639 9.883 1.361-1.465z" />
-            </svg>
-          </i>
-        </a>
-      </li>
-      <li>
-        <a title="Views" href="#views" class="h-16 px-6 flex items-center hover:text-white w-full">
-          <i class="mx-auto">
-            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M18.546 3h-13.069l-5.477 8.986v9.014h24v-9.014l-5.454-8.986zm-3.796 12h-5.5l-2.25-3h-4.666l4.266-7h10.82l4.249 7h-4.669l-2.25 3zm-9.75-4l.607-1h12.787l.606 1h-14zm12.18-3l.607 1h-11.573l.607-1h10.359zm-1.214-2l.606 1h-9.144l.607-1h7.931z" />
-            </svg>
-          </i>
-        </a>
-      </li>
-      <li>
-        <a title="Customer Lists" href="#customer-lists" class="h-16 px-6 flex items-center hover:text-white w-full">
-          <i class="mx-auto">
-            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z" />
-            </svg>
-          </i>
-        </a>
-      </li>
-      <li>
-        <a title="Reporting" href="#reporting" class="h-16 px-6 flex items-center hover:text-white w-full">
-          <i class="mx-auto">
-            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M5 19h-4v-4h4v4zm6 0h-4v-8h4v8zm6 0h-4v-13h4v13zm6 0h-4v-19h4v19zm1 2h-24v2h24v-2z" />
-            </svg>
-          </i>
-        </a>
-      </li>
-      <li>
-        <a title="Admin" href="#admin" class="h-16 px-6 flex items-center hover:text-white w-full">
-          <i class="mx-auto">
-            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z" />
-            </svg>
-          </i>
-        </a>
-      </li>
-    </ul>
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 
-    <div class="mt-auto h-16 flex items-center w-full">
-      <img style="filter: invert(85%);" class="h-8 w-10 mx-auto" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/chi.png" />
-    </div>
-  </nav>
 
-  <div class="flex-1 flex flex-col">
-    <!-- section body top nav -->
-    <nav aria-label="top bar" class="flex-none flex justify-between bg-white h-16">
-      <!-- top bar left -->
-      <ul aria-label="top bar left" aria-orientation="horizontal" class="flex">
-        <!-- add button -->
-        <li class="group relative">
-          <button aria-controls="add" aria-expanded="false" aria-haspopup="listbox" class="flex items-center h-full px-4 text-sm">
-            <i>
-              <svg class="fill-current w-3 h-3 mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M24 10h-10v-10h-2v10h-10v2h10v10h2v-10h10z" />
-              </svg>
-            </i>
-            <span class="ml-2">Add</span>
-          </button>
-          <span class="absolute p-1 hidden group-hover:block">
-            <ul id="add" role="listbox" class="outline-none py-2 bg-white border rounded-md w-screen max-w-md w-dropdown-large shadow-lg focus:outline-none leading-relaxed">
-              <li role="separator" class="mb-2">
-                <label class="block px-4 py-3 font-semibold">
-                  New
+
+<div class="flex items-center justify-center min-h-screen py-6 bg-gray-50 sm:py-12">
+
+  <!-- // For demo purposes, I have open true by default and added open false on a time out
+  // For your project, its not needed. Just use x-data="{ open: false }" instead -->
+
+  <div class="relative" x-data=" data()" x-init="() => setTimeout(() => open = false, 2000)">
+    <button @click="open= !open; if (open) $nextTick(()=>{$refs.input.focus()});"
+      class="px-3 py-1 text-gray-500 bg-white rounded-md cursor-text ring-1 ring-gray-300 focus:outline-none ring-inset
+       focus:ring-indigo-400 hover:ring-indigo-400">Feedback</button>
+    <div x-show="open" @click.away="open = false"
+      class="flex flex-col space-y-2 px-3 pt-1 pb-2 absolute z-10 w-[350px] min-h-[180px] bg-white top-0 left-0 rounded-md shadow-xl"
+      style="	--tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 10px 10px -5px rgba(0, 0, 0, 0.03);">
+      <div class="text-gray-500">Feedback</div>
+      <div>
+
+
+        <form action="https://api.web3forms.com/submit" method="POST" id="form" enctype="multipart/form-data"
+          @submit.prevent="submitForm($event.currentTarget)" class="needs-validation" novalidate>
+          <!-- Add your access key from Web3Forms here -->
+          <input type="hidden" name="apikey" value="YOUR_ACCESS_KEY_HERE" />
+          <input type="hidden" name="subject" value="New Feedback for your Website" />
+          <!-- {You might also want to pre-populate email if the user is logged in} -->
+          <!-- <input type="hidden" name="email" value="{user.email}" /> -->
+          <input type="checkbox" name="botcheck" id="" style="display: none;" />
+          <div class="mb-1">
+            <textarea x-ref="input" required name="message" id=""
+              class="w-full min-h-[100px] max-h-[300px] h-28 border-2 border-gray-200 rounded-md p-2 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-300"
+              placeholder="Let us know what you think..."></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex gap-2">
+              <div>
+                <input class="absolute opacity-0 appearance-none" required type="radio" id="happy" name="type"
+                  value="happy" />
+                <label class="flex p-2 border border-gray-200 rounded-md cursor-pointer" for="happy">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" width="20" height="20" viewBox="0 0 36 36">
+                    <circle fill="#FFCC4D" cx="18" cy="18" r="18" />
+                    <path fill="#664500"
+                      d="M18 21c-3.623 0-6.027-.422-9-1-.679-.131-2 0-2 2 0 4 4.595 9 11 9 6.404 0 11-5 11-9 0-2-1.321-2.132-2-2-2.973.578-5.377 1-9 1z" />
+                    <path fill="#FFF" d="M9 22s3 1 9 1 9-1 9-1-2 4-9 4-9-4-9-4z" />
+                    <ellipse fill="#664500" cx="12" cy="13.5" rx="2.5" ry="3.5" />
+                    <ellipse fill="#664500" cx="24" cy="13.5" rx="2.5" ry="3.5" />
+                  </svg>
                 </label>
-                <hr />
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                Ticket
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                User
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                Organization
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                Search
-              </li>
-              <li role="separator" class="mb-2">
-                <label class="block px-4 py-3 font-semibold">Recently Viewed</label>
-                <hr />
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                <div class="flex">
-                  <div class="pr-2">
-                    <span style="padding: 2px 5px; font-size: 0.7rem;" class="font-mono rounded-sm bg-red-600 text-white leading-none">O</span>
-                  </div>
-                  <div class="flex-1">
-                    <p>Vertias - ams opps issue</p>
-                    <p class="text-gray-600">
-                      <span>#ticket/14352</span>
-                      <span class="mx-1 font-black">&#183;</span>
-                      <span>Nico Braun</span>
-                    </p>
-                  </div>
-                </div>
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                <div class="flex">
-                  <div class="pr-2">
-                    <span style="padding: 2px 5px; font-size: 0.7rem;" class="font-mono rounded-sm bg-yellow-400 text-black leading-none">N</span>
-                  </div>
-                  <div class="flex-1">
-                    <p>Vertias - ams opps issue</p>
-                    <p class="text-gray-600">
-                      <span>#ticket/14352</span>
-                      <span class="mx-1 font-black">&#183;</span>
-                      <span>Nico Braun</span>
-                    </p>
-                  </div>
-                </div>
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                <div class="flex">
-                  <div class="pr-2">
-                    <span style="padding: 2px 5px; font-size: 0.7rem;" class="font-mono rounded-sm bg-gray-500 text-white leading-none">S</span>
-                  </div>
-                  <div class="flex-1">
-                    <p>Vertias - ams opps issue</p>
-                    <p class="text-gray-600">
-                      <span>#ticket/14352</span>
-                      <span class="mx-1 font-black">&#183;</span>
-                      <span>Nico Braun</span>
-                    </p>
-                  </div>
-                </div>
-              </li>
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                <div class="flex">
-                  <div class="pr-2">
-                    <span style="padding: 2px 5px; font-size: 0.7rem;" class="font-mono rounded-sm bg-blue-600 text-white leading-none">P</span>
-                  </div>
-                  <div class="flex-1">
-                    <p>Vertias - ams opps issue</p>
-                    <p class="text-gray-600">
-                      <span>#ticket/14352</span>
-                      <span class="mx-1 font-black">&#183;</span>
-                      <span>Nico Braun</span>
-                    </p>
-                  </div>
-                </div>
-              </li>
+              </div>
+              <div>
+                <input class="absolute opacity-0 appearance-none" required type="radio" id="sad" name="type"
+                  value="sad" />
+                <label class="flex p-2 border border-gray-200 rounded-md cursor-pointer" for="sad">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" width="20" height="20" viewBox="0 0 36 36">
+                    <path fill="#FFCC4D"
+                      d="M36 18c0 9.941-8.059 18-18 18-9.94 0-18-8.059-18-18C0 8.06 8.06 0 18 0c9.941 0 18 8.06 18 18" />
+                    <ellipse fill="#664500" cx="11.5" cy="14.5" rx="2.5" ry="3.5" />
+                    <ellipse fill="#664500" cx="24.5" cy="14.5" rx="2.5" ry="3.5" />
+                    <path fill="#664500"
+                      d="M8.665 27.871c.178.161.444.171.635.029.039-.029 3.922-2.9 8.7-2.9 4.766 0 8.662 2.871 8.7 2.9.191.142.457.13.635-.029.177-.16.217-.424.094-.628C27.3 27.029 24.212 22 18 22s-9.301 5.028-9.429 5.243c-.123.205-.084.468.094.628z" />
+                  </svg>
+                </label>
+              </div>
+              <div>
+                <input class="absolute opacity-0 appearance-none" required type="radio" id="bug" name="type"
+                  value="bug" />
+                <label class="flex p-2 border border-gray-200 rounded-md cursor-pointer" for="bug">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" width="20" height="20" viewBox="0 0 36 36">
+                    <path fill="#FFCC4D"
+                      d="M2.653 35C.811 35-.001 33.662.847 32.027L16.456 1.972c.849-1.635 2.238-1.635 3.087 0l15.609 30.056c.85 1.634.037 2.972-1.805 2.972H2.653z" />
+                    <path fill="#231F20"
+                      d="M15.583 28.953c0-1.333 1.085-2.418 2.419-2.418 1.333 0 2.418 1.085 2.418 2.418 0 1.334-1.086 2.419-2.418 2.419-1.334 0-2.419-1.085-2.419-2.419zm.186-18.293c0-1.302.961-2.108 2.232-2.108 1.241 0 2.233.837 2.233 2.108v11.938c0 1.271-.992 2.108-2.233 2.108-1.271 0-2.232-.807-2.232-2.108V10.66z" />
+                  </svg>
+                </label>
+              </div>
+              <div>
+                <input class="absolute opacity-0 appearance-none" required type="radio" id="idea" name="type"
+                  value="idea" />
+                <label class="flex p-2 border border-gray-200 rounded-md cursor-pointer" for="idea">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" width="20" height="20" viewBox="0 0 36 36">
+                    <path fill="#FFD983"
+                      d="M29 11.06c0 6.439-5 7.439-5 13.44 0 3.098-3.123 3.359-5.5 3.359-2.053 0-6.586-.779-6.586-3.361C11.914 18.5 7 17.5 7 11.06 7 5.029 12.285.14 18.083.14 23.883.14 29 5.029 29 11.06z" />
+                    <path fill="#CCD6DD"
+                      d="M22.167 32.5c0 .828-2.234 2.5-4.167 2.5-1.933 0-4.167-1.672-4.167-2.5 0-.828 2.233-.5 4.167-.5 1.933 0 4.167-.328 4.167.5z" />
+                    <path fill="#FFCC4D"
+                      d="M22.707 10.293c-.391-.391-1.023-.391-1.414 0L18 13.586l-3.293-3.293c-.391-.391-1.023-.391-1.414 0s-.391 1.023 0 1.414L17 15.414V26c0 .553.448 1 1 1s1-.447 1-1V15.414l3.707-3.707c.391-.391.391-1.023 0-1.414z" />
+                    <path fill="#99AAB5" d="M24 31c0 1.104-.896 2-2 2h-8c-1.104 0-2-.896-2-2v-6h12v6z" />
+                    <path fill="#CCD6DD"
+                      d="M11.999 32c-.48 0-.904-.347-.985-.836-.091-.544.277-1.06.822-1.15l12-2c.544-.098 1.06.277 1.15.822.091.544-.277 1.06-.822 1.15l-12 2c-.055.01-.111.014-.165.014zm0-4c-.48 0-.904-.347-.985-.836-.091-.544.277-1.06.822-1.15l12-2c.544-.097 1.06.277 1.15.822.091.544-.277 1.06-.822 1.15l-12 2c-.055.01-.111.014-.165.014z" />
+                  </svg>
+                </label>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <div id="thenga"> <label for="attachment"
+                  :title="(files && files.length > 0) ? files.map(file => file.name).join(', ') : 'Choose a file...'"
+                  class="relative flex items-center justify-center w-6 h-6 cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" width="20" height="20"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                  <div id="badge"
+                    class="absolute z-10 items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full -right-1 -top-1"
+                    :class="(files && files.length > 0) ? 'flex' : 'hidden'">
+                    <span x-text="files?.length > 0 ? files.length : '0'">1</span></div>
+                  <input type="file" id="attachment" name="attachment" accept="image/*"
+                    x-on:change="files = Object.values($event.target.files); checkMaxSize($event.target.files) "
+                    class="absolute w-px h-px overflow-hidden opacity-0 appearance-none ">
+                </label></div>
+              <button type="submit"
+                class="flex justify-center w-24 px-2 py-2 text-white bg-indigo-500 rounded-md focus:outline-none focus:ring focus:ring-indigo-300"
+                :disabled="submitting" id="submit">
 
-              <li role="option" class="px-6 py-1 my-1 focus:outline-none focus:bg-blue-100 hover:bg-blue-100 cursor-pointer">
-                <div class="flex">
-                  <div class="pr-2">
-                    <span style="padding: 2px 5px; font-size: 0.7rem;" class="font-mono rounded-sm bg-gray-800 text-white leading-none">H</span>
-                  </div>
-                  <div class="flex-1">
-                    <p>Vertias - ams opps issue</p>
-                    <p class="text-gray-600">
-                      <span>#ticket/14352</span>
-                      <span class="mx-1 font-black">&#183;</span>
-                      <span>Nico Braun</span>
-                    </p>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </span>
-        </li>
-      </ul>
-
-      <!-- to bar right  -->
-      <ul aria-label="top bar right" aria-orientation="horizontal" class="px-8 flex items-center">
-        <li class="relative">
-          <input title="Search Bar" aria-label="search bar" role="search" class="pr-8 pl-4 py-2 rounded-md cursor-pointer transition-all duration-300 ease-in-out focus:border-black focus:cursor-text w-4 focus:w-64 placeholder-transparent focus:placeholder-gray-500" type="text" placeholder="Search Chi Desk Support" />
-          <i class="pointer-events-none absolute top-0 right-0 h-full flex items-center pr-3">
-            <svg class="fill-current w-4 h-4 mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d="M21.172 24l-7.387-7.387c-1.388.874-3.024 1.387-4.785 1.387-4.971 0-9-4.029-9-9s4.029-9 9-9 9 4.029 9 9c0 1.761-.514 3.398-1.387 4.785l7.387 7.387-2.828 2.828zm-12.172-8c3.859 0 7-3.14 7-7s-3.141-7-7-7-7 3.14-7 7 3.141 7 7 7z" />
-            </svg>
-          </i>
-        </li>
-
-        <li class="h-8 w-8 ml-3">
-          <button title="Notifications" aria-label="notifications" class="w-full h-full text-white bg-gray-600 rounded-md focus:outline-none focus:shadow-outline">
-            <i>
-              <svg class="fill-current w-4 h-4 mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M15.137 3.945c-.644-.374-1.042-1.07-1.041-1.82v-.003c.001-1.172-.938-2.122-2.096-2.122s-2.097.95-2.097 2.122v.003c.001.751-.396 1.446-1.041 1.82-4.667 2.712-1.985 11.715-6.862 13.306v1.749h20v-1.749c-4.877-1.591-2.195-10.594-6.863-13.306zm-3.137-2.945c.552 0 1 .449 1 1 0 .552-.448 1-1 1s-1-.448-1-1c0-.551.448-1 1-1zm3 20c0 1.598-1.392 3-2.971 3s-3.029-1.402-3.029-3h6z" />
-              </svg>
-            </i>
-          </button>
-        </li>
-
-        <li class="h-8 w-8 ml-3">
-          <button title="v2 REPL" aria-label="repl" class="w-full h-full text-white bg-gray-600 rounded-md focus:outline-none focus:shadow-outline">
-            <i>
-              <svg class="fill-current w-4 h-4 mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M22 6v16h-20v-16h20zm2-6h-24v24h24v-24zm-11 11v1.649l3.229 1.351-3.229 1.347v1.653l5-2.201v-1.599l-5-2.2zm-7 2.201v1.599l5 2.2v-1.653l-3.229-1.347 3.229-1.351v-1.649l-5 2.201z" />
-              </svg>
-            </i>
-          </button>
-        </li>
-
-        <li class="h-8 w-8 ml-3">
-          <button title="Products" aria-label="chi desk products" class="w-full h-full rounded-md focus:outline-none focus:shadow-outline">
-            <i class="text-gray-600">
-              <svg class="fill-current w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M11 11h-11v-11h11v11zm13 0h-11v-11h11v11zm-13 13h-11v-11h11v11zm13 0h-11v-11h11v11z" />
-              </svg>
-            </i>
-          </button>
-        </li>
-
-        <li class="h-10 w-10 ml-3">
-          <button title="Page Menu" aria-label="page menu" class="h-full w-full rounded-full border focus:outline-none focus:shadow-outline">
-            <img class="h-full w-full rounded-full mx-auto" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/me.jpg" />
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- section body header -->
-    <header aria-label="page caption" class="flex-none flex h-16 bg-gray-100 border-t px-4 items-center">
-      <h1 id="page-caption" class="font-semibold text-lg">Dashboard</h1>
-    </header>
-
-    <!-- main content -->
-    <main class="flex-grow flex min-h-0 border-t">
-      <!-- section update to tickets -->
-      <section class="flex flex-col p-4 w-full max-w-sm flex-none bg-gray-100 min-h-0 overflow-auto">
-        <h1 class="font-semibold mb-3">
-          Updates to your tickets
-        </h1>
-        <ul>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article tabindex="0" class="cursor-pointer border rounded-md p-3 bg-white flex text-gray-700 mb-2 hover:border-green-500 focus:outline-none focus:border-green-500">
-              <span class="flex-none pt-1 pr-2">
-                <img class="h-8 w-8 rounded-md" src="https://raw.githubusercontent.com/bluebrown/tailwind-zendesk-clone/master/public/assets/avatar.png" />
-              </span>
-              <div class="flex-1">
-                <header class="mb-1">
-                  Tarun T <span class="font-semibold">commented</span> on
-                  <h1 class="inline">"RE: WPMS issue".</h1>
-                </header>
-                <p class="text-gray-600">
-                  Hi Mazhar, Please note this issue comes when user is not
-                  closing or logout sy…
-                </p>
-                <footer class="text-gray-500 mt-2 text-sm">
-                  Friday 22:16
-                </footer>
-              </div>
-            </article>
-          </li>
-        </ul>
-      </section>
-
-      <!-- section content -->
-      <section aria-label="main content" class="flex min-h-0 flex-col flex-auto border-l">
-        <!-- content navigation -->
-        <nav class="bg-gray-100 flex p-4">
-          <!-- open tickets nav -->
-          <section aria-labelledby="open-tickets-tabs-label" class="mr-4 focus:outline-none">
-            <label id="open-tickets-tabs-label" class="font-semibold block mb-1 text-sm">Open Tickets
-              <span class="font-normal text-gray-700">(current)</span>
-            </label>
-            <ul class="flex">
-              <li>
-                <button class="focus:outline-none focus:bg-yellow-200 p-2 rounded-l-md border border-r-0 bg-white flex flex-col items-center w-24">
-                  <p class="font-semibold text-lg">6</p>
-                  <p class="text-sm uppercase text-gray-600">
-                    You
-                  </p>
-                </button>
-              </li>
-              <li>
-                <button class="focus:outline-none focus:bg-yellow-200 p-2 border rounded-r-md bg-white flex flex-col items-center w-24 cursor-pointer">
-                  <p class="font-semibold text-lg">23</p>
-                  <p class="text-sm uppercase text-gray-600">
-                    Groups
-                  </p>
-                </button>
-              </li>
-            </ul>
-          </section>
-          <!-- stats nav -->
-          <section aria-labelledby="ticket-statistics-tabs-label" class="pb-2">
-            <label id="ticket-statistics-tabs-label" class="font-semibold block mb-1 text-sm">Ticket Statistics
-              <span class="font-normal text-gray-700">(this week)</span></label>
-            <ul class="flex">
-              <li>
-                <button class="focus:outline-none focus:bg-yellow-200 p-2 rounded-l-md border border-r-0 bg-white flex flex-col items-center w-24">
-                  <p class="font-semibold text-lg">16</p>
-                  <p class="uppercase text-gray-600 text-sm">
-                    good
-                  </p>
-                </button>
-              </li>
-              <li>
-                <button class="focus:outline-none focus:bg-yellow-200 p-2 border border-r-0 bg-white flex flex-col items-center w-24">
-                  <p class="font-semibold text-lg">2</p>
-                  <p class="uppercase text-gray-600 text-sm">
-                    bad
-                  </p>
-                </button>
-              </li>
-
-              <li>
-                <button class="focus:outline-none focus:bg-yellow-200 p-2 border rounded-r-md bg-white flex flex-col items-center w-24">
-                  <p class="font-semibold text-lg">32</p>
-                  <p class="uppercase text-gray-600 text-sm">
-                    solved
-                  </p>
-                </button>
-              </li>
-            </ul>
-          </section>
-        </nav>
-
-        <!-- content caption -->
-        <header class="bg-white border-t flex items-center py-1 px-4">
-          <div class="flex">
-            <h2 id="content-caption" class="font-semibold">
-              Tickets requiring your attention (6)
-            </h2>
-            <span class="ml-3 group relative">
-              <button role="details" aria-controls="info-popup" class="text-blue-700 border-b border-dotted border-blue-700 focus:outline-none text-sm">
-                What is this?
+                <svg x-show="success" class="w-6 h-6">
+                  <use href="#success" /></svg>
+                <svg x-show="error" class="w-6 h-6">
+                  <use href="#error" /></svg>
+                <span x-show="!success && !error" x-text="submitting ? 'Sending...' : 'Send'">Send</span>
               </button>
-              <div role="tooltip" id="info-popup" class="absolute pt-1 rounded-md rounded-t-lg right-0 transform translate-x-40 mx-auto hidden group-hover:block z-50">
-                <div class="border rounded-md rounded-t-lg shadow-lg bg-white w-full max-w-xs w-screen">
-                  <header class="font-semibold rounded-t-lg bg-gray-300 px-4 py-2">
-                    People are waiting for replies!
-                  </header>
-                  <div class="p-4 border-t">
-                    <p class="mb-4">
-                      These are new or open tickets that are assigned to
-                      you, unassinged in your group(s) or not assigned to
-                      any group.
-                    </p>
-                    <p class="mb-1">
-                      They are ordered by priority and requester update date
-                      (oldest first).
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </span>
+            </div>
           </div>
-          <div class="ml-auto">
-            <button title="See available tickets in this view" aria-label="play" class="border rounded-md px-3 py-2 leading-none">
-              Play
-            </button>
-          </div>
-        </header>
-
-        <!-- content overflow section 
-                remove table and thead but keep tbody and change tbody to section, in order
-                to have scrollable overflow section -->
-        <table aria-describedby="info-popup" aria-label="open tickets" class="border-t w-full min-h-0 h-full flex flex-col">
-          <thead class="flex w-full flex-col px-4">
-            <tr class="border-b flex">
-              <th class="font-semibold text-left py-3 pl-3 pr-1 w-24">
-                <input type="checkbox" name="" id="" />
-              </th>
-              <th class="font-semibold text-left py-3 px-1 w-24 truncate">
-                ID
-              </th>
-              <th class="font-semibold text-left py-3 px-1 w-full max-w-xs xl:max-w-lg truncate">
-                Subject
-              </th>
-              <th class="font-semibold text-left py-3 px-1 flex-1 truncate">
-                Requester
-              </th>
-              <th class="font-semibold text-left py-3 px-1 flex-1 truncate">
-                Requester updated
-              </th>
-              <th class="font-semibold text-left py-3 px-1 flex-1 truncate">
-                Group
-              </th>
-              <th class="font-semibold text-left py-3 px-1 flex-1 truncate">
-                Assignee
-              </th>
-            </tr>
-          </thead>
-          <tbody class="flex w-full flex-col flex-1 min-h-0 overflow-hidden px-4">
-            <!-- low -->
-            <tr class="border-b flex">
-              <th class="bg-gray-100 text-left px-3 py-2 flex-1" colspan="7">
-                <h2 class="text-sm">
-                  <span class="font-normal mr-1">Priority</span><span>Low</span>
-                </h2>
-              </th>
-            </tr>
-            <tr role="row" class="hover:bg-blue-100 border-b flex cursor-pointer">
-              <td role="cell" headers="select" class="py-3 pl-3 pr-1 w-24 flex items-start">
-                <input class="mt-1" type="checkbox" />
-                <div class="ml-auto relative group">
-                  <span style="
-                          padding: 2px 5px;
-                          font-size: 0.7rem;
-                          position: relative;
-                          bottom: 2px;
-                        " class="font-mono rounded-sm bg-red-600 text-white leading-none">O</span>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Quo laudantium error corporis accusamus unde,
-                          labore quidem non officiis.
-                        </h1>
-                        <p class="mt-3">
-                          Hi Team,
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold">Nico Braun</p>
-                          <p class="ml-auto text-gray-700 text-sm">
-                            Yesterday 10:33
-                          </p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 w-24">
-                #12534
-              </td>
-              <td class="py-3 px-1 w-full max-w-xs xl:max-w-lg">
-                <div class="relative group w-full">
-                  <p class="w-full truncate">
-                    Quo laudantium error corporis accusamus unde, labore
-                    quidem non officiis.
-                  </p>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Quo laudantium error corporis accusamus unde,
-                          labore quidem non officiis.
-                        </h1>
-                        <p class="mt-3">
-                          Hi Team,
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold">Nico Braun</p>
-                          <p class="ml-auto text-gray-700 text-sm">
-                            Yesterday 10:33
-                          </p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Marla Darsuz
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Tuesday 09:56
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                UK Support
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Nico Braun
-              </td>
-            </tr>
-            <tr role="row" class="hover:bg-blue-100 border-b flex cursor-pointer">
-              <td role="cell" headers="select" class="py-3 pl-3 pr-1 w-24 flex items-start">
-                <input class="mt-1" type="checkbox" />
-                <div class="ml-auto relative group">
-                  <span style="
-                          padding: 2px 5px;
-                          font-size: 0.7rem;
-                          position: relative;
-                          bottom: 2px;
-                        " class="font-mono rounded-sm bg-red-600 text-white leading-none">O</span>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Lorem ipsum dolor sit amet, consectetur
-                          adipisicing elit.
-                        </h1>
-                        <p class="mt-3">
-                          Hi, <br />
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Odit consequatur natus aut
-                          reiciendis nisi sed! Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold">Nico Braun</p>
-                          <p class="ml-auto text-gray-700 text-sm">
-                            Today 13:30
-                          </p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse tempora
-                          aliquam voluptates quibusdam quae debitis
-                          laboriosam iure ea quos.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 w-24">
-                #12534
-              </td>
-              <td class="py-3 px-1 w-full max-w-xs xl:max-w-lg">
-                <div class="relative group w-full">
-                  <p class="w-full truncate">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing
-                    elit.
-                  </p>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Lorem ipsum dolor sit amet, consectetur
-                          adipisicing elit.
-                        </h1>
-                        <p class="mt-3">
-                          Hi, <br />
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Odit consequatur natus aut
-                          reiciendis nisi sed! Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold">Nico Braun</p>
-                          <p class="ml-auto text-gray-700 text-sm">
-                            Today 13:30
-                          </p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse tempora
-                          aliquam voluptates quibusdam quae debitis
-                          laboriosam iure ea quos.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Jim Beam
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Friday 10:29
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                UK Support
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Nico Braun
-              </td>
-            </tr>
-            <tr role="row" class="hover:bg-blue-100 border-b flex cursor-pointer">
-              <td role="cell" headers="select" class="py-3 pl-3 pr-1 w-24 flex items-start">
-                <input class="mt-1" type="checkbox" />
-                <div class="ml-auto relative group">
-                  <span style="
-                          padding: 2px 5px;
-                          font-size: 0.7rem;
-                          position: relative;
-                          bottom: 2px;
-                        " class="font-mono rounded-sm bg-yellow-400 text-black leading-none">N</span>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-yellow-400 text-black">New</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Excepturi at labore vel accusamus exercitationem
-                          quam, amet provident!
-                        </h1>
-                        <p class="mt-3">
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Odit consequatur natus aut
-                          reiciendis nisi sed! Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4 hidden">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold"></p>
-                          <p class="ml-auto text-gray-700 text-sm"></p>
-                        </div>
-                        <p class="mt-2"></p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 w-24">
-                #12534
-              </td>
-              <td class="py-3 px-1 w-full max-w-xs xl:max-w-lg">
-                <div class="relative group w-full">
-                  <p class="w-full truncate">
-                    Excepturi at labore vel accusamus exercitationem quam,
-                    amet provident!
-                  </p>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-yellow-400 text-black">New</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Excepturi at labore vel accusamus exercitationem
-                          quam, amet provident!
-                        </h1>
-                        <p class="mt-3">
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Odit consequatur natus aut
-                          reiciendis nisi sed! Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4 hidden">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold"></p>
-                          <p class="ml-auto text-gray-700 text-sm"></p>
-                        </div>
-                        <p class="mt-2"></p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Paul Ferrez
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Today 13:45
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                -
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                -
-              </td>
-            </tr>
-            <tr role="row" class="hover:bg-blue-100 border-b flex cursor-pointer">
-              <td role="cell" headers="select" class="py-3 pl-3 pr-1 w-24 flex items-start">
-                <input class="mt-1" type="checkbox" />
-                <div class="ml-auto relative group">
-                  <span style="
-                          padding: 2px 5px;
-                          font-size: 0.7rem;
-                          position: relative;
-                          bottom: 2px;
-                        " class="font-mono rounded-sm bg-red-600 text-white leading-none">O</span>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          impedit possimus praesentium voluptatum omnis
-                          assumenda rem autem magni consequatur nostrum
-                          distinctio unde.
-                        </h1>
-                        <p class="mt-3">
-                          Hi Team,
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold">Nico Braun</p>
-                          <p class="ml-auto text-gray-700 text-sm">
-                            Yesterday 10:33
-                          </p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 w-24">
-                #12534
-              </td>
-              <td class="py-3 px-1 w-full max-w-xs xl:max-w-lg">
-                <div class="relative group w-full">
-                  <p class="w-full truncate">
-                    impedit possimus praesentium voluptatum omnis assumenda
-                    rem autem magni consequatur nostrum distinctio unde.
-                  </p>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Low)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          impedit possimus praesentium voluptatum omnis
-                          assumenda rem autem magni consequatur nostrum
-                          distinctio unde.
-                        </h1>
-                        <p class="mt-3">
-                          Hi Team,
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold">Nico Braun</p>
-                          <p class="ml-auto text-gray-700 text-sm">
-                            Yesterday 10:33
-                          </p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Sara Dechicco
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Thursday 09:22
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                UK Support
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Nico Braun
-              </td>
-            </tr>
-            <!-- medium -->
-            <tr class="border-b flex">
-              <th class="bg-gray-100 text-left px-3 py-2 flex-1" colspan="7">
-                <h2 class="text-sm">
-                  <span class="font-normal mr-1">Priority</span>
-                  <span>Medium</span>
-                </h2>
-              </th>
-            </tr>
-            <tr role="row" class="hover:bg-blue-100 border-b flex cursor-pointer">
-              <td role="cell" headers="select" class="py-3 pl-3 pr-1 w-24 flex items-start">
-                <input class="mt-1" type="checkbox" />
-                <div class="ml-auto relative group">
-                  <span style="
-                          padding: 2px 5px;
-                          font-size: 0.7rem;
-                          position: relative;
-                          bottom: 2px;
-                        " class="font-mono rounded-sm bg-yellow-400 text-black leading-none">N</span>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-yellow-400 text-black">New</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Medium)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Excepturi at labore vel accusamus exercitationem
-                          assumenda ex incidunt eum quam, amet provident!
-                        </h1>
-                        <p class="mt-3">
-                          Hi, <br />
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Odit consequatur natus aut
-                          reiciendis nisi sed! Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4 hidden">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold"></p>
-                          <p class="ml-auto text-gray-700 text-sm"></p>
-                        </div>
-                        <p class="mt-2"></p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 w-24">
-                #12534
-              </td>
-              <td class="py-3 px-1 w-full max-w-xs xl:max-w-lg">
-                <div class="relative group w-full">
-                  <p class="w-full truncate">
-                    Excepturi at labore vel accusamus exercitationem
-                    assumenda ex incidunt eum quam, amet provident!
-                  </p>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-yellow-400 text-black">New</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Medium)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Excepturi at labore vel accusamus exercitationem
-                          assumenda ex incidunt eum quam, amet provident!
-                        </h1>
-                        <p class="mt-3">
-                          Hi, <br />
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Odit consequatur natus aut
-                          reiciendis nisi sed! Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4 hidden">
-                        <p class="text-gray-600"></p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p class="font-semibold"></p>
-                          <p class="ml-auto text-gray-700 text-sm"></p>
-                        </div>
-                        <p class="mt-2">
-                          Dolore odio error inventore sint et dolorum
-                          asperiores exercitationem, quisquam esse tempora
-                          aliquam voluptates quibusdam quae debitis
-                          laboriosam iure ea quos.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Freddy Murro
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Today 12:13
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                -
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                -
-              </td>
-            </tr>
-            <tr role="row" class="hover:bg-blue-100 border-b flex cursor-pointer">
-              <td role="cell" headers="select" class="py-3 pl-3 pr-1 w-24 flex items-start">
-                <input class="mt-1" type="checkbox" />
-                <div class="ml-auto relative group">
-                  <span style="
-                          padding: 2px 5px;
-                          font-size: 0.7rem;
-                          position: relative;
-                          bottom: 2px;
-                        " class="font-mono rounded-sm bg-red-600 text-white leading-none">O</span>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Medium)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Odit consequatur natus aut reiciendis nisi sed!
-                        </h1>
-                        <p class="mt-3">
-                          Hi, <br />
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p aria-label="commenter" class="font-semibold">
-                            Nico Braun
-                          </p>
-                          <p aria-label="time" class="ml-auto text-gray-700 text-sm">
-                            Today 06:34
-                          </p>
-                        </div>
-                        <p aria-label="comment" class="mt-2">
-                          Quos explicabo sed nisi totam dolores deleniti
-                          blanditiis culpa dolor provident perferendis
-                          sapiente corrupti repudiandae ea dolore.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 w-24">
-                #12534
-              </td>
-              <td class="py-3 px-1 w-full max-w-xs xl:max-w-lg">
-                <div class="relative group w-full">
-                  <p class="w-full truncate">
-                    Odit consequatur natus aut reiciendis nisi sed!
-                  </p>
-                  <!-- dropdown -->
-                  <span class="hidden group-hover:block ml-4 mt-10 w-screen max-w-lg absolute top-0 border shadow-lg p-6 bg-white rounded-md z-50 text-gray-900">
-                    <article>
-                      <header>
-                        <div>
-                          <span class="px-3 py-1 uppercase text-xs leading-none rounded-sm bg-red-600 text-white">Open</span>
-                          <span class="ml-2 text-gray-700">Incident #12534</span>
-                          <span class="ml-1">(Medium)</span>
-                        </div>
-                      </header>
-                      <section class="mt-5">
-                        <h1 class="text-sm font-semibold mt-3">
-                          Odit consequatur natus aut reiciendis nisi sed!
-                        </h1>
-                        <p class="mt-3">
-                          Hi, <br />
-                          <br />
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Error accusantium molestias fugit commodi
-                          doloremque. <br /><br />
-                          Lorem ipsum dolor sit amet consectetur,
-                          adipisicing elit. Temporibus, quibusdam
-                          voluptates? ...
-                        </p>
-                      </section>
-                      <footer class="mt-4">
-                        <p class="text-gray-600">Latest Comments</p>
-                        <hr class="mt-1" />
-                        <div class="flex mt-3">
-                          <p aria-label="commenter" class="font-semibold">
-                            Nico Braun
-                          </p>
-                          <p aria-label="time" class="ml-auto text-gray-700 text-sm">
-                            Today 06:34
-                          </p>
-                        </div>
-                        <p aria-label="comment" class="mt-2">
-                          Quos explicabo sed nisi totam dolores deleniti
-                          blanditiis culpa dolor provident perferendis
-                          sapiente corrupti repudiandae ea dolore.
-                        </p>
-                      </footer>
-                    </article>
-                  </span>
-                  <!-- end dropdown -->
-                </div>
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Carla Sandaers
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                Today 08:13
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                -
-              </td>
-              <td class="py-3 px-1 flex-1 truncate">
-                -
-              </td>
-            </tr>
-            <!-- high -->
-            <tr class="border-b flex hidden">
-              <th class="bg-gray-100 text-left px-3 py-2 flex-1" colspan="7">
-                <h2 class="text-sm">
-                  <span class="font-normal mr-1">Priority</span>
-                  <span>High</span>
-                </h2>
-              </th>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- content footer, currently hidden -->
-        <footer aria-label="content footer" class="flex p-3 bg-white border-t hidden">
-          footer
-        </footer>
-      </section>
-    </main>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
-  </body>
-</html>
+
+<script>
+  function data() {
+    return {
+      open: true,
+      files: null,
+      submitting: false,
+      success: false,
+      error: false,
+      checkMaxSize(files) {
+        //console.table(files);
+        if (files.length > 0) {
+          {
+            for (const [key, value] of Object.entries(files)) {
+              const fileSize = value.size / 1024;
+              if (fileSize > 500) {
+                console.log(fileSize);
+                alert('Please upload image less than 500 KB');
+                this.files = null;
+                return;
+              }
+            }
+          }
+        };
+      },
+      async submitForm(form) {
+        console.log(form);
+        form.classList.add("was-validated");
+        if (!form.checkValidity()) {
+          console.log("Please fill all the fields");
+          form.querySelectorAll(":invalid")[0].focus();
+        } else {
+          const formData = new FormData(form);
+          this.submitting = true;
+          // needed for converting to JSON app/json
+          // const object = {};
+          // formData.forEach((value, key) => {
+          //   object[key] = value;
+          // });
+          // const json = JSON.stringify(object);
+
+          // console.log(object);
+
+          try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+              method: "POST",
+              body: formData
+            });
+
+            let json = await response.json();
+            this.submitting = false;
+
+            if (response.status == 200) {
+              this.success = true;
+              form.reset();
+              this.files = null;
+
+            } else {
+              this.error = true;
+
+            }
+          } catch (error) {
+            console.log(error);
+          }
+
+          form.classList.remove("was-validated");
+          setTimeout(() => {
+            this.open = false;
+            this.error = false;
+            this.success = false;
+            this.files = null;
+          }, 5000);
+
+        }
+
+      }
+    }
+  }
+</script>
+
+<div class="hidden">
+  <!-- Hidden SVG will show when it success -->
+  <svg id="success" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" width="24" height="24" fill="none"
+    viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <svg id="error" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" width="24" height="24" fill="none"
+    viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+</div>

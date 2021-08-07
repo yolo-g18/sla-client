@@ -7,6 +7,8 @@ interface Props {
   label?: string;
   value?: string;
   setValue: (str: string) => void;
+  rows?: number;
+  cols?: number;
 }
 
 const InputArea = (props: Props) => {
@@ -24,8 +26,8 @@ const InputArea = (props: Props) => {
         placeholder={props.placeholder}
         onChange={(e) => props.setValue(e.target.value)}
         value={props.value}
-        rows={5}
-        cols={40}
+        rows={props.rows ? props.rows : 5}
+        cols={props.cols ? props.cols : 40}
       />
       {props.error && (
         <>
