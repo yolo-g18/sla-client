@@ -148,6 +148,28 @@ const RoomLayout = (props: Props) => {
   const color_folder = React.useRef<HTMLSelectElement>(null);
 
   const [isDefaultSearching, setIsDefaultSearching] = React.useState(true);
+
+  React.useEffect(() => {
+    // load detail data of room
+
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
+        setRoom(res.data);
+        setTitle(res.data.name);
+        setDescription(res.data.description);
+
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setError(err);
+      }
+    }
+
+    excute();
+  }, [alert.success,id]);
+
   React.useEffect(() => {
     // load folder color
     async function excute() {
@@ -191,18 +213,6 @@ const RoomLayout = (props: Props) => {
         setIsPendingRequestAttend(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
 
-        const btn = document.getElementById("btnRequest") as HTMLInputElement;
-
-        if (btn) {
-          if (res.data === true) {
-            btn.style.backgroundColor = "#607D8B";
-            btn.textContent = "Cancel request";
-          } else {
-            btn.style.backgroundColor =
-              "rgba(16, 185, 129, var(--tw-bg-opacity)";
-            btn.textContent = "Request to join";
-          }
-        }
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
@@ -233,26 +243,7 @@ const RoomLayout = (props: Props) => {
     excute();
   }, [auth.userResponse?._id, alert.success]);
 
-  React.useEffect(() => {
-    // load detail data of room
-
-    async function excute() {
-      try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(`${PARAMS.ENDPOINT}room/getRoom/${id}`);
-        setRoom(res.data);
-        setTitle(res.data.name);
-        setDescription(res.data.description);
-
-        dispatch({ type: ALERT, payload: { loading: false } });
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-        setError(err);
-      }
-    }
-
-    excute();
-  }, [id, alert.success]);
+ 
 
   React.useEffect(() => {
     // load SS of user for adding to folder
@@ -698,6 +689,7 @@ const RoomLayout = (props: Props) => {
     }
   }
 
+  
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -783,24 +775,25 @@ const RoomLayout = (props: Props) => {
                       <span className="tooltiptext w-28">invite user</span>
                     </button>
                   </div>
-                ) : // sau phai check member hay ko de hien btn join
-
-                isMember === false ? (
+                ) :(
                   <button
                     id="btnRequest"
                     onClick={handleRequestAttend}
-                    className="w-32 text-md rounded-md px-4 py-1 mx-2
-                  text-sm font-medium bg-blue-500 hover:bg-blue-600 
-               text-white focus:outline-none"
+                    style={isMember === false ? {display:"block"} : {display:"none"}}
+                    className={isPendingRequestAttend === false ? "w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white focus:outline-none"
+                    :"w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none"}
                   >
-                    <p className="text-md">Request to join</p>
+                    {isPendingRequestAttend === false ? (<p className="text-md">Request to join</p>)
+                    :(<p className="text-md">Cancel request</p>)}
+                    
                   </button>
-                ) : null}
+                
+                )}
 
                 <button
                   onClick={shareLink}
                   className="mx-2 tooltip focus:outline-none"
-                >
+                  >
                   <ShareIcon
                     fontSize="small"
                     className="hover:text-gray-400 text-gray-700"

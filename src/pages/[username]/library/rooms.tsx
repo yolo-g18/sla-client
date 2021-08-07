@@ -15,7 +15,7 @@ import { PARAMS } from "../../../common/params";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../../redux/types/alertType";
-
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -147,9 +147,12 @@ const rooms = (props: any) => {
                   <div className="my-auto px-4">
                     <button
                       onClick={() => handleRemoveRoom(item.room_id)}
-                      className="text-right flex justify-end focus:outline-none"
+                      className="tooltip text-right flex justify-end focus:outline-none"
                     >
-                      <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700 " />
+                      <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
+                                <span className="tooltiptext w-32">
+                                  delete this room
+                              </span>
                     </button>
                   </div>
                 ) : null

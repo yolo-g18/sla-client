@@ -52,6 +52,8 @@ const members = () => {
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
 
+  const [isMember, setIsMember] = React.useState(false);
+
   React.useEffect(() => {
     // list all member of room
     async function excute() {
@@ -124,78 +126,122 @@ const members = () => {
 
     setIsToastOpen(false);
   };
+
+    // share link
+    function shareLink() {
+      navigator.clipboard.writeText(window.location.href);
+      setMessageToast("copied link");
+      setTypeToast("success");
+      setIsToastOpen(true);
+    }
+
+    
+  React.useEffect(() => {
+    // check member permisson
+    async function excute() {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/isMemberOfRoom/${id}`);
+        setIsMember(res.data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        
+      }
+    }
+    excute();
+  }, [alert.success, id]);
   return (
     <RoomLayout>
-      {members.length === 0 ? (
-        <div></div>
-      ) : (
-        <div>
+
+      <div>
+        { isMember === true ? (
           <div className="mt-8 mb-6">
-            <p className="text-lg font-bold text-gray-500">
-              {members.length} Members
+          <p className="text-lg text-gray-500">
+            Members
             </p>
-            <hr />
-          </div>
-          {members.map((item, index) => {
-            return (
-              <div>
-                <div
-                  className=" bg-white dark:bg-gray-800 mt-6 border-b-2  
+          <hr />
+        </div>
+        ):null}
+        
+        {auth.userResponse?.username === room.ownerName ? (
+        <div className="col-span-2 text-center mx-auto">
+          <p className="text-3xl font-semibold text-gray-700">
+            Click this button to get join link for your classmates
+            </p>
+          <br/>
+          <p className="text-md text-gray-600">
+            Anyone with this URL can sign up and join your class
+                </p>
+
+          <br />
+          <button
+            onClick={shareLink}
+            type="button"
+            className="w-40 text-md rounded-sm px-4 mx-2 py-2
+            text-md font-bold bg-blue-500 hover:bg-blue-600 
+         text-white focus:outline-none"
+          >
+            Copy link
+          </button>
+        </div>):null}
+
+        {members.map((item, index) => {
+          return (
+            <div>
+              <div
+                className=" bg-white dark:bg-gray-800 mt-6 border-b-2  
              hover:border-gray-300 hover:shadow-lg rounded-md shadow-md flex justify-between"
-                  key={index}
-                >
-                  <div className="w-full">
-                    <Link
-                      href={{
-                        pathname: "/[username]/library/sets",
-                        query: { username: item.userName },
-                      }}
-                    >
-                      <div className="cursor-pointer flex flex-1 items-center p-4">
-                        <FaceOutlinedIcon style={{ fontSize: 65 }} />
-                        <div className="flex-1 pl-1 mr-16">
-                          {room.ownerName === item.userName ? "host" : "member"}
-                          <div className="font-medium hover:underline flex">
-                            <p>{item.userName}</p>
-                          </div>
+                key={index}
+              >
+                <div className="w-full">
+                  <Link
+                    href={{
+                      pathname: "/[username]/library/sets",
+                      query: { username: item.userName },
+                    }}
+                  >
+                    <div className="cursor-pointer flex flex-1 items-center p-4">
+                      <FaceOutlinedIcon style={{ fontSize: 65 }} />
+                      <div className="flex-1 pl-1 mr-16">
+                        <p className="text-sm text-gray-400">{room.ownerName === item.userName ? "admin room" : "member"}</p>
+                        <div className="text-lg font-bold hover:underline flex">
+                          <p>{item.userName}</p>
                         </div>
                       </div>
-                    </Link>
-                  </div>
-                  {room.ownerName === auth.userResponse?.username ? (
-                    <div className="my-auto px-4">
-                      <button
-                        onClick={() => handleRemoveMember(item.member_id)}
-                        className={`tooltip text-right flex justify-end focus:outline-none 
+                    </div>
+                  </Link>
+                </div>
+                {room.ownerName === auth.userResponse?.username ? (
+                  <div className="my-auto px-4">
+                    <button
+                      onClick={() => handleRemoveMember(item.member_id)}
+                      className={`tooltip text-right flex justify-end focus:outline-none 
                         `}
-                        disabled={item.userName === auth.userResponse?.username} //check host
-                      >
-                        <HighlightOffOutlinedIcon
-                          className={`
+                      style={item.userName === auth.userResponse?.username ? { display: "none" } : {}} //check host
+                    >
+                      <HighlightOffOutlinedIcon
+                        className={`
                         ${
                           item.userName === auth.userResponse?.username
                             ? "text-gray-300"
                             : "hover:text-yellow-500 text-gray-700"
-                        }`}
-                        />
-                        {item.userName === auth.userResponse?.username ? (
-                          <span className="tooltiptext w-44">
-                            cannot remove host
+                          }`}
+                      />
+
+                      <span className="tooltiptext w-44">
+                        remove this member
                           </span>
-                        ) : (
-                          <span className="tooltiptext w-44">
-                            remove this member
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
+
+                    </button>
+                  </div>
+                ) : null}
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        })}
+      </div>
+
       {isShowRemoveMemberModal ? (
         <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
           <div className=" w-full absolute flex items-center justify-center bg-modal">
@@ -229,8 +275,8 @@ const members = () => {
                       </svg>
                     </div>
                   ) : (
-                    "Remove"
-                  )}
+                      "Remove"
+                    )}
                 </button>
                 <button
                   onClick={closeRemoveMemberModal}

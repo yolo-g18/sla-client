@@ -41,11 +41,11 @@ export const ddmItemsAdd = [
   },
   {
     label: "New folder",
-    link: "/setting",
+    link: "/library/folders",
   },
   {
-    label: "New class",
-    link: "help",
+    label: "New rooms",
+    link: "/library/folders",
   },
 ];
 
