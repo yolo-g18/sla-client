@@ -30,8 +30,15 @@ export const convertTimeToMySQl = (timeEvent: any) => {
    + " " + new Date(timeEvent).getHours() 
    + ":" + new Date(timeEvent).getMinutes() 
    + ":" + new Date(timeEvent).getSeconds() 
+}
 
+export const convertTimeEvnLearn = (date: any) => {
+   let today = new Date(date);
+   let dd = String(today.getDate()).padStart(2, '0');
+   let mm = String(today.getMonth() + 1).padStart(2, '0'); 
+   let yyyy = today.getFullYear();
 
+return yyyy + '-' + mm + '-' + dd;
 }
 
 export const getTimeInDay = (time: any) => {
@@ -46,6 +53,10 @@ export const formatDate = (oj: any) => {
 
 export const formatDate2 = (oj: any) => {
    return oj.year + "-" + oj.month + "-" + oj.day;
+}
+
+export const formatDate3 = (oj: any) => {
+   return oj.getYear() + "-" + oj.getMonth() + "-" + oj.getDay();
 }
 // export const convertTimeToMySQL = (d : any) =>   {
 //     if(0 <= d && d < 10) return "0" + d.toString();

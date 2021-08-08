@@ -5,6 +5,7 @@ import user from './userReducer'
 import search from './searchReducer'
 import event from './eventReducer'
 import eventHandle from './eventHandleReducer'
+import learn from './learnReducer'
 
 
 export default combineReducers({
@@ -13,5 +14,6 @@ export default combineReducers({
   user,
   search,
   event,
-  eventHandle
+  eventHandle,
+  learn
 })

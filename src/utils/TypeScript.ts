@@ -269,6 +269,7 @@ export interface INewRoom {
         color?: string | null
         createdTime: number
         updateTime: number
+        isDone?:boolean
         
   }
 
@@ -293,4 +294,11 @@ export interface IEventHandle {
   typeAction?: number
   currentEvn?: IEventRes | undefined
   time?: Date
+}
+
+export interface ILearnActionPayload {
+  ssID?:number
+  learnDate?: Date
+  isDone?: boolean
+  evnID?:number
 }

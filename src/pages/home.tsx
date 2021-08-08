@@ -23,8 +23,10 @@ import CircularProgress, {
 } from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import dayjs from "dayjs";
 import {
+  convertTimeEvnLearn,
   convertTimeToMySQl,
   formatUTCToDate,
   getTimeInDay,
@@ -53,8 +55,25 @@ const home = () => {
             todayObj.startOf("day")
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
-        dispatch({ type: ALERT, payload: { loading: false } });
-        dispatch(putEvent(res.data));
+        const listTemp: IEventRes[] = [...res.data];
+        listTemp.map(async (item, index) => {
+          if (item.isLearnEvent) {
+            try {
+              const res = await getAPI(
+                `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                  item.description
+                }&date=${convertTimeEvnLearn(item.fromTime)}`
+              );
+              dispatch({ type: ALERT, payload: { loading: false } });
+              if (res.data.length) {
+                listTemp[index].isDone = false;
+              } else listTemp[index].isDone = true;
+            } catch (err) {
+              console.log(err);
+            }
+          }
+        });
+        if (!alert.loading) dispatch(putEvent(res.data));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -123,7 +142,7 @@ const home = () => {
                 </p>{" "}
               </div>
               <div className="mb-6">
-                <div className="shadow-lg rounded-md w-full p-4 bg-white overflow-auto mb-6">
+                <div className="rounded-md w-full p-4 overflow-auto mb-6">
                   <div className="w-full flex items-center justify-between">
                     <p className="text-gray-800 dark:text-white text-xl font-medium">
                       Calendar
@@ -138,7 +157,7 @@ const home = () => {
                       </p>
                     </Link>
                   </div>
-                  <p className="text-gray-800 dark:text-white text-md font-medium mb-4">
+                  <p className="text-gray-800 text-md font-medium mb-4 w-full">
                     {event.length
                       ? formatUTCToDate(event[0]?.fromTime)
                       : "No task at this day"}
@@ -148,7 +167,7 @@ const home = () => {
                       <article
                         onClick={() => viewEventhandle(evn)}
                         key={index}
-                        className={`cursor-pointer border rounded-md p-1 bg-white flex text-gray-700 mb-2 
+                        className={`cursor-pointer  rounded-md p-1 flex text-gray-700 mb-2 
                     focus:outline-none`}
                       >
                         <span className="flex-none pr-2 my-auto">
@@ -167,15 +186,26 @@ const home = () => {
                             className={`bg-${evn.color?.toLowerCase()}-500 w-2 h-2 rounded-full mx-auto mt-2`}
                           ></div>
                         </span>
-                        <div className="flex-1 relative">
+                        <div className="">
                           <header className="mb-1 text-sm truncate">
-                            {dayjs(evn.toTime) < todayObj &&
-                            !evn.isLearnEvent ? (
-                              <span className="font-semibold line-through">
-                                {evn.name}
+                            {evn.isLearnEvent ? (
+                              <span
+                                className={`font-semibold ${
+                                  evn.isDone
+                                    ? "text-gray-400 "
+                                    : "text-gray-800"
+                                }`}
+                              >
+                                {evn.name}{" "}
+                                {evn.isDone ? (
+                                  <CheckCircleIcon
+                                    className="text-blue-600 ml-2"
+                                    fontSize="small"
+                                  />
+                                ) : null}
                               </span>
                             ) : (
-                              <span className="font-semibold line-through">
+                              <span className="font-semibold truncate">
                                 {evn.name}
                               </span>
                             )}

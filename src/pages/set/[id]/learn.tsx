@@ -24,6 +24,10 @@ import CircularProgress, {
 } from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import {
+  convertTime,
+  formatDate2,
+} from "../../../components/schedule/convertTime";
 
 //alert
 function Alert(props: AlertProps) {
@@ -103,7 +107,7 @@ function CircularProgressWithLabel(
 }
 
 const learn = () => {
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, learn } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [q, setQ] = useState(0);
@@ -147,8 +151,13 @@ const learn = () => {
     query: { id }, //id of folder get from path
   } = router;
 
+  const [isLearnByDay, setIsLearnByday] = useState(false);
+
   //fecth to get cards
   useEffect(() => {
+    if (!id) {
+      return;
+    }
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -162,14 +171,30 @@ const learn = () => {
         const listCardLearingRes = await getAPI(
           `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
         );
-        setIsContinue(false);
+
         setListCardsLearning(listCardLearingRes.data.listCardLearning);
         setOverralProgress(listCardLearingRes.data.progress);
+        if (learn.isDone) {
+          console.log("tai sao nhay vao day");
+
+          const listCardLearingRes = await getAPI(
+            `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+              learn.ssID
+            }&date=${formatDate2(learn.learnDate)}`
+          );
+          setListCardsLearning(listCardLearingRes.data.listCardLearning);
+        }
+        setIsContinue(false);
         dispatch({ type: ALERT, payload: { loading: false } });
         console.log("legth: " + listCardsLearning.length);
-        setCardHint(listCardsLearning[currenrCard].hint);
+        setCardHint(
+          listCardsLearning[currenrCard]
+            ? listCardsLearning[currenrCard].hint
+            : ""
+        );
       } catch (err) {
         console.log("error is: " + err);
+        router.push("/error");
       }
     };
     fetchData();
@@ -177,6 +202,9 @@ const learn = () => {
   }, [id, isChange, isContinue]);
 
   useEffect(() => {
+    if (!id) {
+      return;
+    }
     const fetchData = async () => {
       try {
         const listCardLearingRes = await getAPI(
@@ -185,6 +213,7 @@ const learn = () => {
         setOverralProgress(listCardLearingRes.data.progress);
       } catch (err) {
         console.log(err);
+        router.push("/error");
       }
     };
 
@@ -335,6 +364,9 @@ const learn = () => {
                 </button>
               </Link>
             </div>
+            {!learn.isDone ? null : (
+              <p>Review card at {formatDate2(learn.learnDate)}</p>
+            )}
             {showLearningResultModal ? (
               <div className="mx-auto h-2/3 text-center">
                 <p className="font-bold text-gray-700">OVERRAL PROGRESS</p>

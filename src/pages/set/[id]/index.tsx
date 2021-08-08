@@ -119,6 +119,9 @@ const index = () => {
   useEffect(() => {
     setIsSuc(false);
     const fetchData = async () => {
+      if (!id) {
+        return;
+      }
       if (alert.success === "😎 Update successful!") {
         setTypeToast("success");
         setMessageToast(alert.success.toString());
@@ -141,7 +144,8 @@ const index = () => {
           setNumberOfCard(studySetRes.data.numberOfCard);
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
-        console.log("error is: " + err);
+        console.log(err.response.data);
+        router.push("/error");
       }
     };
     fetchData();
@@ -252,6 +256,9 @@ const index = () => {
   };
 
   const handelDeleteStudySet = async () => {
+    if (!id) {
+      return;
+    }
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await deleteAPI(`${PARAMS.ENDPOINT}studySet/delete?id=${id}`);
@@ -285,6 +292,9 @@ const index = () => {
 
   const deleteCard = async () => {
     let id = cards[currentCard].id;
+    if (!id) {
+      return;
+    }
     if (cards.length <= 2) {
       setIsToastOpen(true);
       setTypeToast("warning");
@@ -328,6 +338,9 @@ const index = () => {
     console.log("dasbdhabs");
 
     const fetchData = async () => {
+      if (!id) {
+        return;
+      }
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
@@ -351,6 +364,9 @@ const index = () => {
   }, [reportContent]);
 
   const sendReportHandle = async () => {
+    if (!id) {
+      return;
+    }
     if (reportContent.length === 0) {
       setReportContentErr("Report content required");
       return;

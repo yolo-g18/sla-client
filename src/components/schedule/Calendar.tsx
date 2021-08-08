@@ -7,11 +7,12 @@ import { useEffect, useState } from "react";
 
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { FormSubmit, IEventRes, RootStore } from "../../utils/TypeScript";
 import {
   convertTime,
+  convertTimeEvnLearn,
   convertTimeToMySQl,
-  formatDate2,
   getTimeInDay,
 } from "./convertTime";
 
@@ -45,6 +46,9 @@ import AccessAlarmOutlinedIcon from "@material-ui/icons/AccessAlarmOutlined";
 import { useClickOutside } from "../../hook/useClickOutside";
 import { putEvent } from "../../redux/actions/eventAction";
 import { eventHandleDispatch } from "../../redux/actions/eventHandleAction";
+import { learnByDay } from "../../redux/actions/learnAction";
+import router from "next/router";
+import index from "../../pages/folder/[id]";
 
 interface Props {}
 
@@ -147,8 +151,12 @@ const Calendar = (props: Props) => {
     setCurrentEvent(evn);
   };
 
+  //bien tam
+  const [isReviewCheck, setIsReviewCheck] = useState(false);
+
   //get all event for calendar
   useEffect(() => {
+    setIsReviewCheck(false);
     setIsSuccess(false);
     setCalendarChange(false);
     const fetchData = async () => {
@@ -161,9 +169,25 @@ const Calendar = (props: Props) => {
             dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
           )}`
         );
-        dispatch({ type: ALERT, payload: { loading: false } });
-
-        setListEvent(res.data);
+        const listTemp: IEventRes[] = [...res.data];
+        listTemp.map(async (item, index) => {
+          if (item.isLearnEvent) {
+            try {
+              const res = await getAPI(
+                `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                  item.description
+                }&date=${convertTimeEvnLearn(item.fromTime)}`
+              );
+              dispatch({ type: ALERT, payload: { loading: false } });
+              if (res.data.length) {
+                listTemp[index].isDone = false;
+              } else listTemp[index].isDone = true;
+            } catch (err) {
+              console.log(err);
+            }
+          }
+        });
+        if (!alert.loading) setListEvent(listTemp);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -209,12 +233,6 @@ const Calendar = (props: Props) => {
   };
 
   const showMoreHandle = (dateFrom: any, dateTo: any) => {
-    console.log(
-      JSON.stringify(convertTime(dateFrom)) +
-        ": " +
-        JSON.stringify(convertTime(dateTo))
-    );
-
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -249,10 +267,10 @@ const Calendar = (props: Props) => {
 
   //handle open add modal
   const addClickHandle = (date: any) => {
-    // console.log("date: " + date);
+    const now = dayjs();
     let time = new Date(date);
-    time.setHours(todayObj.hour());
-    time.setMinutes(todayObj.minute());
+    time.setHours(now.hour());
+    time.setMinutes(now.minute());
     setDateEventPick(time);
     setTimeFromPick(time);
 
@@ -312,8 +330,6 @@ const Calendar = (props: Props) => {
         setTimePickerErr("");
       }
     }
-
-    console.log(timeFromPick);
   }, [eventName, eventDesc, timeToPick, timeFromPick]);
 
   const addEventHandle = () => {
@@ -456,7 +472,18 @@ const Calendar = (props: Props) => {
     dispatch(eventHandleDispatch({ typeAction: 0 }));
   };
 
-  console.log(dayjs(currentEvent.toTime) < todayObj);
+  const learn = (ssID: number, date: Date, evnID: number) => {
+    dispatch(
+      learnByDay({
+        ssID: ssID,
+        learnDate: date,
+        isDone: false,
+        evnID: evnID,
+      })
+    );
+
+    router.push(`/set/${ssID}/learn`);
+  };
 
   return (
     <div>
@@ -565,7 +592,11 @@ const Calendar = (props: Props) => {
                               className="h-4 w-4 my-auto mr-2"
                               alt=""
                             />
-                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                            <div
+                              className={`text-xs font-medium text-gray-800 dark:text-gray-100 truncate ${
+                                evn.isDone ? "text-gray-400 " : "text-gray-800"
+                              }`}
+                            >
                               {evn.name}
                             </div>
                             <div className=" hidden xl:block"></div>
@@ -685,17 +716,20 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className="flex px-2 w-full my-1.5"
+                            className={`flex px-2 w-full my-1.5 `}
                           >
                             <img
                               src="draft.svg"
                               className="h-4 w-4 my-auto mr-2"
                               alt=""
                             />
-                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                            <div
+                              className={`text-xs font-medium truncate ${
+                                evn.isDone ? "text-gray-400 " : "text-gray-800"
+                              }`}
+                            >
                               {evn.name}
                             </div>
-                            <div className=" hidden xl:block"></div>
                           </button>
                         ) : (
                           <button
@@ -820,7 +854,11 @@ const Calendar = (props: Props) => {
                               className="h-4 w-4 my-auto mr-2"
                               alt=""
                             />
-                            <div className="text-xs font-medium text-gray-800 dark:text-gray-100 truncate ">
+                            <div
+                              className={`text-xs font-medium text-gray-800 dark:text-gray-100 truncate ${
+                                evn.isDone ? "text-gray-400 " : "text-gray-800"
+                              }`}
+                            >
                               {evn.name}
                             </div>
                             <div className=" hidden xl:block"></div>
@@ -965,7 +1003,9 @@ const Calendar = (props: Props) => {
                     <div className=" mt-2 gap-2 w-72 px-1">
                       <p className="mt-2">
                         {currentEvent.isLearnEvent
-                          ? null
+                          ? currentEvent.isDone
+                            ? "You have reviewed for this day 👌, now you can continue studying ✌️"
+                            : null
                           : currentEvent.description}
                       </p>
                     </div>
@@ -974,11 +1014,18 @@ const Calendar = (props: Props) => {
               </div>
               <div className="flex justify-center py-4">
                 {currentEvent.isLearnEvent ? (
-                  <Link href={`/set/${currentEvent.description}/learn`}>
-                    <button className=" text-white w-28 py-1 mx-3 rounded-sm bg-blue-500 hover:bg-blue-600 focus:outline-none">
-                      Review
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() =>
+                      learn(
+                        Number(currentEvent.description),
+                        currentEvent.fromTime,
+                        currentEvent.id
+                      )
+                    }
+                    className=" text-white w-28 py-1 mx-3 rounded-sm bg-blue-500 hover:bg-blue-600 focus:outline-none"
+                  >
+                    {currentEvent.isDone ? "Learn" : "Review"}
+                  </button>
                 ) : (
                   <button
                     onClick={eventEditHandle}
