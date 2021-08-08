@@ -42,9 +42,8 @@ const home = () => {
   const dispatch = useDispatch();
   const { auth, alert, event } = useSelector((state: RootStore) => state);
 
-  //get event today
-  //get 6 study set learning
-  //get 6 study set own
+  const [numberOfSetsCreated, setNumberSetsCreated] = useState(0);
+  const [numberOfSetsLearning, setNumberSetsLearning] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,44 +89,75 @@ const home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      //list ss created
+      //list 6 ss created
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const listSSCreatedRes = await getAPI(
-          `${PARAMS.ENDPOINT}home/SSCreated`
+          `${PARAMS.ENDPOINT}lib/ss/created?userId=${auth.userResponse?._id}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
+        setNumberSetsCreated(listSSCreatedRes.data.length);
         setList4StudySetCreated(listSSCreatedRes.data);
 
-        console.log(JSON.stringify(listSSCreatedRes.data));
+        console.log(JSON.stringify(listSSCreatedRes.data.slice(0, 6)));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
       }
 
-      //list studyset learning
+      //list 6 studyset learning
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const listSSLearningRes = await getAPI(
-          `${PARAMS.ENDPOINT}home/SSLearning`
+          `${PARAMS.ENDPOINT}lib/ss/learning`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
-        setList4StudySetLearning(listSSLearningRes.data);
+        setNumberSetsLearning(listSSLearningRes.data.length);
+        setList4StudySetLearning(listSSLearningRes.data.slice(0, 6));
 
         console.log(JSON.stringify(listSSLearningRes.data));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
       }
+
+      //
     };
 
     fetchData();
-  }, []);
+  }, [auth.userResponse?._id]);
 
   const viewEventhandle = (evn: IEventRes) => {
     dispatch(eventHandleDispatch({ typeAction: 2, currentEvn: evn }));
     router.push("/schedule");
   };
+
+  if (numberOfSetsCreated === 0 && numberOfSetsLearning === 0) {
+    return (
+      <AppLayout2 title="home" desc="home">
+        <div className="text-center mt-12">
+          <p className="text-3xl font-semibold text-gray-700">
+            You have no sets yet
+          </p>
+          <p className="text-md text-gray-600">
+            Sets you create or study will be displayed here.
+          </p>
+          <div className="mt-4 text-center">
+            <Link href="/set/add">
+              <button
+                type="button"
+                className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                      text-md font-bold bg-blue-500 hover:bg-blue-600 
+                   text-white focus:outline-none"
+              >
+                Create a new set
+              </button>
+            </Link>
+          </div>
+        </div>
+      </AppLayout2>
+    );
+  }
 
   return (
     <div>
@@ -139,7 +169,7 @@ const home = () => {
                 <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
                 <p className="text-lg font-bold text-blue-600">
                   Today Task ({event?.length})
-                </p>{" "}
+                </p>
               </div>
               <div className="mb-6">
                 <div className="rounded-md w-full p-4 overflow-auto mb-6">
@@ -147,15 +177,6 @@ const home = () => {
                     <p className="text-gray-800 dark:text-white text-xl font-medium">
                       Calendar
                     </p>
-                    <Link
-                      href={{
-                        pathname: "/schedule",
-                      }}
-                    >
-                      <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
-                        Show more <ChevronRightIcon fontSize="small" />
-                      </p>
-                    </Link>
                   </div>
                   <p className="text-gray-800 text-md font-medium mb-4 w-full">
                     {event.length
@@ -229,147 +250,154 @@ const home = () => {
               </div>
             </div>
             <div className="col-span-5 px-2">
-              <div>
-                <div className="flex justify-between">
-                  <div className="flex flex-col">
-                    <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
-                    <p className="text-lg font-bold text-blue-600">
-                      Learning
-                    </p>{" "}
+              {!numberOfSetsLearning ? null : (
+                <div>
+                  <div className="flex justify-between">
+                    <div className="flex flex-col">
+                      <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
+                      <p className="text-lg font-bold text-blue-600">
+                        Learning ({numberOfSetsLearning})
+                      </p>{" "}
+                    </div>
+                    <div className="flex flex-col">
+                      <Link
+                        href={{
+                          pathname: "/[username]/library/sets",
+                          query: { username: auth.userResponse?.username },
+                        }}
+                      >
+                        <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                          Show more <ChevronRightIcon fontSize="small" />
+                        </p>
+                      </Link>{" "}
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <Link
-                      href={{
-                        pathname: "/[username]/library/sets",
-                        query: { username: auth.userResponse?.username },
-                      }}
-                    >
-                      <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
-                        Show more <ChevronRightIcon fontSize="small" />
-                      </p>
-                    </Link>{" "}
-                  </div>
-                </div>
-                <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
-                  {list4StudySetLeaning.map((set, index) => {
-                    return (
-                      <div className="col-span-1 ">
-                        <div
-                          key={index}
-                          className="grid grid-rows-5 flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white 
+                  <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                    {list4StudySetLeaning.map((set, index) => {
+                      return (
+                        <div className="col-span-1 ">
+                          <div
+                            key={index}
+                            className="grid grid-rows-5 flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white 
                           hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
-                        >
-                          <div className="row-span-1 w-full flex flex-row mb-2">
-                            <div className="w-full">
-                              <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
-                                <a
-                                  href={`/set/${set.studySetId}`}
-                                  className="hover:underline"
-                                >
-                                  {set.studySetName.length <= 6
-                                    ? set.studySetName
-                                    : set.studySetName.substring(0, 6) +
-                                      "..."}{" "}
-                                </a>
-                                {set.color ? (
+                          >
+                            <div className="row-span-1 w-full flex flex-row mb-2">
+                              <div className="w-full">
+                                <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
+                                  <a
+                                    href={`/set/${set.studySetId}`}
+                                    className="hover:underline"
+                                  >
+                                    {set.studySetName.length <= 6
+                                      ? set.studySetName
+                                      : set.studySetName.substring(0, 6) +
+                                        "..."}{" "}
+                                  </a>
+                                  {set.color ? (
+                                    <FiberManualRecordIcon
+                                      className={`text-${set.color?.toLowerCase()}-400`}
+                                    />
+                                  ) : null}
                                   <FiberManualRecordIcon
-                                    className={`text-${set.color?.toLowerCase()}-400`}
+                                    className={`text-yellow-50-400`}
                                   />
-                                ) : null}
-                                <FiberManualRecordIcon
-                                  className={`text-yellow-50-400`}
-                                />
-                                {"  "}
-                                <a href={`/${set.owner}/library/sets`}>
-                                  <span className="text-gray-500 text-sm hover:underline">
-                                    {set.owner}
-                                  </span>
-                                </a>
+                                  {"  "}
+                                  <a href={`/${set.owner}/library/sets`}>
+                                    <span className="text-gray-500 text-sm hover:underline">
+                                      {set.owner}
+                                    </span>
+                                  </a>
+                                </p>
+                              </div>
+                            </div>
+                            <div className="row-span-3 mb-12">
+                              {set.ssDescription.length <= 50 ? (
+                                <p className="text-gray-500">
+                                  {set.ssDescription}
+                                </p>
+                              ) : (
+                                <p className="text-gray-500">
+                                  {set.ssDescription.substring(0, 60)}...
+                                </p>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-sm">
+                                Progress: {Math.round(set.progress * 100)}%
                               </p>
                             </div>
-                          </div>
-                          <div className="row-span-3 mb-12">
-                            {set.ssDescription.length <= 50 ? (
-                              <p className="text-gray-500">
-                                {set.ssDescription}
-                              </p>
-                            ) : (
-                              <p className="text-gray-500">
-                                {set.ssDescription.substring(0, 60)}...
-                              </p>
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-sm">
-                              Progress: {Math.round(set.progress * 100)}%
-                            </p>
-                          </div>
 
-                          <div className="row-span-1 mt-1">
-                            <p>{set.numberOfCards} cards</p>
+                            <div className="row-span-1 mt-1">
+                              <p>{set.numberOfCards} cards</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
+
               <hr />
               {/* ss created */}
-              <div className="mt-6">
-                <div className="flex justify-between mb-2">
-                  <div className="flex flex-col">
-                    <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
-                    <p className="text-lg font-bold text-blue-600">
-                      Created
-                    </p>{" "}
+              {!numberOfSetsCreated ? null : (
+                <div className="mt-6">
+                  <div className="flex justify-between mb-2">
+                    <div className="flex flex-col">
+                      <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
+                      <p className="text-lg font-bold text-blue-600">
+                        Created ({numberOfSetsCreated})
+                      </p>{" "}
+                    </div>
                   </div>
-                </div>
-                <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
-                  {list4StudySetCreated.map((set, index) => {
-                    return (
-                      <div className=" col-span-1" key={index}>
-                        <div
-                          className="grid grid-rows-5 flex-row col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800 
+                  <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                    {list4StudySetCreated.map((set, index) => {
+                      return (
+                        <div className=" col-span-1" key={index}>
+                          <div
+                            className="grid grid-rows-5 flex-row col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800 
                         hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
-                        >
-                          <div className="row-span-1 w-full mb-2">
-                            <div className="w-full">
-                              <p className="text-gray-800 dark:text-white text-xl font-medium ">
-                                <a
-                                  href={`/set/${set.id}`}
-                                  className="hover:underline"
-                                >
-                                  {set.title.length <= 6
-                                    ? set.title
-                                    : set.title.substring(0, 6) + "..."}{" "}
-                                </a>
-                                <a href={`/${set.creator}/library/sets`}>
-                                  <span className="text-gray-500 text-sm hover:underline">
-                                    {set.creator}
-                                  </span>
-                                </a>
-                              </p>
+                          >
+                            <div className="row-span-1 w-full mb-2">
+                              <div className="w-full">
+                                <p className="text-gray-800 dark:text-white text-xl font-medium ">
+                                  <a
+                                    href={`/set/${set.id}`}
+                                    className="hover:underline"
+                                  >
+                                    {set.title.length <= 6
+                                      ? set.title
+                                      : set.title.substring(0, 6) + "..."}{" "}
+                                  </a>
+                                  <a href={`/${set.creator}/library/sets`}>
+                                    <span className="text-gray-500 text-sm hover:underline">
+                                      {set.creator}
+                                    </span>
+                                  </a>
+                                </p>
+                              </div>
+                            </div>
+                            <div className="row-span-3 mb-12">
+                              {set.description.length <= 50 ? (
+                                <p className="text-gray-500">
+                                  {set.description}
+                                </p>
+                              ) : (
+                                <p className="text-gray-500">
+                                  {set.description.substring(0, 50)}...
+                                </p>
+                              )}
+                            </div>
+                            <div className="row-span-1 mt-2">
+                              <p>{set.numberOfCards} cards</p>
                             </div>
                           </div>
-                          <div className="row-span-3 mb-12">
-                            {set.description.length <= 50 ? (
-                              <p className="text-gray-500">{set.description}</p>
-                            ) : (
-                              <p className="text-gray-500">
-                                {set.description.substring(0, 50)}...
-                              </p>
-                            )}
-                          </div>
-                          <div className="row-span-1 mt-2">
-                            <p>{set.numberOfCards} cards</p>
-                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

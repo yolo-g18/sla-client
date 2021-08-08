@@ -83,7 +83,7 @@ const SetEditLayout = (props: Props) => {
 
   //   const id: number;
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("Untitled");
   const [creatorName, setCreatorName] = useState("");
   const [desc, setDesc] = useState("");
   const [isPublic, setIsPublic] = useState(false);

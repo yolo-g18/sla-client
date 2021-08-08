@@ -50,10 +50,9 @@ const QuillNoSSRWrapper = dynamic(import("react-quill"), {
 
 const modules = {
   toolbar: [
-    [{ header: "2" }],
-    ["bold", "italic", "underline", "blockquote"],
+    ["bold", "italic", "underline"],
     [{ color: [] }, { background: [] }],
-    ["link", "image", "video"],
+    ["link", "image"],
   ],
   clipboard: {
     matchVisual: false,
@@ -61,16 +60,13 @@ const modules = {
 };
 
 const formats = [
-  "header",
   "bold",
   "italic",
   "color",
   "background",
   "underline",
-  "blockquote",
   "link",
   "image",
-  "video",
 ];
 
 const index = () => {
@@ -669,7 +665,7 @@ const index = () => {
         {isModalEditOpen || isModalAddOpen ? (
           <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
             <div className="mx-2 py-2 rounded-md bg-white">
-              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-2">
+              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-6 py-2">
                 <div className="col-span-1 flex lg:my-2 my-4">
                   <QuillNoSSRWrapper
                     modules={modules}
@@ -693,7 +689,7 @@ const index = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-end px-4">
+              <div className="flex justify-end px-6 pb-2">
                 <button
                   className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300"
                   type="button"

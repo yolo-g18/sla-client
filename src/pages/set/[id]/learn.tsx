@@ -17,6 +17,7 @@ import { getAPI, postAPI, putAPI } from "../../../utils/FetchData";
 import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { useClickOutside } from "../../../hook/useClickOutside";
 
 import CircularProgress, {
@@ -26,6 +27,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import {
   convertTime,
+  convertTimeEvnLearn,
   formatDate2,
 } from "../../../components/schedule/convertTime";
 
@@ -81,7 +83,7 @@ function CircularProgressWithLabel(
   return (
     <Box position="relative" display="inline-flex">
       <CircularProgress
-        style={{ color: "#10B981" }}
+        style={{ color: "#3B82F6" }}
         size="40"
         variant="determinate"
         {...props}
@@ -136,14 +138,7 @@ const learn = () => {
   // to count number of q > 3
   const [listQ, setListQ] = useState<{ index: number; q: number }[]>([]);
 
-  const qValueArr = [
-    "bg-green-300",
-    "bg-blue-300",
-    "bg-purple-300",
-    "bg-pink-300",
-    "bg-red-300",
-    "bg-yellow-300",
-  ];
+  const qValueArr = ["sosad", "sad", "neutral", "grinning", "smile", "happy"];
 
   const router = useRouter();
   //lay ra id tu path
@@ -174,15 +169,16 @@ const learn = () => {
 
         setListCardsLearning(listCardLearingRes.data.listCardLearning);
         setOverralProgress(listCardLearingRes.data.progress);
-        if (learn.isDone) {
+        if (!learn.isDone) {
           console.log("tai sao nhay vao day");
 
           const listCardLearingRes = await getAPI(
             `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
               learn.ssID
-            }&date=${formatDate2(learn.learnDate)}`
+            }&date=${convertTimeEvnLearn(learn.learnDate)}`
           );
-          setListCardsLearning(listCardLearingRes.data.listCardLearning);
+          if (listCardLearingRes.data.length)
+            setListCardsLearning(listCardLearingRes.data);
         }
         setIsContinue(false);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -194,7 +190,7 @@ const learn = () => {
         );
       } catch (err) {
         console.log("error is: " + err);
-        router.push("/error");
+        // router.push("/error");
       }
     };
     fetchData();
@@ -213,7 +209,7 @@ const learn = () => {
         setOverralProgress(listCardLearingRes.data.progress);
       } catch (err) {
         console.log(err);
-        router.push("/error");
+        // router.push("/error");
       }
     };
 
@@ -359,9 +355,9 @@ const learn = () => {
                   query: { id: id },
                 }}
               >
-                <button className="hover:underline hover:text-gray-800">
-                  Back to set
-                </button>
+                <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                  <ChevronLeftIcon fontSize="small" /> Back to set
+                </p>
               </Link>
             </div>
             {!learn.isDone ? null : (
@@ -395,7 +391,7 @@ const learn = () => {
                         }}
                       >
                         <button
-                          className=" bg-green-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                          className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
                           type="button"
                         >
                           Finish
@@ -437,7 +433,7 @@ const learn = () => {
                         Review again
                       </button>
                       <button
-                        className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                        className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
                         type="button"
                         onClick={() => learnContinue()}
                       >
@@ -526,24 +522,22 @@ const learn = () => {
                           flipDirection="vertical"
                         >
                           <div onClick={flipCardHandel}>
-                            <QuillNoSSRWrapper
-                              className={`h-96 bg-white shadow-md rounded-md border-2 border-gray-200 ${
-                                switching ? "opacity-20 bg-white" : ""
-                              } duration-300`}
-                              readOnly={true}
-                              theme="bubble"
-                              value={card.front}
-                            />
+                            <div
+                              className={`h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
+                              overflow-auto ${
+                                switching ? " bg-gray-200" : ""
+                              } duration-100`}
+                              dangerouslySetInnerHTML={{ __html: card.front }}
+                            ></div>
                           </div>
                           <div onClick={flipCardHandel}>
-                            <QuillNoSSRWrapper
-                              className={`h-96 bg-white shadow-md rounded-md border-2 border-gray-200 ${
-                                switching ? "opacity-20 bg-gray-500" : ""
-                              } duration-300`}
-                              readOnly={true}
-                              theme="bubble"
-                              value={card.back}
-                            />
+                            <div
+                              className={`h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
+                               overflow-auto ${
+                                 switching ? " bg-gray-200" : ""
+                               } duration-100`}
+                              dangerouslySetInnerHTML={{ __html: card.back }}
+                            ></div>
                           </div>
                         </ReactCardFlip>
                       );
@@ -560,12 +554,14 @@ const learn = () => {
                       <button
                         onClick={() => handelResultUserSelect(index)}
                         key={index}
-                        className={`flex-wrap w-1/6 mx-2 h-8 px-2 py-1 rounded-md transition duration-300 hover:bg-gray-200 bg-blue-${
-                          index + 3
-                        }00 focus:outline-none text-white text-sm hover:text-gray-900`}
+                        className={`flex-wrap w-1/6 mx-2 h-12 px-2  rounded-md transition duration-300
+                         hover:bg-gray-200 focus:outline-none shadow-md border`}
                       >
-                        {index === 0 ? "Not at all" : ""}
-                        {index === 5 ? "Perfectly" : null}
+                        <img
+                          src={`../../${qValue}.svg`}
+                          className="h-6 w-6 my-auto mx-auto"
+                          alt=""
+                        />
                       </button>
                     );
                   })}
@@ -576,7 +572,7 @@ const learn = () => {
                     className={`${
                       currenrCard === 0
                         ? "text-gray-300"
-                        : "hover:bg-green-500 rounded-full hover:text-white transition duration-300"
+                        : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300"
                     }  focus:outline-none mx-4`}
                     onClick={() => switchCardHandle("prev")}
                   >
@@ -586,7 +582,7 @@ const learn = () => {
                     disabled={
                       currenrCard === listCardsLearning.length ? true : false
                     }
-                    className="mx-4 hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                    className="mx-4 hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
                     onClick={() => switchCardHandle("next")}
                   >
                     <KeyboardArrowRightIcon fontSize="large" />
@@ -657,7 +653,7 @@ const learn = () => {
                   Cancel
                 </button>
                 <button
-                  className=" bg-green-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600"
+                  className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600"
                   type="button"
                   // onClick={handleCardSave}
                 >

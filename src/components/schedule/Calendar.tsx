@@ -472,17 +472,19 @@ const Calendar = (props: Props) => {
     dispatch(eventHandleDispatch({ typeAction: 0 }));
   };
 
-  const learn = (ssID: number, date: Date, evnID: number) => {
-    dispatch(
-      learnByDay({
-        ssID: ssID,
-        learnDate: date,
-        isDone: false,
-        evnID: evnID,
-      })
-    );
+  const learn = (event: IEventRes) => {
+    if (!currentEvent.isDone) {
+      dispatch(
+        learnByDay({
+          ssID: Number(event.description),
+          learnDate: event.fromTime,
+          isDone: false,
+          evnID: event.id,
+        })
+      );
+    }
 
-    router.push(`/set/${ssID}/learn`);
+    router.push(`/set/${event.description}/learn`);
   };
 
   return (
@@ -1015,13 +1017,7 @@ const Calendar = (props: Props) => {
               <div className="flex justify-center py-4">
                 {currentEvent.isLearnEvent ? (
                   <button
-                    onClick={() =>
-                      learn(
-                        Number(currentEvent.description),
-                        currentEvent.fromTime,
-                        currentEvent.id
-                      )
-                    }
+                    onClick={() => learn(currentEvent)}
                     className=" text-white w-28 py-1 mx-3 rounded-sm bg-blue-500 hover:bg-blue-600 focus:outline-none"
                   >
                     {currentEvent.isDone ? "Learn" : "Review"}
