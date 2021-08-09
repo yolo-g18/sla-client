@@ -27,6 +27,7 @@ import { PARAMS } from "../../common/params";
 import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import InputGroup from "../input/InputGroup";
 
 interface Props {
@@ -168,7 +169,7 @@ const RoomLayout = (props: Props) => {
     }
 
     excute();
-  }, [alert.success,id]);
+  }, [alert.success, id]);
 
   React.useEffect(() => {
     // load folder color
@@ -212,7 +213,6 @@ const RoomLayout = (props: Props) => {
         );
         setIsPendingRequestAttend(res.data);
         dispatch({ type: ALERT, payload: { loading: false } });
-
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
         setError(err);
@@ -242,8 +242,6 @@ const RoomLayout = (props: Props) => {
     }
     excute();
   }, [auth.userResponse?._id, alert.success]);
-
- 
 
   React.useEffect(() => {
     // load SS of user for adding to folder
@@ -689,7 +687,6 @@ const RoomLayout = (props: Props) => {
     }
   }
 
-  
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -775,31 +772,52 @@ const RoomLayout = (props: Props) => {
                       <span className="tooltiptext w-28">invite user</span>
                     </button>
                   </div>
-                ) :(
+                ) : (
                   <button
                     id="btnRequest"
                     onClick={handleRequestAttend}
-                    style={isMember === false ? {display:"block"} : {display:"none"}}
-                    className={isPendingRequestAttend === false ? "w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white focus:outline-none"
-                    :"w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none"}
+                    style={
+                      isMember === false
+                        ? { display: "block" }
+                        : { display: "none" }
+                    }
+                    className={
+                      isPendingRequestAttend === false
+                        ? "w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white focus:outline-none"
+                        : "w-32 text-md rounded-md px-4 py-1 mx-2 text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none"
+                    }
                   >
-                    {isPendingRequestAttend === false ? (<p className="text-md">Request to join</p>)
-                    :(<p className="text-md">Cancel request</p>)}
-                    
+                    {isPendingRequestAttend === false ? (
+                      <p className="text-md">Request to join</p>
+                    ) : (
+                      <p className="text-md">Cancel request</p>
+                    )}
                   </button>
-                
                 )}
 
                 <button
                   onClick={shareLink}
                   className="mx-2 tooltip focus:outline-none"
-                  >
+                >
                   <ShareIcon
                     fontSize="small"
                     className="hover:text-gray-400 text-gray-700"
                   />
                   <span className="tooltiptext w-16">share</span>
                 </button>
+                {/* check member */}
+                {true && room.ownerName !== auth.userResponse?.username ? (
+                  <button
+                    // onClick={shareLink}
+                    className="mx-2 tooltip focus:outline-none"
+                  >
+                    <ExitToAppIcon
+                      fontSize="default"
+                      className="hover:text-gray-400 text-gray-700"
+                    />
+                    <span className="tooltiptext w-16">leave</span>
+                  </button>
+                ) : null}
 
                 {/* menu button */}
                 <div className="flex mx-2" ref={domNode}>
