@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AppLayout from "../../../components/layout/AppLayout";
 import { deleteAPI, getAPI, postAPI, putAPI } from "../../../utils/FetchData";
@@ -43,21 +43,18 @@ let useClickOutside = (handler: any) => {
   return domNode;
 };
 
-const QuillNoSSRWrapper = dynamic(import("react-quill"), {
-  ssr: false,
-  loading: () => <p>...</p>,
-});
-
-const modules = {
-  toolbar: [
-    ["bold", "italic", "underline"],
-    [{ color: [] }, { background: [] }],
-    ["link", "image"],
-  ],
-  clipboard: {
-    matchVisual: false,
+const QuillNoSSRWrapper = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill");
+    return ({ forwardedRef, ...props }: any) => (
+      <RQ ref={forwardedRef} {...props} />
+    );
   },
-};
+  {
+    ssr: false,
+    loading: () => <p>...</p>,
+  }
+);
 
 const formats = [
   "bold",
@@ -95,6 +92,116 @@ const index = () => {
 
   const router = useRouter();
 
+  //settup rick editor
+  const editorRefFront = useRef<any>(null);
+  const editorRefBack = useRef<any>(null);
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+
+        // file type is only image.
+        if (/^image\//.test(file.type)) {
+          saveToServer(file);
+        } else {
+          console.warn("You could only upload images.");
+        }
+      }
+    };
+  };
+  const imageHandler2 = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+
+        // file type is only image.
+        if (/^image\//.test(file.type)) {
+          saveToServer2(file);
+        } else {
+          console.warn("You could only upload images.");
+        }
+      }
+    };
+  };
+
+  const saveToServer = async (file: any) => {
+    const data = new FormData();
+    data.append("file", file);
+
+    try {
+      const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
+      insertToEditor(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const saveToServer2 = async (file: any) => {
+    const data = new FormData();
+    data.append("file", file);
+
+    try {
+      const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
+      insertToEditor2(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const insertToEditor = (url: string) => {
+    if (editorRefFront.current) {
+      editorRefFront.current.getEditor().insertEmbed(null, "image", url);
+    }
+  };
+  const insertToEditor2 = (url: string) => {
+    if (editorRefBack.current) {
+      editorRefBack.current.getEditor().insertEmbed(null, "image", url);
+    }
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          ["bold", "italic", "underline"],
+          [{ color: [] }, { background: [] }],
+          ["link", "image"],
+        ],
+
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    }),
+    []
+  );
+
+  const modules2 = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          ["bold", "italic", "underline"],
+          [{ color: [] }, { background: [] }],
+          ["link", "image"],
+        ],
+
+        handlers: {
+          image: imageHandler2,
+        },
+      },
+    }),
+    []
+  );
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   //handel close toast
@@ -118,7 +225,7 @@ const index = () => {
       if (!id) {
         return;
       }
-      if (alert.success === "😎 Update successful!") {
+      if (alert.success) {
         setTypeToast("success");
         setMessageToast(alert.success.toString());
         setIsToastOpen(true);
@@ -220,6 +327,8 @@ const index = () => {
       ];
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
+        console.log("card: " + JSON.stringify(cardDataUpdate));
+
         const res = await putAPI(`${PARAMS.ENDPOINT}card/edit`, cardDataUpdate);
         dispatch({
           type: ALERT,
@@ -392,7 +501,6 @@ const index = () => {
   return (
     <div>
       <AppLayout title={title} desc={desc}>
-        {/* Day la trang view set, va day la id cua set: {id} */}
         <div className="grid lg:grid-cols-5 grid-cols-1 gap-8 h-full lg:w-4/5 mx-auto mt-6">
           <div className="col-span-1 px-2">
             <div className="w-full flex items-center px-2">
@@ -580,26 +688,18 @@ const index = () => {
               <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div
-                      key={index}
-                      className=" rounded-md grid grid-cols-11 gap-4 my-4"
-                    >
-                      <div className="col-span-5 rounded-md bg-white shadow-lg border-b-1">
-                        <QuillNoSSRWrapper
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.front}
-                          className="w-64"
-                        />
+                    <div key={index} className="rounded-md flex w-full my-4">
+                      <div className="flex justify-between w-full gap-3">
+                        <div
+                          className="card-overview w-1/2 rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                          dangerouslySetInnerHTML={{ __html: card.front }}
+                        ></div>
+                        <div
+                          className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                          dangerouslySetInnerHTML={{ __html: card.back }}
+                        ></div>
                       </div>
-                      <div className="col-span-5 rounded-md bg-white shadow-lg border-b-1">
-                        <QuillNoSSRWrapper
-                          readOnly={true}
-                          theme="bubble"
-                          value={card.back}
-                          className="w-64"
-                        />
-                      </div>
+
                       {auth.userResponse?.username === creatorName ? (
                         <div className="col-span-1">
                           <button
@@ -669,6 +769,7 @@ const index = () => {
                 <div className="col-span-1 flex lg:my-2 my-4">
                   <QuillNoSSRWrapper
                     modules={modules}
+                    forwardedRef={editorRefFront}
                     formats={formats}
                     theme="snow"
                     className="h-64 editor relative mb-12 border-white"
@@ -679,7 +780,8 @@ const index = () => {
                 </div>
                 <div className="col-span-1 flex  lg:my-2 my-4 ">
                   <QuillNoSSRWrapper
-                    modules={modules}
+                    modules={modules2}
+                    forwardedRef={editorRefBack}
                     formats={formats}
                     theme="snow"
                     className="h-64 editor relative mb-12"

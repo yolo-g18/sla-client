@@ -290,25 +290,36 @@ const LibraryLayout = (props: Props) => {
                 </p>
                 <p className="text-left mt-4 text-sm">
                   {user.schoolName ? (
-                    <DomainIcon
-                      fontSize="small"
-                      className="text-gray-600 -mt-1"
-                    />
-                  ) : null}{" "}
-                  {user.schoolName}
-                  <br />
+                    <span>
+                      <DomainIcon
+                        fontSize="small"
+                        className="text-gray-600 -mt-1"
+                      />{" "}
+                      {user.schoolName}
+                      <br />
+                    </span>
+                  ) : null}
                   {user.address ? (
-                    <RoomIcon fontSize="small" className="text-gray-600" />
-                  ) : null}{" "}
-                  {user.address}
-                  <br />
+                    <span>
+                      <RoomIcon fontSize="small" className="text-gray-600" />{" "}
+                      {user.address}
+                      <br />
+                    </span>
+                  ) : null}
+
                   <span>
                     {user.major ? (
-                      <ClassIcon fontSize="small" className="text-gray-600" />
-                    ) : null}{" "}
-                    {user.major}
+                      <span>
+                        {" "}
+                        <ClassIcon
+                          fontSize="small"
+                          className="text-gray-600"
+                        />{" "}
+                        {user.major}
+                        <br />
+                      </span>
+                    ) : null}
                   </span>
-                  <br />
                   <span>
                     {user.email ? (
                       <MailOutlineIcon

@@ -34,10 +34,6 @@ interface ITag {
   text: string;
 }
 
-// const QuillNoSSRWrapper = dynamic(import("react-quill"), {
-//   ssr: false,
-//   loading: () => <p>...</p>,
-// });
 const QuillNoSSRWrapper = dynamic(
   async () => {
     const { default: RQ } = await import("react-quill");
@@ -151,9 +147,6 @@ const SetEditLayout = (props: Props) => {
           image: imageHandler,
         },
       },
-      ImageResize: {
-        displaySize: true,
-      },
     }),
     []
   );
@@ -243,14 +236,14 @@ const SetEditLayout = (props: Props) => {
   useEffect(() => {
     if (title.length <= 0) {
       setTitleErr("Title is required.");
-    } else if (title.length > 20) {
-      setTitleErr("Title cannot exceed 20 character.");
+    } else if (title.length > 50) {
+      setTitleErr("Title cannot exceed 50 character.");
     } else {
       setTitleErr("");
     }
 
-    if (desc.length > 150) {
-      setDescErr("Description cannot exceed 150 characters.");
+    if (desc.length > 250) {
+      setDescErr("Description cannot exceed 250 characters.");
     } else {
       setDescErr("");
     }
@@ -292,11 +285,10 @@ const SetEditLayout = (props: Props) => {
 
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, addData);
-        dispatch({ type: ALERT, payload: { loading: false } });
-
-        setIsToastOpen(true);
-        setTypeToast("success");
-        setMessageToast("😎 Your study set created!");
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Your study set created!" },
+        });
 
         router.push({
           pathname: "/set/[id]",
@@ -308,11 +300,10 @@ const SetEditLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { errors: err.response.data } });
         setIsToastOpen(true);
         setTypeToast("error");
-        setMessageToast("An error occurred");
+        ("An error occurred");
       }
     } else {
       //check list card delete
-
       if (listCardsDelete.length !== 0) {
         listCardsDelete.map((id) => {
           deleteCardById(id);
@@ -341,14 +332,13 @@ const SetEditLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "😎 Update successful!" },
         });
-        setIsToastOpen(true);
-        setTypeToast("success");
-        setMessageToast("😎 Your study set updated!");
         router.push({
           pathname: "/set/[id]",
           query: { id: props.id },
         });
       } catch (err) {
+        console.log(err);
+
         dispatch({ type: ALERT, payload: { loading: false } });
         setIsToastOpen(true);
         setTypeToast("error");
@@ -612,36 +602,24 @@ const SetEditLayout = (props: Props) => {
               <div className=" w-full mb-44">
                 {cards.map((card, index) => {
                   return (
-                    <div className="rounded-xl flex w-full my-4">
+                    <div key={index} className="rounded-md flex w-full my-4">
                       <div className="flex justify-between w-full gap-3">
                         <div
-                          className="w-1/2  rounded-sm bg-white shadow-lg hover:bg-indigo-50"
+                          className="card-overview  w-1/2 rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                          dangerouslySetInnerHTML={{ __html: card.front }}
                           onClick={() => {
                             setIsFront(true);
                             handelCardOnClick(card.front, index);
                           }}
-                        >
-                          <QuillNoSSRWrapper
-                            readOnly={true}
-                            theme="bubble"
-                            value={card.front}
-                            className="w-64"
-                          />
-                        </div>
+                        ></div>
                         <div
-                          className="w-1/2 rounded-sm bg-white shadow-lg hover:bg-indigo-50"
+                          className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                          dangerouslySetInnerHTML={{ __html: card.back }}
                           onClick={() => {
                             setIsFront(false);
                             handelCardOnClick(card.back, index);
                           }}
-                        >
-                          <QuillNoSSRWrapper
-                            readOnly={true}
-                            theme="bubble"
-                            value={card.back}
-                            className="w-64"
-                          />
-                        </div>
+                        ></div>
                       </div>
 
                       <div className="">

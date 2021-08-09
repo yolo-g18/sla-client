@@ -533,7 +533,7 @@ const learn = () => {
                         >
                           <div onClick={flipCardHandel}>
                             <div
-                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
+                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center bg-white
                               overflow-auto ${
                                 switching ? " bg-gray-200" : ""
                               } duration-100`}
@@ -542,7 +542,7 @@ const learn = () => {
                           </div>
                           <div onClick={flipCardHandel}>
                             <div
-                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
+                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center bg-white
                                overflow-auto ${
                                  switching ? " bg-gray-200" : ""
                                } duration-100`}
