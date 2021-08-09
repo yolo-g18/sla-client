@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppLayput2 from "./AppLayout";
 import InputGroup from "../../components/input/InputGroup";
 import InputArea from "../../components/input/InputArea";
@@ -22,6 +22,8 @@ import "react-quill/dist/quill.bubble.css";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import { useMemo } from "react";
+
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -32,45 +34,31 @@ interface ITag {
   text: string;
 }
 
-const QuillNoSSRWrapper = dynamic(import("react-quill"), {
-  ssr: false,
-  loading: () => <p>...</p>,
-});
-
-const modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ size: [] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "image", "video"],
-    ["clean"],
-  ],
-  clipboard: {
-    matchVisual: false,
+// const QuillNoSSRWrapper = dynamic(import("react-quill"), {
+//   ssr: false,
+//   loading: () => <p>...</p>,
+// });
+const QuillNoSSRWrapper = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill");
+    return ({ forwardedRef, ...props }: any) => (
+      <RQ ref={forwardedRef} {...props} />
+    );
   },
-};
+  {
+    ssr: false,
+    loading: () => <p>...</p>,
+  }
+);
 
 const formats = [
-  "header",
-  "font",
-  "size",
   "bold",
   "italic",
+  "color",
+  "background",
   "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
   "link",
   "image",
-  "video",
 ];
 
 interface Props {
@@ -109,6 +97,66 @@ const SetEditLayout = (props: Props) => {
   const [isReset, setIsReset] = useState(false);
 
   const router = useRouter();
+
+  const editorRef = useRef<any>(null);
+
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+
+        // file type is only image.
+        if (/^image\//.test(file.type)) {
+          saveToServer(file);
+        } else {
+          console.warn("You could only upload images.");
+        }
+      }
+    };
+  };
+
+  const saveToServer = async (file: any) => {
+    const data = new FormData();
+    data.append("file", file);
+
+    try {
+      const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
+      insertToEditor(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const insertToEditor = (url: string) => {
+    if (editorRef.current) {
+      editorRef.current.getEditor().insertEmbed(null, "image", url);
+    }
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          ["bold", "italic", "underline"],
+          [{ color: [] }, { background: [] }],
+          ["link", "image"],
+        ],
+
+        handlers: {
+          image: imageHandler,
+        },
+      },
+      ImageResize: {
+        displaySize: true,
+      },
+    }),
+    []
+  );
 
   //handel close toast
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -659,22 +707,24 @@ const SetEditLayout = (props: Props) => {
                     {/*content*/}
                     <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
                       {/*header*/}
-                      <div className="justify-between px-4 py-6 rounded-t">
+                      <div className="justify-between px-4 py-4 rounded-t">
                         <p>Card Content</p>
                       </div>
                       {/*body*/}
                       <div className="relative h-full px-4 flex flex-wrap">
                         <QuillNoSSRWrapper
                           modules={modules}
+                          forwardedRef={editorRef}
                           formats={formats}
                           theme="snow"
                           value={text}
                           onChange={setText}
-                          className="h-96"
+                          className="h-80"
+                          style={{ width: "550px" }}
                         />
                       </div>
                       {/*footer*/}
-                      <div className="flex items-center justify-end px-4 py-6 mt-12">
+                      <div className="flex items-center justify-end px-4 py-4 mt-12">
                         <button
                           className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
                           type="button"

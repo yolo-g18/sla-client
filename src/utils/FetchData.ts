@@ -45,3 +45,10 @@ export const deleteAPI = async (url: string) => {
   };
   return axios.delete(url, config);
 }
+
+// export const postFile = async (url:string, body: object) => {
+//   const access_token = localStorage.getItem("access-token");
+//   return axios({
+//     method: 
+//   })
+// }

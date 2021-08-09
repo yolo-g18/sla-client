@@ -29,7 +29,9 @@ import {
   convertTime,
   convertTimeEvnLearn,
   formatDate2,
+  formatUTCToDate,
 } from "../../../components/schedule/convertTime";
+import { learnByDay } from "../../../redux/actions/learnAction";
 
 //alert
 function Alert(props: AlertProps) {
@@ -336,6 +338,9 @@ const learn = () => {
   };
 
   const learnContinue = () => {
+    //mark learn by day is done
+    dispatch(learnByDay({}));
+    //redet current card to 0
     setCurrentCard(0);
     setIsContinue(true);
     setShowLearningResultModal(false);
@@ -360,9 +365,14 @@ const learn = () => {
                 </p>
               </Link>
             </div>
-            {!learn.isDone ? null : (
-              <p>Review card at {formatDate2(learn.learnDate)}</p>
-            )}
+            {!learn.learnDate ? null : !learn.isDone ? (
+              <p className="text-md text-gray-600">
+                Review card at{" "}
+                <span className="font-bold">
+                  {formatUTCToDate(learn.learnDate)}
+                </span>
+              </p>
+            ) : null}
             {showLearningResultModal ? (
               <div className="mx-auto h-2/3 text-center">
                 <p className="font-bold text-gray-700">OVERRAL PROGRESS</p>
@@ -391,7 +401,7 @@ const learn = () => {
                         }}
                       >
                         <button
-                          className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none"
+                          className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
                           type="button"
                         >
                           Finish
@@ -523,7 +533,7 @@ const learn = () => {
                         >
                           <div onClick={flipCardHandel}>
                             <div
-                              className={`h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
+                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
                               overflow-auto ${
                                 switching ? " bg-gray-200" : ""
                               } duration-100`}
@@ -532,7 +542,7 @@ const learn = () => {
                           </div>
                           <div onClick={flipCardHandel}>
                             <div
-                              className={`h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
+                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center 
                                overflow-auto ${
                                  switching ? " bg-gray-200" : ""
                                } duration-100`}

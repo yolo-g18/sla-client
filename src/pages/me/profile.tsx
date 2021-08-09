@@ -18,6 +18,8 @@ function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+let emailRegex = new RegExp(PARAMS.EMAIL_REGEX);
+
 const profile = () => {
   const { auth, alert } = useSelector((state: RootStore) => state);
 
@@ -30,11 +32,14 @@ const profile = () => {
   const [major, setMajor] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [avatar, setAvatar] = useState("");
-  const [errors, setErrors] = useState({});
 
   const [isToastOpen, setIsToastOpen] = useState(false);
   const [typeToast, setTypeToast] = useState("success");
   const [messageToast, setMessageToast] = useState("");
+
+  const [emailErr, setEmailErr] = useState("");
+  const [bioErr, setBioErr] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -46,6 +51,18 @@ const profile = () => {
 
     setIsToastOpen(false);
   };
+
+  useEffect(() => {
+    setIsUploading(false);
+    if (!emailRegex.test(email)) {
+      setEmailErr("Email is invalid");
+    } else setEmailErr("");
+
+    //check bio length
+    if (bio.length > 500) {
+      setBioErr("Bio cannot exceed 500 character");
+    }
+  }, [email, bio]);
 
   //int value to form
   useEffect(() => {
@@ -61,9 +78,12 @@ const profile = () => {
     setSchoolName(
       auth.userResponse?.schoolName ? auth.userResponse?.schoolName : ""
     );
+    setAvatar(auth.userResponse?.avatar ? auth.userResponse.avatar : "");
   }, [auth.userResponse]);
 
   const handleSubmit = async (e: any) => {
+    if (emailErr || bioErr) return;
+
     const data = {
       firstname,
       lastname,
@@ -75,6 +95,7 @@ const profile = () => {
       address,
       avatar,
     };
+
     console.log(data);
 
     try {
@@ -94,11 +115,28 @@ const profile = () => {
     }
   };
 
+  const handleInputChange = async (e: any) => {
+    const data = new FormData();
+    data.append("file", e.target.files[0]);
+    console.log("data: " + JSON.stringify(data));
+
+    try {
+      setIsUploading(true);
+      const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
+      setIsUploading(false);
+      setAvatar(res.data);
+      console.warn(res.data);
+    } catch (err) {
+      setIsUploading(false);
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <ProfileSettingLayout>
         <div className="grid grid-cols-3 h-full">
-          <div className="col-span-2 px-2">
+          <div className="col-span-2 px-4">
             <div>
               <p className="text-xl font-bold text-gray-600 mb-4">
                 Public Profile
@@ -132,7 +170,7 @@ const profile = () => {
                     type="text"
                     setValue={setEmail}
                     placeholder="your email"
-                    error={alert.errors?.errors?.email}
+                    error={emailErr}
                     value={email}
                     label="Email"
                   />
@@ -145,7 +183,7 @@ const profile = () => {
                   <InputArea
                     setValue={setBio}
                     placeholder="your bio"
-                    error={alert.errors?.errors?.bio}
+                    error={bioErr}
                     value={bio}
                     label="Bio"
                   />
@@ -226,7 +264,30 @@ const profile = () => {
               </form>
             </div>
           </div>
-          <div className="col-span-1 bg-green-200"></div>
+          <div className="col-span-1 px-4">
+            <div className="py-3 center mx-auto">
+              <div className=" px-4 py-5 text-center w-48">
+                <div className="mb-4">
+                  <img
+                    className="w-40 h-40 mx-auto rounded-full object-cover object-center"
+                    src={`${avatar ? avatar : "../../user.svg"}`}
+                    alt="Avatar Upload"
+                  />
+                </div>
+                <label className="cursor-pointer mt-6">
+                  <span className="mt-2 leading-normal px-4 py-2 bg-blue-500 text-white text-sm rounded-sm">
+                    {isUploading ? "Loading..." : "Select Avatar"}
+                  </span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    name="upload_file"
+                    onChange={(e) => handleInputChange(e)}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
         <Snackbar
           open={isToastOpen}
