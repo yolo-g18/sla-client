@@ -267,7 +267,7 @@ const LibraryLayout = (props: Props) => {
           <div className="col-span-1 px-2">
             <div className="flex flex-col justify-between items-center pt-10">
               <img
-                className="w-56 h-56 my-auto rounded-full object-cover object-center"
+                className="w-56 h-56 my-auto rounded-full object-cover object-center opacity-50"
                 src={`${
                   auth.userResponse?.avatar
                     ? auth.userResponse?.avatar
