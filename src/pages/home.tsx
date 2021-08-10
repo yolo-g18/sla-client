@@ -54,6 +54,7 @@ const home = () => {
             todayObj.startOf("day")
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
+        dispatch({ type: ALERT, payload: { loading: false } });
         const listTemp: IEventRes[] = [...res.data];
         listTemp.map(async (item, index) => {
           if (item.isLearnEvent) {

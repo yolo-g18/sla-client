@@ -20,6 +20,8 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { useClickOutside } from "../../../hook/useClickOutside";
 
+import { FaStar } from "react-icons/fa";
+
 import CircularProgress, {
   CircularProgressProps,
 } from "@material-ui/core/CircularProgress";
@@ -32,6 +34,7 @@ import {
   formatUTCToDate,
 } from "../../../components/schedule/convertTime";
 import { learnByDay } from "../../../redux/actions/learnAction";
+import InputArea from "../../../components/input/InputArea";
 
 //alert
 function Alert(props: AlertProps) {
@@ -78,6 +81,13 @@ const formats = [
   "image",
   "video",
 ];
+
+const colors = {
+  orange: "#FFBA5A",
+  grey: "#a9a9a9",
+};
+
+const stars = Array(5).fill(0);
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -133,6 +143,7 @@ const learn = () => {
   const [messageToast, setMessageToast] = useState("");
   const [isChange, setIsChange] = useState(false);
   const [studySetTitle, setStudySetTitle] = useState("");
+  const [ssCreator, setSsCreator] = useState("");
 
   const [isContinue, setIsContinue] = useState(false);
   const [overralProgress, setOverralProgress] = useState(0);
@@ -163,6 +174,7 @@ const learn = () => {
         );
         dispatch({ type: ALERT, payload: { loading: false } });
         setStudySetTitle(studySetRes.data.title);
+        setSsCreator(studySetRes.data.creatorName);
 
         dispatch({ type: ALERT, payload: { loading: true } });
         const listCardLearingRes = await getAPI(
@@ -346,7 +358,87 @@ const learn = () => {
     setShowLearningResultModal(false);
   };
 
-  console.log("is continue: " + isContinue);
+  const [showModalFeedback, setShowModalFeedback] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackContentErr, setFeedbackContentErr] = useState("");
+
+  const [hoverValue, setHoverValue] = useState(undefined);
+  const handleMouseOver = (newHoverValue: any) => {
+    setHoverValue(newHoverValue);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverValue(undefined);
+  };
+
+  const handleClick = (value: any) => {
+    setRating(value);
+  };
+
+  //remove err when user typing
+  useEffect(() => {
+    setFeedbackContentErr("");
+  }, [feedbackContentErr]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}/me`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+
+        setRating(res.data.rating);
+        setFeedback(res.data.feedback);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    if (
+      rating === 0 &&
+      Math.round(overralProgress * 100) === 100 &&
+      auth.userResponse?.username !== ssCreator
+    )
+      setShowModalFeedback(true);
+  }, [showLearningResultModal]);
+
+  const sendFeedback = async () => {
+    if (!id) return;
+    if (feedback.length > 500) {
+      setFeedbackContentErr("Feedback cannot exceed 500 character.");
+      return;
+    } else {
+      setFeedbackContentErr("");
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const data = {
+        rating: rating,
+        feedback: feedback,
+        studySetId: id,
+      };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await putAPI(`${PARAMS.ENDPOINT}feedback/edit`, data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("Thanks for your feedback 🙏");
+        setTypeToast("success");
+        setIsToastOpen(true);
+        setShowModalFeedback(false);
+      } catch (err) {
+        console.log(err);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
+      console.log("data: " + JSON.stringify(data));
+    }
+  };
 
   return (
     <div>
@@ -388,7 +480,7 @@ const learn = () => {
                     </p>
                     <div className="flex w-full pt-10 px-4 mx-auto justify-center">
                       <button
-                        className="bg-gray-100 border-2 text-gray-700 w-32 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                        className="bg-gray-100 border-2 text-gray-700 w-32 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300 focus:outline-none"
                         type="button"
                         onClick={() => learnContinue()}
                       >
@@ -401,13 +493,80 @@ const learn = () => {
                         }}
                       >
                         <button
-                          className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
+                          className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600 focus:outline-none"
                           type="button"
                         >
                           Finish
                         </button>
                       </Link>
                     </div>
+                    {showModalFeedback ? (
+                      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+                        <div className="h-screen w-full absolute flex items-center justify-center bg-modal px-2">
+                          <div className="bg-white rounded-md shadow p-6 m-4 max-w-md ">
+                            <div className="mb-2 text-gray-600 text-md font-semibold">
+                              <p>Thank you!</p>
+                              <p>Please send us your feedback!</p>
+                            </div>
+                            <div className="mb-4 items-center justify-around">
+                              <div className="justify-center items-center flex">
+                                {stars.map((_, index) => {
+                                  return (
+                                    <FaStar
+                                      key={index}
+                                      size={24}
+                                      onClick={() => handleClick(index + 1)}
+                                      onMouseOver={() =>
+                                        handleMouseOver(index + 1)
+                                      }
+                                      onMouseLeave={handleMouseLeave}
+                                      color={
+                                        (hoverValue || rating) > index
+                                          ? colors.orange
+                                          : colors.grey
+                                      }
+                                      style={{
+                                        marginRight: 10,
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  );
+                                })}
+                              </div>
+                              {rating > 0 ? (
+                                <div className="mt-4">
+                                  <InputArea
+                                    setValue={setFeedback}
+                                    placeholder="Let us know what you think..."
+                                    rows={10}
+                                    value={feedback}
+                                    error={feedbackContentErr}
+                                  />
+                                </div>
+                              ) : null}
+                            </div>
+                            <div className="flex justify-center mt-4 gap-6">
+                              <button
+                                onClick={() => setShowModalFeedback(false)}
+                                className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm 
+                 font-medium hover:bg-gray-300"
+                                type="button"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={sendFeedback}
+                                className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium 
+                 hover:bg-blue-600"
+                                type="button"
+                              >
+                                Send
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 ) : (
                   <div>
@@ -436,14 +595,14 @@ const learn = () => {
                     </div>
                     <div className="flex w-full pt-10 px-4 mx-auto justify-center">
                       <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300 focus:outline-none"
                         type="button"
                         onClick={() => reviewAgain()}
                       >
                         Review again
                       </button>
                       <button
-                        className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
+                        className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600 focus:outline-none"
                         type="button"
                         onClick={() => learnContinue()}
                       >

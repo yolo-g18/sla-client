@@ -732,6 +732,9 @@ const index = () => {
                 })}
               </div>
             </div>
+            <div>
+              <p>Feedback</p>
+            </div>
           </div>
         </div>
         {showDeleteCardModal ? (
