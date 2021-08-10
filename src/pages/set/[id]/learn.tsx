@@ -381,6 +381,7 @@ const learn = () => {
     setFeedbackContentErr("");
   }, [feedbackContentErr]);
 
+  //get feedback of current user
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -406,7 +407,7 @@ const learn = () => {
       auth.userResponse?.username !== ssCreator
     )
       setShowModalFeedback(true);
-  }, [showLearningResultModal]);
+  }, [showLearningResultModal, overralProgress]);
 
   const sendFeedback = async () => {
     if (!id) return;

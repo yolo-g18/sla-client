@@ -62,70 +62,74 @@ const sets = (props: any) => {
     <div>
       <LibraryLayout>
         <div className=" px-2">
-          <div>
-            <div className="flex justify-between">
-              <div className="flex flex-col mt-2">
-                <div className="w-44 h-2 bg-blue-600 mb-2"></div>
-                <p className="text-lg font-bold text-blue-600">Learning</p>{" "}
+          {user.username === auth.userResponse?.username ? (
+            <div>
+              <div className="flex justify-between">
+                <div className="flex flex-col mt-2">
+                  <div className="w-44 h-2 bg-blue-600 mb-2"></div>
+                  <p className="text-lg font-bold text-blue-600">
+                    Learning
+                  </p>{" "}
+                </div>
               </div>
-            </div>
-            <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
-              {list4StudySetLeaning.map((set, index) => {
-                return (
-                  <div className="col-span-1">
-                    <div
-                      key={index}
-                      className="grid grid-rows-5 shadow-lg flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800"
-                    >
-                      <div className="row-span-1 w-full flex mb-2">
-                        <div className="w-full">
-                          <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
-                            <a
-                              href={`/set/${set.studySetId}`}
-                              className="hover:underline"
-                            >
-                              {set.studySetName.length <= 15
-                                ? set.studySetName
-                                : set.studySetName.substring(0, 15) +
-                                  "..."}{" "}
-                            </a>
-                            {set.color ? (
-                              <FiberManualRecordIcon
-                                className={`text-${set.color?.toLowerCase()}-400`}
-                              />
-                            ) : null}
-                            {"  "}
-                            <a href={`/${set.owner}/library/sets`}>
-                              <span className="text-gray-500 text-sm hover:underline">
-                                {set.owner}
-                              </span>
-                            </a>
+              <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                {list4StudySetLeaning.map((set, index) => {
+                  return (
+                    <div className="col-span-1">
+                      <div
+                        key={index}
+                        className="grid grid-rows-5 shadow-lg flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800"
+                      >
+                        <div className="row-span-1 w-full flex mb-2">
+                          <div className="w-full">
+                            <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
+                              <a
+                                href={`/set/${set.studySetId}`}
+                                className="hover:underline"
+                              >
+                                {set.studySetName.length <= 15
+                                  ? set.studySetName
+                                  : set.studySetName.substring(0, 15) +
+                                    "..."}{" "}
+                              </a>
+                              {set.color ? (
+                                <FiberManualRecordIcon
+                                  className={`text-${set.color?.toLowerCase()}-400`}
+                                />
+                              ) : null}
+                              {"  "}
+                              <a href={`/${set.owner}/library/sets`}>
+                                <span className="text-gray-500 text-sm hover:underline">
+                                  {set.owner}
+                                </span>
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="row-span-2 mb-12">
+                          {set.ssDescription.length <= 50 ? (
+                            <p className="text-gray-500">{set.ssDescription}</p>
+                          ) : (
+                            <p className="text-gray-500">
+                              {set.ssDescription.substring(0, 50)}...
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-gray-500 text-sm">
+                            Progress: {Math.round(set.progress * 100)}%
                           </p>
                         </div>
-                      </div>
-                      <div className="row-span-2 mb-12">
-                        {set.ssDescription.length <= 50 ? (
-                          <p className="text-gray-500">{set.ssDescription}</p>
-                        ) : (
-                          <p className="text-gray-500">
-                            {set.ssDescription.substring(0, 50)}...
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-gray-500 text-sm">
-                          Progress: {Math.round(set.progress * 100)}%
-                        </p>
-                      </div>
-                      <div className="row-span-1 mt-1">
-                        <p>{set.numberOfCards} cards</p>
+                        <div className="row-span-1 mt-1">
+                          <p>{set.numberOfCards} cards</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          ) : null}
           <hr />
           {/* ss created */}
           <div className="mt-6">

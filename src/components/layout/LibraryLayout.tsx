@@ -268,11 +268,7 @@ const LibraryLayout = (props: Props) => {
             <div className="flex flex-col justify-between items-center pt-10">
               <img
                 className="w-56 h-56 my-auto rounded-full object-cover object-center"
-                src={`${
-                  auth.userResponse?.avatar
-                    ? auth.userResponse?.avatar
-                    : "../../user.svg"
-                }`}
+                src={`${user.avatar ? user.avatar : "../../user.svg"}`}
                 alt="Avatar Upload"
               />
               <div className=" px-2 w-full justify-between">

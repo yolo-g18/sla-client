@@ -302,3 +302,10 @@ export interface ILearnActionPayload {
   isDone?: boolean
   evnID?:number
 }
+
+export interface IFeedback {
+  userName?: string
+  rating?:number
+  feedback?:string
+  avatar?:string
+}
