@@ -30,7 +30,7 @@ function Alert(props: AlertProps) {
 }
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const colorFolderList: String[] = [];

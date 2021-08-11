@@ -461,7 +461,7 @@ const Folder = () => {
                     <button
                       onClick={() => setIsShowAddModal(true)}
                       type="button"
-                      className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                      className="w-44 text-md rounded-sm px-4 mx-2 py-2
                       text-md font-bold bg-blue-500 hover:bg-blue-600 
                    text-white focus:outline-none"
                     >

@@ -309,3 +309,14 @@ export interface IFeedback {
   feedback?:string
   avatar?:string
 }
+
+export interface IReport {
+  id?:number
+  ssId:number
+  ssTitle?:string
+  reporter?:string
+  content?:string
+  user_avatar?:string
+  checked?:boolean
+  createdTime?: Date
+}

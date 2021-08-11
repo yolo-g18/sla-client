@@ -100,6 +100,8 @@ const index = () => {
   const [creatorId, setCreatorId] = useState();
   const [isSuc, setIsSuc] = useState(false);
 
+  const [showModalColorPicker, setShowModalColorPicker] = useState(false);
+
   const router = useRouter();
 
   //settup rick editor
@@ -228,6 +230,8 @@ const index = () => {
     query: { id }, //id of folder get from path
   } = router;
 
+  //frag ss learned
+  const [isLearned, setIsLearned] = useState(false);
   //get data of set by id
   useEffect(() => {
     setIsSuc(false);
@@ -249,15 +253,26 @@ const index = () => {
           `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
         if (studySetRes.data) {
-          const cardRes = await getAPI(`${PARAMS.ENDPOINT}card/list?id=${id}`);
-          dispatch({ type: ALERT, payload: { loading: false } });
+          const cardResLearning = await getAPI(
+            `${PARAMS.ENDPOINT}learn/listCardSort?id=${id}`
+          );
+          if (cardResLearning.data) {
+            setCards(cardResLearning.data);
+            setIsLearned(true);
+          } else {
+            const cardRes = await getAPI(
+              `${PARAMS.ENDPOINT}card/list?id=${id}`
+            );
+            setCards(cardRes.data);
+            setIsLearned(false);
+          }
           setTitle(studySetRes.data.title);
           setDesc(studySetRes.data.description);
           setIsPublic(studySetRes.data.public);
           setTags(studySetRes.data.tag);
           setCreatorName(studySetRes.data.creatorName);
-          setCards(cardRes.data);
           setNumberOfCard(studySetRes.data.numberOfCard);
+          dispatch({ type: ALERT, payload: { loading: false } });
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log(err.response.data);
@@ -612,7 +627,29 @@ const index = () => {
     }
   };
 
-  console.log("ls: " + JSON.stringify(listFeedback));
+  const [ssColor, setSSColor] = useState("");
+  const [listColors, setListColors] = useState<string[]>([]);
+
+  //init color list
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setListColors(res.data);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const setColorhandle = (color: string) => {
+    setShowModalColorPicker(false);
+    setSSColor(color);
+  };
 
   return (
     <div>
@@ -751,6 +788,48 @@ const index = () => {
                   />
                   <span className="tooltiptext -mt-2 w-16">share</span>
                 </button>
+                {/* set color for ss */}
+                {/* {isLearned ? (
+                  <div className="w-full flex relative ml-4">
+                    <div>
+                      <div
+                        onClick={() =>
+                          setShowModalColorPicker(!showModalColorPicker)
+                        }
+                        className={`w-6 h-6 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
+                                bg-${s.toLocaleLowerCase()}-400 cursor-pointer hover:bg-${eventColor.toLocaleLowerCase()}-300`}
+                      ></div>
+                      {showModalColorPicker ? (
+                        <div className="origin-top-right absolute z-50  mt-6 w-40 rounded-md shadow-lg hover:shadow-xl">
+                          <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                            <div className="flex flex-wrap -mx-2">
+                              {listColors.map((color, index) => {
+                                return (
+                                  <div key={index} className="px-2">
+                                    {eventColor === color ? (
+                                      <div
+                                        className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                      ></div>
+                                    ) : (
+                                      <div
+                                        onClick={() => {
+                                          setColorhandle(color);
+                                        }}
+                                        className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                      ></div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null} */}
                 <div className="flex mx-2" ref={domNode}>
                   <button
                     onClick={handelExpandMoreBtnClick}

@@ -90,8 +90,7 @@ const schedule = () => {
                 return (
                   <article
                     key={index}
-                    className={`cursor-pointer border rounded-md p-1 bg-white flex text-gray-700 mb-2 
-                    focus:outline-none`}
+                    className={`cursor-pointer rounded-md p-1 bg-white flex text-gray-700 mb-2 `}
                     onClick={() => viewEventhandle(evn)}
                   >
                     <span className="flex-none pr-2 my-auto">

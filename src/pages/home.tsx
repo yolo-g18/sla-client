@@ -98,9 +98,7 @@ const home = () => {
         );
         dispatch({ type: ALERT, payload: { loading: false } });
         setNumberSetsCreated(listSSCreatedRes.data.length);
-        setList4StudySetCreated(listSSCreatedRes.data);
-
-        console.log(JSON.stringify(listSSCreatedRes.data.slice(0, 6)));
+        setList4StudySetCreated(listSSCreatedRes.data.slice(0, 6));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -115,8 +113,6 @@ const home = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
         setNumberSetsLearning(listSSLearningRes.data.length);
         setList4StudySetLearning(listSSLearningRes.data.slice(0, 6));
-
-        console.log(JSON.stringify(listSSLearningRes.data));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -149,7 +145,7 @@ const home = () => {
             <Link href="/set/add">
               <button
                 type="button"
-                className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                className="w-44 text-md rounded-sm px-4 mx-2 py-2
                       text-md font-bold bg-blue-500 hover:bg-blue-600 
                    text-white focus:outline-none"
               >
@@ -184,7 +180,6 @@ const home = () => {
                   {event.slice(0, 9).map((evn, index) => {
                     return (
                       <article
-                        onClick={() => viewEventhandle(evn)}
                         key={index}
                         className={`cursor-pointer rounded-md flex text-gray-700 mb-2 
                     focus:outline-none`}
@@ -214,6 +209,7 @@ const home = () => {
                                     ? "text-gray-400 "
                                     : "text-gray-800"
                                 } hover:text-gray-800 hover:underline`}
+                                onClick={() => viewEventhandle(evn)}
                               >
                                 {evn.name}{" "}
                                 {evn.isDone ? (
@@ -227,11 +223,12 @@ const home = () => {
                               <span
                                 className={`font-semibold truncate hover:underline
                                 ${
-                                  new Date(evn.toTime) > dateNow
-                                    ? " text-gray-400 "
+                                  new Date(evn.toTime) < dateNow
+                                    ? " text-gray-400 line-through"
                                     : "text-gray-800 "
                                 }
                               `}
+                                onClick={() => viewEventhandle(evn)}
                               >
                                 {evn.name}
                               </span>
