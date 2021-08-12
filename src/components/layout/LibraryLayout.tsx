@@ -41,7 +41,7 @@ const LibraryLayout = (props: Props) => {
 
   const router = useRouter();
   const {
-    query: { username },
+    query: { username, type, search_query },
   } = router;
 
   //call api get user profile by username de lay ra fullname, address, email, school, job de hien thi
@@ -256,6 +256,30 @@ const LibraryLayout = (props: Props) => {
     }
   }, [title, description, name]);
 
+  const [keyWord, setKeyWord] = useState(
+    search_query ? search_query.toString() : ""
+  );
+  const seachHandle = () => {
+    setTimeout(() => {}, 1000);
+    if (router.pathname.indexOf("/sets") !== -1) {
+      if (type) {
+        router.push(
+          `/${
+            user.username
+          }/library/sets?type=${type}&search_query=${keyWord.replace(/ /g, "")}`
+        );
+      } else
+        router.push(
+          `/${user.username}/library/sets?search_query=${keyWord.replace(
+            / /g,
+            ""
+          )}`
+        );
+    }
+  };
+
+  useEffect(() => seachHandle(), [keyWord]);
+
   if (!username) {
     return <></>;
   }
@@ -407,36 +431,34 @@ const LibraryLayout = (props: Props) => {
               <div className="col-span-2 flex justify-around text-md text-gray-600  cursor-pointer">
                 <div className="text-gray-900 py-3 flex flex-grow">
                   {router.pathname.indexOf("/sets") !== -1 ? (
-                    <SelectBox
-                      items={itemsSetsFilter}
-                      searchKeyWord=""
-                      typeResult="sets"
-                    />
+                    <SelectBox items={itemsSetsFilter} typeResult="sets" />
                   ) : null}
                   {router.pathname.indexOf("/folders") !== -1 ? (
-                    <SelectBox
-                      items={itemsFoldersFilter}
-                      searchKeyWord=""
-                      typeResult="folder"
-                    />
+                    <SelectBox items={itemsFoldersFilter} typeResult="folder" />
                   ) : null}
                 </div>
               </div>
               <div className="flex flex-wrap right-2 ">
                 <div className="text-gray-900 py-3 flex relative ">
-                  <svg
-                    className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
-                  </svg>
-                  <input
-                    type="text"
-                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
-                    bg-gray-100 dark:bg-gray-800 text-gray-400"
-                    placeholder="Search"
-                  />
+                  <form>
+                    <svg
+                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
+                    </svg>
+                    <input
+                      type="text"
+                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
+                  bg-gray-100 dark:bg-gray-800 text-gray-400"
+                      placeholder="Search"
+                      value={keyWord}
+                      onChange={(e) => {
+                        setKeyWord(e.target.value);
+                      }}
+                    />
+                  </form>
                 </div>
                 <div className="py-3 flex relative">
                   {user.username === auth.userResponse?.username ? (

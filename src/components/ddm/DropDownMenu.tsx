@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Link as Link2, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
