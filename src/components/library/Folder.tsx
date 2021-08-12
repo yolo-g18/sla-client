@@ -454,20 +454,25 @@ const Folder = () => {
                   <p className="text-3xl font-semibold text-gray-700">
                     This folder has no sets yet
                   </p>
-                  <p className="text-md text-gray-600">
-                    Organize all your study sets with folders.
-                  </p>
-                  <div className="mt-4 text-center">
-                    <button
-                      onClick={() => setIsShowAddModal(true)}
-                      type="button"
-                      className="w-44 text-md rounded-sm px-4 mx-2 py-2
+
+                  {auth.userResponse?.username === folder.creatorUserName ? (
+                    <div>
+                      <p className="text-md text-gray-600">
+                        Organize all your study sets with folders.
+                      </p>
+                      <div className="mt-4 text-center">
+                        <button
+                          onClick={() => setIsShowAddModal(true)}
+                          type="button"
+                          className="w-44 text-md rounded-sm px-4 mx-2 py-2
                       text-md font-bold bg-blue-500 hover:bg-blue-600 
                    text-white focus:outline-none"
-                    >
-                      Create a new set
-                    </button>
-                  </div>
+                        >
+                          Create a new set
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 studySets.map((set, index) => {

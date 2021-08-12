@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
 import { IFolder } from "../../../utils/TypeScript";
 import React, { useState } from "react";
-import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import Grid from "@material-ui/core/Grid";
 import { deleteAPI } from "../../../utils/FetchData";
 import { getAPI } from "../../../utils/FetchData";
@@ -14,16 +13,14 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../../redux/types/alertType";
 import { PARAMS } from "../../../common/params";
 import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const folder = () => {
-  
   const [folders, setFolders] = React.useState<IFolder[]>([]);
- 
 
   const dispatch = useDispatch();
 
@@ -32,7 +29,7 @@ const folder = () => {
   const router = useRouter();
 
   const {
-    query: { username },
+    query: { username, search_query },
   } = router;
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
@@ -47,7 +44,6 @@ const folder = () => {
   console.log("id: " + user._id);
 
   React.useEffect(() => {
-  
     // list all folders of user
     async function excute() {
       try {
@@ -59,6 +55,16 @@ const folder = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
         setFolders(res.data);
 
+        if (search_query) {
+          setFolders(
+            res.data.filter((item: IFolder) =>
+              item.title
+                .toLowerCase()
+                .includes(search_query.toString().toLowerCase())
+            )
+          );
+        }
+
         if (folders.length === 0) setIsShowEmpty(false);
         else setIsShowEmpty(false);
       } catch (err) {
@@ -66,7 +72,7 @@ const folder = () => {
       }
     }
     excute();
-  }, [user._id, alert.success]);
+  }, [user._id, alert.success, search_query]);
 
   // remove folder from listFolder of user
   async function removeFolder() {
@@ -75,8 +81,8 @@ const folder = () => {
       const res = await deleteAPI(
         `${PARAMS.ENDPOINT}folder/deleteFolder/${idRemoveFolder}`
       );
-      dispatch({ type: ALERT, payload: { loading: false , success:"ss"} });
-      
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+
       setMessageToast("folder deleted");
       setTypeToast("success");
       setIsToastOpen(true);
@@ -85,7 +91,6 @@ const folder = () => {
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
-   
     }
 
     setIsShowRemoveModal(!isShowRemoveModal);
@@ -112,6 +117,18 @@ const folder = () => {
   // if () {
   //   return <div>Loading...</div>;
   // }
+  if (search_query && folders.length === 0)
+    return (
+      <div>
+        <LibraryLayout>
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-xl font-semibold text-gray-600">
+              No folders matching {search_query} found
+            </p>
+          </div>
+        </LibraryLayout>
+      </div>
+    );
 
   return (
     <div>
@@ -174,10 +191,8 @@ const folder = () => {
                     onClick={() => handleRemoveFolder(item.folder_id)}
                     className="tooltip text-right flex justify-end focus:outline-none"
                   >
-                    <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
-                                <span className="tooltiptext w-32">
-                                  delete this folder
-                              </span>
+                    <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700" />
+                    <span className="tooltiptext w-36">delete this folder</span>
                   </button>
                 </div>
               ) : null}
@@ -201,31 +216,31 @@ const folder = () => {
                 <div className="flex justify-center">
                   <button
                     onClick={removeFolder}
-                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                    className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
-                           {alert.loading ? (
-                          <div className="flex justify-center items-center space-x-1">
-                            <svg
-                              fill="none"
-                              className="w-6 h-6 animate-spin"
-                              viewBox="0 0 32 32"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                clipRule="evenodd"
-                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
-                                fill="currentColor"
-                                fillRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        ) : (
-                          "Delete"
-                        )}
+                    {alert.loading ? (
+                      <div className="flex justify-center items-center space-x-1">
+                        <svg
+                          fill="none"
+                          className="w-6 h-6 animate-spin"
+                          viewBox="0 0 32 32"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                            fill="currentColor"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    ) : (
+                      "Delete"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>

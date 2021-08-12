@@ -137,7 +137,7 @@ const AppLayout = (props: Props) => {
     if (searchValue.length > 0)
       dispatch(
         putSearchKeyword(
-          searchValue.replace(/ /g, ""),
+          searchValue.trim(),
           search.type ? search.type : 0,
           search.searchBy ? search.searchBy : 0
         )

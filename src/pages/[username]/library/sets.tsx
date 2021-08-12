@@ -49,7 +49,7 @@ const sets = (props: any) => {
               listSSCreatedRes.data.filter((item: IStudySetInfo2) =>
                 item.title
                   .toLowerCase()
-                  .includes(search_query.toString().toLowerCase().toLowerCase())
+                  .includes(search_query.toString().toLowerCase())
               )
             );
           }
@@ -73,7 +73,7 @@ const sets = (props: any) => {
               listSSLearningRes.data.filter((item: IStudySetLearning) =>
                 item.studySetName
                   .toLowerCase()
-                  .includes(search_query.toString().toLowerCase().toLowerCase())
+                  .includes(search_query.toString().toLowerCase())
               )
             );
             console.log("co thay doi hong");
@@ -106,6 +106,64 @@ const sets = (props: any) => {
 
   console.log("key: " + search_query);
 
+  if (
+    search_query &&
+    listStudySetLeaning.length === 0 &&
+    listStudySetCreated.length === 0
+  )
+    return (
+      <div>
+        <LibraryLayout>
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-xl font-semibold text-gray-600">
+              No sets matching {search_query} found
+            </p>
+          </div>
+        </LibraryLayout>
+      </div>
+    );
+
+  if (listStudySetLeaning.length === 0 && listStudySetCreated.length === 0) {
+    if (user.username === auth.userResponse?.username)
+      return (
+        <LibraryLayout>
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-3xl font-semibold text-gray-700">
+              You have no sets yet
+            </p>
+            <p className="text-md text-gray-600">
+              Sets you create or study will be displayed here
+            </p>
+            <div className="mt-4 text-center">
+              <Link href="/set/add">
+                <button
+                  type="button"
+                  className="w-44 text-md rounded-sm px-4 mx-2 py-2
+                      text-md font-bold bg-blue-500 hover:bg-blue-600 
+                   text-white focus:outline-none"
+                >
+                  Create a new set
+                </button>
+              </Link>
+            </div>
+          </div>
+        </LibraryLayout>
+      );
+    else
+      return (
+        <LibraryLayout>
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-3xl font-semibold text-gray-700">
+              {user.username} hasn't created any sets yet
+            </p>
+            <p className="text-md text-gray-600">
+              Sets they create will appear here
+            </p>
+          </div>
+        </LibraryLayout>
+      );
+  }
+
   return (
     <div>
       <LibraryLayout>
@@ -125,43 +183,38 @@ const sets = (props: any) => {
               <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
                 {listStudySetLeaning.map((set, index) => {
                   return (
-                    <div className="col-span-1">
+                    <div key={index} className="col-span-1">
                       <div
-                        key={index}
-                        className="grid grid-rows-5 shadow-lg flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800"
+                        className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
                       >
-                        <div className="row-span-1 w-full flex mb-2">
-                          <div className="w-full">
-                            <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
-                              <a
-                                href={`/set/${set.studySetId}`}
-                                className="hover:underline"
-                              >
-                                {set.studySetName.length <= 15
-                                  ? set.studySetName
-                                  : set.studySetName.substring(0, 15) +
-                                    "..."}{" "}
-                              </a>
-                              {set.color ? (
-                                <FiberManualRecordIcon
-                                  className={`text-${set.color?.toLowerCase()}-400`}
-                                />
-                              ) : null}
-                              {"  "}
-                              <a href={`/${set.owner}/library/sets`}>
+                        <div className=" w-full flex flex-row mb-2">
+                          <div className="w-full flex justify-between my-auto">
+                            <Link href={`/set/${set.studySetId}`}>
+                              <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                {set.color ? (
+                                  <FiberManualRecordIcon
+                                    className={`py-1 ${set.color.toLowerCase()}`}
+                                  />
+                                ) : null}
+                                {set.studySetName}
+                              </p>
+                            </Link>
+                            <Link href={`/${set.owner}/library/sets`}>
+                              <p className="my-auto ml-2">
                                 <span className="text-gray-500 text-sm hover:underline">
                                   {set.owner}
                                 </span>
-                              </a>
-                            </p>
+                              </p>
+                            </Link>
                           </div>
                         </div>
-                        <div className="row-span-2 mb-12">
-                          {set.ssDescription.length <= 50 ? (
+                        <div className="mb-4 h-20">
+                          {set.ssDescription.length <= 150 ? (
                             <p className="text-gray-500">{set.ssDescription}</p>
                           ) : (
                             <p className="text-gray-500">
-                              {set.ssDescription.substring(0, 50)}...
+                              {set.ssDescription.substring(0, 150)}...
                             </p>
                           )}
                         </div>
@@ -170,7 +223,7 @@ const sets = (props: any) => {
                             Progress: {Math.round(set.progress * 100)}%
                           </p>
                         </div>
-                        <div className="row-span-1 mt-1">
+                        <div className=" mt-1">
                           <p>{set.numberOfCards} cards</p>
                         </div>
                       </div>
@@ -180,10 +233,9 @@ const sets = (props: any) => {
               </div>
             </div>
           ) : null}
-          <hr />
           {/* ss created */}
           {listStudySetCreated.length !== 0 ? (
-            <div className="mt-6">
+            <div className="">
               <div className="flex justify-between">
                 <div className="flex flex-col mt-2">
                   <div className="w-44 h-2 bg-blue-600 mb-2"></div>
@@ -196,34 +248,36 @@ const sets = (props: any) => {
                 {listStudySetCreated.map((set, index) => {
                   return (
                     <div className=" col-span-1" key={index}>
-                      <div className="grid grid-rows-5 shadow-lg flex-row col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800 ">
-                        <div className="row-span-1 w-full mb-2">
-                          <div className="w-full">
-                            <p className="text-gray-800 dark:text-white text-xl font-medium ">
-                              <a
-                                href={`/set/${set.id}`}
-                                className="hover:underline"
-                              >
-                                {set.title}{" "}
-                              </a>
-                              <a href={`/${set.creator}/library/sets`}>
+                      <div
+                        className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
+                      >
+                        <div className=" w-full flex flex-row mb-2">
+                          <div className="w-full flex justify-between my-auto">
+                            <Link href={`/set/${set.id}`}>
+                              <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                {set.title}
+                              </p>
+                            </Link>
+                            <Link href={`/${set.creator}/library/sets`}>
+                              <p className="my-auto ml-2">
                                 <span className="text-gray-500 text-sm hover:underline">
                                   {set.creator}
                                 </span>
-                              </a>
-                            </p>
+                              </p>
+                            </Link>
                           </div>
                         </div>
-                        <div className="row-span-3 mb-12">
-                          {set.description.length <= 60 ? (
+                        <div className="mb-4 h-20">
+                          {set.description.length <= 150 ? (
                             <p className="text-gray-500">{set.description}</p>
                           ) : (
                             <p className="text-gray-500">
-                              {set.description.substring(0, 60)}...
+                              {set.description.substring(0, 150)}...
                             </p>
                           )}
                         </div>
-                        <div className="row-span-1 mt-2">
+                        <div className=" mt-1">
                           <p>{set.numberOfCards} cards</p>
                         </div>
                       </div>

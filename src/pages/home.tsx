@@ -289,6 +289,11 @@ const home = () => {
                               <div className="w-full flex justify-between my-auto">
                                 <Link href={`/set/${set.studySetId}`}>
                                   <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                    {set.color ? (
+                                      <FiberManualRecordIcon
+                                        className={`py-1 ${set.color.toLowerCase()}`}
+                                      />
+                                    ) : null}
                                     {set.studySetName}
                                   </p>
                                 </Link>
@@ -302,24 +307,25 @@ const home = () => {
                               </div>
                             </div>
                             <div className="mb-4 h-20">
-                              {set.ssDescription.length <= 100 ? (
+                              {set.ssDescription.length <= 120 ? (
                                 <p className="text-gray-500">
                                   {set.ssDescription}
                                 </p>
                               ) : (
                                 <p className="text-gray-500">
-                                  {set.ssDescription.substring(0, 100)}...
+                                  {set.ssDescription.substring(0, 120)}...
                                 </p>
                               )}
                             </div>
-                            <div>
-                              <p className="text-gray-500 text-sm">
-                                Progress: {Math.round(set.progress * 100)}%
-                              </p>
-                            </div>
-
-                            <div className=" mt-1">
-                              <p>{set.numberOfCards} cards</p>
+                            <div className="flex justify-between">
+                              <div className=" mt-1">
+                                <p>{set.numberOfCards} cards</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-500 text-sm">
+                                  Progress: {Math.round(set.progress * 100)}%
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
