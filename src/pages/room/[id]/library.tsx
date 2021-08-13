@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
-import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
+import RemoveCircleRoundedIcon from "@material-ui/icons/RemoveCircleRounded";
 import { useRouter } from "next/router";
 import React from "react";
 import { getAPI } from "../../../utils/FetchData";
@@ -250,65 +250,47 @@ const library = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {sets.map((set, index) => {
                 return (
-                  <div className="col-span-1">
+                  <div className=" col-span-1" key={index}>
                     <div
-                      key={index}
-                      className="grid grid-rows-5 shadow-lg flex-row rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800"
+                      className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
                     >
-                      <div className="row-span-1 w-full flex mb-2">
-                        <div className="w-full">
-                          <p className="text-gray-800 dark:text-white text-xl flex flex-wrap font-medium leading-non">
-                            <a
-                              href={`/set/${set.studySet_id}`}
-                              className="hover:underline"
-                            >
-                              {set.title.length <= 15
-                                ? set.title
-                                : set.title.substring(0, 15) + "..."}{" "}
-                            </a>
-                            {set.color ? (
-                              <FiberManualRecordIcon
-                                className={`text-${set.color?.toLowerCase()}-400`}
-                              />
-                            ) : (
-                              <FiberManualRecordIcon className={`text-white`} />
-                            )}
-                            {"  "}
-                            <a href={`/${set.creatorName}/library/sets`}>
+                      <div className=" w-full flex flex-row mb-2">
+                        <div className="w-full flex justify-between my-auto">
+                          <Link href={`/set/${set.studySet_id}`}>
+                            <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                              {set.title}
+                            </p>
+                          </Link>
+                          <Link href={`/${set.creatorName}/library/sets`}>
+                            <p className="my-auto ml-2">
                               <span className="text-gray-500 text-sm hover:underline">
-                                {set.creatorName.length <= 10
-                                  ? set.creatorName
-                                  : set.creatorName.substring(0, 10) + "..."}
+                                {set.creatorName}
                               </span>
-                            </a>
-                          </p>
+                            </p>
+                          </Link>
                         </div>
-                        {room.ownerName === auth.userResponse?.username ? (
-                          <div>
-                            <button
-                              onClick={() => handleRemoveSet(set.studySet_id)}
-                              className="tooltip flex items-center focus:outline-none"
-                            >
-                              <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
-                              <span className="tooltiptext w-32">
-                                remove this set
-                              </span>
-                            </button>
-                          </div>
-                        ) : null}
                       </div>
-                      <div className="row-span-3 mb-12">
-                        {set.description.length <= 50 ? (
+                      <div className="mb-4 h-20">
+                        {set.description.length <= 150 ? (
                           <p className="text-gray-500">{set.description}</p>
                         ) : (
                           <p className="text-gray-500">
-                            {set.description.substring(0, 50)}...
+                            {set.description.substring(0, 150)}...
                           </p>
                         )}
                       </div>
-
-                      <div className="row-span-1 mt-2">
-                        <p>{set.numberOfCards} cards</p>
+                      <div className="flex justify-between">
+                        <div className=" mt-1">
+                          <p>{set.numberOfCards} cards</p>
+                        </div>
+                        <button
+                          className="focus:outline-none tooltip"
+                          onClick={() => handleRemoveSet(set.studySet_id)}
+                        >
+                          <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
+                          <span className="tooltiptext w-20">remove</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -376,7 +358,7 @@ const library = () => {
                           onClick={() => handleRemoveFolder(item.folder_id)}
                           className="tooltip text-right flex justify-end focus:outline-none"
                         >
-                          <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
+                          <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
                           <span className="tooltiptext w-32">
                             remove this folder
                           </span>

@@ -15,14 +15,8 @@ import { useState } from "react";
 
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import EventIcon from "@material-ui/icons/Event";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
-import CircularProgress, {
-  CircularProgressProps,
-} from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import dayjs from "dayjs";
 import {
@@ -32,7 +26,6 @@ import {
   getTimeInDay,
 } from "../components/schedule/convertTime";
 import { putEvent } from "../redux/actions/eventAction";
-import { route } from "next/dist/next-server/server/router";
 import router from "next/router";
 import { eventHandleDispatch } from "../redux/actions/eventHandleAction";
 
@@ -55,6 +48,7 @@ const home = () => {
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
+
         const listTemp: IEventRes[] = [...res.data];
         listTemp.map(async (item, index) => {
           if (item.isLearnEvent) {
@@ -73,7 +67,7 @@ const home = () => {
             }
           }
         });
-        if (!alert.loading) dispatch(putEvent(res.data));
+        if (!alert.loading) dispatch(putEvent(listTemp));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -171,8 +165,8 @@ const home = () => {
                 </p>
               </div>
               <div className="mb-6">
-                <div className="rounded-md w-full overflow-auto mb-6">
-                  <p className="text-gray-800 text-md font-medium mb-4 w-full">
+                <div className="rounded-md w-full mb-6">
+                  <p className="text-gray-800 text-md font-medium mb-4">
                     {event.length
                       ? formatUTCToDate(event[0]?.fromTime)
                       : "No task at this day"}
@@ -200,27 +194,31 @@ const home = () => {
                             className={`bg-${evn.color?.toLowerCase()}-500 w-2 h-2 rounded-full mx-auto mt-2`}
                           ></div>
                         </span>
-                        <div className="">
-                          <header className="mb-1 text-sm truncate">
+                        <div className="w-full pr-16">
+                          <header className="mb-1 text-sm w-full">
                             {evn.isLearnEvent ? (
-                              <span
-                                className={`font-semibold ${
-                                  evn.isDone
-                                    ? "text-gray-400 "
-                                    : "text-gray-800"
-                                } hover:text-gray-800 hover:underline`}
-                                onClick={() => viewEventhandle(evn)}
-                              >
-                                {evn.name}{" "}
+                              <div className="flex justify-between">
+                                <div
+                                  className={`font-semibold hover:text-gray-800 hover:underline truncate 
+                                  ${
+                                    evn.isDone
+                                      ? "text-gray-400 "
+                                      : "text-gray-800 "
+                                  } `}
+                                  onClick={() => viewEventhandle(evn)}
+                                >
+                                  {evn.name}{" "}
+                                </div>
+
                                 {evn.isDone ? (
                                   <CheckCircleIcon
                                     className="text-blue-600 ml-2"
                                     fontSize="small"
                                   />
                                 ) : null}
-                              </span>
+                              </div>
                             ) : (
-                              <span
+                              <div
                                 className={`font-semibold truncate hover:underline
                                 ${
                                   new Date(evn.toTime) < dateNow
@@ -231,7 +229,7 @@ const home = () => {
                                 onClick={() => viewEventhandle(evn)}
                               >
                                 {evn.name}
-                              </span>
+                              </div>
                             )}
                           </header>
                           <footer className="text-gray-500 mt-2 text-sm">

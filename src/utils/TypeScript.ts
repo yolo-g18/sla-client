@@ -83,6 +83,8 @@ export interface ISearch {
     id?:number
     front: string
     back: string
+    q?:number
+    color?: string
   }
 
   export interface ICardLearning {
@@ -230,6 +232,7 @@ export interface INewRoom {
   export interface IGuestRoom{
     user_id:number
     userName?:string
+    avatar?: string
 
   }
   export interface IUserResultSearch {

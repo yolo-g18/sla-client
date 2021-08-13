@@ -194,7 +194,7 @@ const sets = (props: any) => {
                               <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
                                 {set.color ? (
                                   <FiberManualRecordIcon
-                                    className={`py-1 ${set.color.toLowerCase()}`}
+                                    className={`py-1 text-${set.color.toLowerCase()}-500`}
                                   />
                                 ) : null}
                                 {set.studySetName}

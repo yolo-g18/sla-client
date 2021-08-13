@@ -1,7 +1,7 @@
 import RoomLayout from "../../../components/layout/RoomLayout";
 import Link from "next/link";
 import FaceOutlinedIcon from "@material-ui/icons/FaceOutlined";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import RemoveCircleRoundedIcon from "@material-ui/icons/RemoveCircleRounded";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
 import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
@@ -182,32 +182,29 @@ const requests = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        
       }
     }
     excute();
   }, [alert.success, id]);
-  
+
   return (
     <RoomLayout>
-      
-      
-      {isMember === true && room.ownerName !== auth.userResponse?.username ? 
-      (<p className="text-lg font-thin text-center text-yellow-600 m-16">You have no permission to see this content</p>):null}
-      
+      {isMember === true && room.ownerName !== auth.userResponse?.username ? (
+        <p className="text-lg font-thin text-center text-yellow-600 m-16">
+          You have no permission to see this content
+        </p>
+      ) : null}
+
       {guestRooms.length === 0 ? (
         room.ownerName === auth.userResponse?.username ? (
           <div>
-
             {guestRooms.length === 0 ? (
-             <p className="text-lg font-thin text-center text-gray-400 m-16">You have no request</p>
-            ) :
-            null}
-
-
+              <p className="text-lg font-thin text-center text-gray-400 m-16">
+                You have no request
+              </p>
+            ) : null}
           </div>
         ) : null
-
       ) : room.ownerName === auth.userResponse?.username ? (
         <div>
           <div className="mt-8 mb-6">
@@ -232,7 +229,26 @@ const requests = () => {
                       }}
                     >
                       <div className="cursor-pointer flex flex-1 items-center p-4">
-                        <FaceOutlinedIcon style={{ fontSize: 65 }} />
+                        {item.avatar ? (
+                          <img
+                            className="w-12 h-12 my-auto rounded-full object-cover object-center"
+                            src={`${
+                              item.avatar ? item.avatar : "../../user.svg"
+                            }`}
+                            alt="Avatar Upload"
+                          />
+                        ) : (
+                          <svg
+                            width="40"
+                            height="40"
+                            fill="currentColor"
+                            className="text-gray-800"
+                            viewBox="0 0 1792 1792"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z" />
+                          </svg>
+                        )}
                         <div className="flex-1 pl-1 mr-16">
                           <p className="text-sm text-gray-400">user</p>
                           <div className="text-lg font-bold hover:underline flex">
@@ -248,22 +264,16 @@ const requests = () => {
                       onClick={() => acceptRequest(item.user_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
-                      <AddBoxRoundedIcon
-                        style={{ fontSize: 28 }}
-                        className="hover:text-blue-600 text-blue-500"
-                      />
+                      <AddBoxRoundedIcon className="hover:text-blue-600 text-blue-500" />
                       <span className="tooltiptext w-16">accept</span>
                     </button>
                   </div>
-                  <div className="my-auto px-2">
+                  <div className="my-auto pl-2 pr-4">
                     <button
                       onClick={() => handleRejectRequest(item.user_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
-                      <HighlightOffOutlinedIcon
-                        style={{ fontSize: 28 }}
-                        className="hover:text-yellow-500 text-gray-700"
-                      />
+                      <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
                       <span className="tooltiptext w-16">reject</span>
                     </button>
                   </div>

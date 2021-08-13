@@ -76,6 +76,8 @@ const colors = {
   grey: "#a9a9a9",
 };
 
+const qValueArr = ["sosad", "sad", "neutral", "grinning", "smile", "happy"];
+
 const index = () => {
   const { auth, alert, user } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
@@ -99,6 +101,9 @@ const index = () => {
   const [messageToast, setMessageToast] = useState("");
   const [creatorId, setCreatorId] = useState();
   const [isSuc, setIsSuc] = useState(false);
+
+  const [ssColor, setSSColor] = useState("");
+  const [listColors, setListColors] = useState<string[]>([]);
 
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
 
@@ -252,17 +257,37 @@ const index = () => {
         const studySetRes = await getAPI(
           `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
+
         if (studySetRes.data) {
           const cardResLearning = await getAPI(
             `${PARAMS.ENDPOINT}learn/listCardSort?id=${id}`
           );
-          if (cardResLearning.data) {
+          if (cardResLearning.data.length) {
+            //get color of SS
+            try {
+              const colorRes = await getAPI(
+                `${PARAMS.ENDPOINT}studySet/color?id=${id}`
+              );
+              setSSColor(colorRes.data);
+            } catch (err) {
+              console.log(err.response.data);
+            }
+
+            //add new card not started to learning
+            const insertCardLearning = await getAPI(
+              `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
+            );
+            //set lai card learning cho list cardlearing
+            const cardResLearning = await getAPI(
+              `${PARAMS.ENDPOINT}learn/listCardSort?id=${id}`
+            );
             setCards(cardResLearning.data);
             setIsLearned(true);
           } else {
             const cardRes = await getAPI(
               `${PARAMS.ENDPOINT}card/list?id=${id}`
             );
+
             setCards(cardRes.data);
             setIsLearned(false);
           }
@@ -276,11 +301,13 @@ const index = () => {
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log(err.response.data);
-        router.push("/error");
+        // router.push("/error");
       }
     };
     fetchData();
   }, [id, isSuc]);
+
+  console.log(cards);
 
   useEffect(() => {
     dispatch(getUserByUsername(`${creatorName}`));
@@ -627,9 +654,6 @@ const index = () => {
     }
   };
 
-  const [ssColor, setSSColor] = useState("");
-  const [listColors, setListColors] = useState<string[]>([]);
-
   //init color list
   useEffect(() => {
     const fetchData = async () => {
@@ -647,15 +671,36 @@ const index = () => {
   }, []);
 
   const setColorhandle = (color: string) => {
+    console.log({
+      id: id,
+      color: color,
+    });
+
+    const putColor = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await putAPI(`${PARAMS.ENDPOINT}studySet/color`, {
+          id: id,
+          color: color,
+        });
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setIsSuc(true);
+      } catch (err) {
+        setIsSuc(false);
+        console.log(err);
+        dispatch({ type: ALERT, payload: { loading: true } });
+      }
+    };
+
+    putColor();
     setShowModalColorPicker(false);
-    setSSColor(color);
   };
 
   return (
     <div>
       <AppLayout title={title} desc={desc}>
         <div className="grid lg:grid-cols-5 grid-cols-1 gap-8 h-full lg:w-4/5 mx-auto mt-6">
-          <div className="col-span-1 px-2">
+          <div className="col-span-1 px-4">
             <div className="w-full flex items-center px-2">
               <div>
                 {user.avatar ? (
@@ -729,7 +774,7 @@ const index = () => {
                 <Link
                   href={{
                     pathname: "/[username]/library/sets",
-                    query: { username: auth.userResponse?.username },
+                    query: { username: user.username },
                   }}
                 >
                   <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
@@ -789,24 +834,29 @@ const index = () => {
                   <span className="tooltiptext -mt-2 w-16">share</span>
                 </button>
                 {/* set color for ss */}
-                {/* {isLearned ? (
-                  <div className="w-full flex relative ml-4">
-                    <div>
+                {isLearned ? (
+                  <div
+                    className="w-full flex relative ml-2 my-auto"
+                    ref={domNode}
+                  >
+                    <div className="pt-1.5">
                       <div
                         onClick={() =>
                           setShowModalColorPicker(!showModalColorPicker)
                         }
-                        className={`w-6 h-6 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow 
-                                bg-${s.toLocaleLowerCase()}-400 cursor-pointer hover:bg-${eventColor.toLocaleLowerCase()}-300`}
-                      ></div>
+                        className={`tooltip w-5 h-5 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md
+                                bg-${ssColor.toLocaleLowerCase()}-400 cursor-pointer hover:bg-${ssColor.toLocaleLowerCase()}-300 `}
+                      >
+                        <span className="tooltiptext mt-2 w-24">set color</span>
+                      </div>
                       {showModalColorPicker ? (
-                        <div className="origin-top-right absolute z-50  mt-6 w-40 rounded-md shadow-lg hover:shadow-xl">
+                        <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
                           <div className="rounded-md bg-white shadow-xs px-4 py-3">
                             <div className="flex flex-wrap -mx-2">
                               {listColors.map((color, index) => {
                                 return (
                                   <div key={index} className="px-2">
-                                    {eventColor === color ? (
+                                    {ssColor === color ? (
                                       <div
                                         className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
                                                 bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
@@ -829,7 +879,7 @@ const index = () => {
                       ) : null}
                     </div>
                   </div>
-                ) : null} */}
+                ) : null}
                 <div className="flex mx-2" ref={domNode}>
                   <button
                     onClick={handelExpandMoreBtnClick}
@@ -891,45 +941,63 @@ const index = () => {
               <div className=" w-full">
                 {cards.map((card, index) => {
                   return (
-                    <div key={index} className="rounded-md flex w-full my-4">
+                    <div
+                      key={index}
+                      className="rounded-md flex w-full my-4 relative"
+                    >
                       <div className="flex justify-between w-full gap-3">
                         <div
-                          className="card-overview w-1/2 rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                          className="card-overview w-1/2 rounded-md bg-white shadow-lg border-b-1 p-6 text-center"
                           dangerouslySetInnerHTML={{ __html: card.front }}
                         ></div>
                         <div
-                          className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                          className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-6 text-center"
                           dangerouslySetInnerHTML={{ __html: card.back }}
                         ></div>
+                        {isLearned ? (
+                          <div className="absolute right-2 top-2">
+                            <img
+                              src={`../../${
+                                qValueArr[card.q ? card.q : 0]
+                              }.svg`}
+                              className="h-5 w-5 my-auto mx-auto"
+                              alt=""
+                            />
+                          </div>
+                        ) : null}
                       </div>
 
-                      {auth.userResponse?.username === creatorName ? (
-                        <div className="w-0">
-                          <button
-                            onClick={(event) => handelEditOnclick(index)}
-                            className="ml-2 tooltip focus:outline-none"
-                          >
-                            <EditIcon
-                              fontSize="small"
-                              className="hover:text-gray-400 text-gray-700"
-                            />
-                            <span className="tooltiptext mt-2 w-16">edit</span>
-                          </button>
+                      <div className="w-0">
+                        {auth.userResponse?.username === creatorName ? (
+                          <div>
+                            <button
+                              onClick={(event) => handelEditOnclick(index)}
+                              className="ml-2 tooltip focus:outline-none"
+                            >
+                              <EditIcon
+                                fontSize="small"
+                                className="hover:text-gray-400 text-gray-700"
+                              />
+                              <span className="tooltiptext mt-2 w-16">
+                                edit
+                              </span>
+                            </button>
 
-                          <button
-                            onClick={(event) => handelDeleteOnclick(index)}
-                            className="ml-2 tooltip focus:outline-none"
-                          >
-                            <DeleteOutlineIcon
-                              fontSize="small"
-                              className="hover:text-yellow-400 text-gray-700"
-                            />
-                            <span className="tooltiptext mt-2 w-20">
-                              delete
-                            </span>
-                          </button>
-                        </div>
-                      ) : null}
+                            <button
+                              onClick={(event) => handelDeleteOnclick(index)}
+                              className="ml-2 tooltip focus:outline-none"
+                            >
+                              <DeleteOutlineIcon
+                                fontSize="small"
+                                className="hover:text-yellow-400 text-gray-700"
+                              />
+                              <span className="tooltiptext mt-2 w-20">
+                                delete
+                              </span>
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                   );
                 })}
@@ -1198,7 +1266,7 @@ const index = () => {
             </div>
           </div>
         ) : null}
-        {showModalFeedback ? (
+        {showModalFeedback && isLearned ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal px-2">
               <div className="bg-white rounded-md shadow p-6 m-4 max-w-md ">
