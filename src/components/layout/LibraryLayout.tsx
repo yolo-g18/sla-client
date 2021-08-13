@@ -23,6 +23,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
+import { GetStaticProps } from "next";
 
 //alert
 function Alert(props: AlertProps) {
@@ -36,7 +37,6 @@ interface Props {
 const colorFolderList: String[] = [];
 
 const LibraryLayout = (props: Props) => {
-  const { user } = useSelector((state: RootStore) => state);
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -46,17 +46,12 @@ const LibraryLayout = (props: Props) => {
 
   //call api get user profile by username de lay ra fullname, address, email, school, job de hien thi
   useEffect(() => {
+    console.log("username: " + username);
+    console.log("redux: " + user.username);
+
     if (!username) return;
     dispatch(getUserByUsername(`${username}`));
   }, [username]);
-
-  // useEffect(() => {
-  //   if (auth.userResponse?.username !== user.username && type !== "0") {
-  //     console.log("tai sao ha");
-
-  //     router.push(`/${user.username}/library/sets?type=0`);
-  //   }
-  // }, [type]);
 
   function handleAddNew() {
     if (router.pathname.includes("sets")) {
@@ -71,7 +66,7 @@ const LibraryLayout = (props: Props) => {
     }
   }
 
-  const { auth, alert } = useSelector((state: RootStore) => state);
+  const { auth, alert, user } = useSelector((state: RootStore) => state);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -300,28 +295,20 @@ const LibraryLayout = (props: Props) => {
     setTimeout(() => {}, 1000);
     if (!user.username) return;
     if (router.pathname.indexOf("/sets") !== -1) {
-      console.log("username: " + user.username);
-
       if (type) {
         router.push(
-          `/${
-            user.username
-          }/library/sets?type=${type}&search_query=${keyWord.trim()}`
+          `/${username}/library/sets?type=${type}&search_query=${keyWord.trim()}`
         );
       } else
-        router.push(
-          `/${user.username}/library/sets?search_query=${keyWord.trim()}`
-        );
+        router.push(`/${username}/library/sets?search_query=${keyWord.trim()}`);
     }
     if (router.pathname.indexOf("/folders") !== -1) {
       router.push(
-        `/${user.username}/library/folders?search_query=${keyWord.trim()}`
+        `/${username}/library/folders?search_query=${keyWord.trim()}`
       );
     }
     if (router.pathname.indexOf("/rooms") !== -1) {
-      router.push(
-        `/${user.username}/library/rooms?search_query=${keyWord.trim()}`
-      );
+      router.push(`/${username}/library/rooms?search_query=${keyWord.trim()}`);
     }
   };
 
@@ -359,7 +346,7 @@ const LibraryLayout = (props: Props) => {
                   </span>
                   <br />
                   <span className="text-md font-mono text-gray-700">
-                    {user.username}
+                    {username}
                   </span>
                 </p>
                 <p className="text-left mt-4">
@@ -418,7 +405,7 @@ const LibraryLayout = (props: Props) => {
                   </span>
                 </p>
 
-                {user.username === auth.userResponse?.username ? (
+                {username === auth.userResponse?.username ? (
                   <Link href="/me/profile">
                     <button
                       className="w-3/5 flex mx-auto justify-center mt-8 py-1 rounded-md text-gray-600 border-gray-300 border-2
@@ -488,14 +475,15 @@ const LibraryLayout = (props: Props) => {
               <div className="col-span-2 flex justify-around text-md text-gray-600  cursor-pointer">
                 <div className="text-gray-900 py-3 flex flex-grow">
                   {router.pathname.indexOf("/sets") !== -1 &&
-                  user.username === auth.userResponse?.username ? (
+                  username === auth.userResponse?.username ? (
                     <SelectBox
                       items={
-                        auth.userResponse?.username === user.username
+                        auth.userResponse?.username === username
                           ? itemsSetsFilter
                           : itemsSetsFilter.slice(0, 1)
                       }
                       typeResult="sets"
+                      username={username}
                     />
                   ) : null}
                 </div>
@@ -526,7 +514,7 @@ const LibraryLayout = (props: Props) => {
                   </form>
                 </div>
                 <div className="py-3 flex relative">
-                  {user.username === auth.userResponse?.username ? (
+                  {username === auth.userResponse?.username ? (
                     <button
                       id="btnAddNew"
                       onClick={handleAddNew}

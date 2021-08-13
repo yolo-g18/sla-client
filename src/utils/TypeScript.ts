@@ -80,7 +80,7 @@ export interface ISearch {
 
   export interface ICard {
     index?: number
-    id?:number
+    cardId?:number
     front: string
     back: string
     q?:number
@@ -226,7 +226,7 @@ export interface INewRoom {
   export interface IMember{
     member_id:number
     userName?:string
-
+    avatar?:string
   }
 
   export interface IGuestRoom{

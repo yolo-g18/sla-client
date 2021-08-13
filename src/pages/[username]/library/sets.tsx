@@ -84,8 +84,6 @@ const sets = (props: any) => {
       };
 
       if (!type || type === "0") {
-        console.log("mac dinh dung hong");
-
         fetchCreatedSets();
         fetchLearningSets();
       }
@@ -103,8 +101,6 @@ const sets = (props: any) => {
 
     fetchData();
   }, [user._id, type, search_query]);
-
-  console.log("key: " + search_query);
 
   if (
     search_query &&

@@ -30,6 +30,7 @@ interface Props {
   searchKeyWord?: string;
   typeResult?: string;
   link?: string;
+  username?: string | string[];
 }
 
 interface SelectBox {
@@ -102,11 +103,11 @@ const SelectBox = (props: Props) => {
                 if (props.typeResult === "sets") {
                   return (
                     <Link
-                      href={`/${user.username}/library/sets?type=${item.searchType}`}
+                      href={`/${props.username}/library/sets?type=${item.searchType}`}
                       key={index}
                     >
                       <a
-                        href={`/${user.username}/library/sets?type=${item.searchType}`}
+                        href={`/${props.username}/library/sets?type=${item.searchType}`}
                         className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
                         onClick={(e) => handleClick(e, item)}
                       >

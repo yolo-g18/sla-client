@@ -42,6 +42,7 @@ const rooms = (props: any) => {
   const [typeToast, setTypeToast] = React.useState("success");
   const [messageToast, setMessageToast] = React.useState("");
   React.useEffect(() => {
+    if (!user._id) return;
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
