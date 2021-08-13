@@ -831,7 +831,7 @@ const RoomLayout = (props: Props) => {
                   <span className="tooltiptext w-16">share</span>
                 </button>
                 {/* check member */}
-                {true && room.ownerName !== auth.userResponse?.username ? (
+                {isMember === true ?(
                   <button
                     onClick={() => setIsShowLeaveRoomModal(true)}
                     className="mx-2 tooltip focus:outline-none"
