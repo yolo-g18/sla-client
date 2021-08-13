@@ -137,7 +137,7 @@ const AppLayout = (props: Props) => {
     if (searchValue.length > 0)
       dispatch(
         putSearchKeyword(
-          searchValue.replace(/ /g, ""),
+          searchValue.trim(),
           search.type ? search.type : 0,
           search.searchBy ? search.searchBy : 0
         )
@@ -391,7 +391,7 @@ const AppLayout = (props: Props) => {
                       <Ddm
                         icon={
                           <img
-                            className="w-6 h-6 my-auto rounded-full object-cover object-center"
+                            className="w-6 h-6 my-auto rounded-full object-cover object-center bg-white"
                             src={`${
                               auth.userResponse?.avatar
                                 ? auth.userResponse?.avatar

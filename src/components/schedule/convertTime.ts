@@ -68,3 +68,10 @@ export const formatUTCToDate = (date: any) => {
    return new Date(date).getDate() + " "
    + monthNames[(new Date(date).getMonth())];
 }
+
+export const formatCreatedDate = (date:any) => {
+   return new Date(date).getDate() + "/" 
+   + (new Date(date).getMonth() + 1) + "/" 
+   + new Date(date).getFullYear() + " " 
+   + getTimeInDay(date);
+}

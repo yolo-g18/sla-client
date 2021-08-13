@@ -12,6 +12,7 @@ import { getAPI } from "../utils/FetchData";
 
 import {
   convertTime,
+  convertTimeEvnLearn,
   convertTimeToMySQl,
   formatUTCToDate,
   getTimeInDay,
@@ -19,12 +20,14 @@ import {
 import { PARAMS } from "../common/params";
 import { putEvent } from "../redux/actions/eventAction";
 import { eventHandleDispatch } from "../redux/actions/eventHandleAction";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 const todayObj = dayjs();
 
 const schedule = () => {
   const dispatch = useDispatch();
   const { alert, event } = useSelector((state: RootStore) => state);
+  const [dateNow, setDateNow] = useState(new Date());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,9 +38,28 @@ const schedule = () => {
             todayObj.startOf("day")
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
-        dispatch({ type: ALERT, payload: { loading: false } });
-        dispatch(putEvent(res.data));
+        const listTemp: IEventRes[] = [...res.data];
+        listTemp.map(async (item, index) => {
+          if (item.isLearnEvent) {
+            try {
+              const res = await getAPI(
+                `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                  item.description
+                }&date=${convertTimeEvnLearn(item.fromTime)}`
+              );
+              dispatch({ type: ALERT, payload: { loading: false } });
+              if (res.data.length) {
+                listTemp[index].isDone = false;
+              } else listTemp[index].isDone = true;
+            } catch (err) {
+              console.log(err);
+              dispatch({ type: ALERT, payload: { loading: false } });
+            }
+          }
+        });
+        if (!alert.loading) dispatch(putEvent(res.data));
       } catch (err) {
+        console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
@@ -64,7 +86,7 @@ const schedule = () => {
         <div className=" grid grid-cols-1 lg:grid-cols-5 w-full px-4 mb-36">
           <div className="col-span-1 px-2 mt-2">
             <div
-              className="shadow-lg rounded-md w-full p-4 bg-white overflow-auto mb-6 md:h-64"
+              className="shadow-lg rounded-md w-full p-4 bg-white mb-6 md:h-64"
               style={{ height: "780px" }}
             >
               <div className="w-full flex items-center justify-between">
@@ -90,8 +112,7 @@ const schedule = () => {
                 return (
                   <article
                     key={index}
-                    className={`cursor-pointer border rounded-md p-1 bg-white flex text-gray-700 mb-2 
-                    focus:outline-none`}
+                    className={`cursor-pointer rounded-md bg-white flex text-gray-700 mb-2 `}
                     onClick={() => viewEventhandle(evn)}
                   >
                     <span className="flex-none pr-2 my-auto">
@@ -110,11 +131,38 @@ const schedule = () => {
                         className={`bg-${evn.color?.toLowerCase()}-500 w-2 h-2 rounded-full mx-auto mt-2`}
                       ></div>
                     </span>
-                    <div className="flex-1 relative">
-                      <header className="mb-1 text-sm flex w-full">
-                        <span className="font-semibold truncate">
-                          {evn.name}
-                        </span>
+                    <div className="flex-1 w-full pr-6">
+                      <header className="mb-1 text-sm w-full">
+                        {evn.isLearnEvent ? (
+                          <div className="flex justify-between">
+                            <div
+                              className={`font-semibold ${
+                                evn.isDone ? "text-gray-400 " : "text-gray-800"
+                              } hover:text-gray-800 hover:underline truncate`}
+                              onClick={() => viewEventhandle(evn)}
+                            >
+                              {evn.name}{" "}
+                            </div>
+                            {evn.isDone ? (
+                              <CheckCircleIcon
+                                className="text-blue-600 ml-2"
+                                fontSize="small"
+                              />
+                            ) : null}
+                          </div>
+                        ) : (
+                          <div
+                            className={`font-semibold truncate hover:underline
+                                ${
+                                  new Date(evn.toTime) < dateNow
+                                    ? " text-gray-400 line-through"
+                                    : "text-gray-800 "
+                                }`}
+                            onClick={() => viewEventhandle(evn)}
+                          >
+                            {evn.name}
+                          </div>
+                        )}
                       </header>
                       <p className="text-gray-600 text-sm">
                         {evn.isLearnEvent ? null : evn.description}

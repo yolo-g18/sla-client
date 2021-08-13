@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
-import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
+import RemoveCircleRoundedIcon from "@material-ui/icons/RemoveCircleRounded";
 import { useRouter } from "next/router";
 import React from "react";
 import { getAPI } from "../../../utils/FetchData";
@@ -199,7 +199,6 @@ const library = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-       
       }
     }
     excute();
@@ -207,16 +206,17 @@ const library = () => {
   return (
     <RoomLayout>
       <div className="mt-6">
-        {room.setNumbers === 0 && room.folderNumbers ===0 ? (
+        {room.setNumbers === 0 && room.folderNumbers === 0 ? (
           <div className="col-span-2 text-center mx-auto">
             {auth.userResponse?.username === room.ownerName ? (
               <>
                 <p className="text-3xl font-semibold text-gray-700">
                   This room doesn't have any data yet
-            </p>
-            <br/>
+                </p>
+                <br />
                 <p className="text-md text-gray-600">
-                  Add an existing set or folder and maybe create a new one to share.
+                  Add an existing set or folder and maybe create a new one to
+                  share.
                 </p>
                 <div className="mt-4 text-center">
                   <Link
@@ -226,7 +226,7 @@ const library = () => {
                   >
                     <button
                       type="button"
-                      className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                      className="w-44 text-md rounded-sm px-4 mx-2 py-2
             text-md font-bold bg-blue-500 hover:bg-blue-600 
          text-white focus:outline-none"
                     >
@@ -238,161 +238,139 @@ const library = () => {
             ) : null}
           </div>
         ) : (
-            <div>
-              {/* sets */}
-              <div className="mb-4">
-                {isMember === true ? (
-                  <p className="text-lg text-gray-500">
-                    Sets
-                  </p>
-                ) : null}
+          <div>
+            {/* sets */}
+            <div className="mb-4">
+              {isMember === true ? (
+                <p className="text-lg text-gray-500">Sets</p>
+              ) : null}
 
-                <hr />
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {sets.map((set, index) => {
-                  return (
-                    <div className="col-span-1">
-                      <div
-                        key={index}
-                        className="grid grid-rows-5 shadow-lg flex-row rounded-md p-2 h-36 my-4 bg-white dark:bg-gray-800"
-                      >
-                        <div className="row-span-1 w-full flex mb-2">
-                          <div className="w-full">
-                            <p className="text-gray-800 dark:text-white text-xl flex flex-wrap font-medium leading-non">
-                              <a
-                                href={`/set/${set.studySet_id}`}
-                                className="hover:underline"
-                              >
-                                {set.title.length <= 15
-                                  ? set.title
-                                  : set.title.substring(0, 15) + "..."}{" "}
-                              </a>
-                              {set.color ? (
-                                <FiberManualRecordIcon
-                                  className={`text-${set.color?.toLowerCase()}-400`}
-                                />
-                              ) : (
-                                  <FiberManualRecordIcon className={`text-white`} />
-                                )}
-                              {"  "}
-                              <a href={`/${set.creatorName}/library/sets`}>
-                                <span className="text-gray-500 text-sm hover:underline">
-                                  {set.creatorName.length <= 10
-                                    ? set.creatorName
-                                    : set.creatorName.substring(0, 10) + "..."}
-                                </span>
-                              </a>
+              <hr />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {sets.map((set, index) => {
+                return (
+                  <div className=" col-span-1" key={index}>
+                    <div
+                      className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
+                    >
+                      <div className=" w-full flex flex-row mb-2">
+                        <div className="w-full flex justify-between my-auto">
+                          <Link href={`/set/${set.studySet_id}`}>
+                            <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                              {set.title}
                             </p>
-                          </div>
-                          {room.ownerName === auth.userResponse?.username ? (
-                            <div>
-                              <button
-                                onClick={() => handleRemoveSet(set.studySet_id)}
-                                className="tooltip flex items-center focus:outline-none"
-                              >
-                                <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
-                                <span className="tooltiptext w-32">
-                                  remove this set
+                          </Link>
+                          <Link href={`/${set.creatorName}/library/sets`}>
+                            <p className="my-auto ml-2">
+                              <span className="text-gray-500 text-sm hover:underline">
+                                {set.creatorName}
                               </span>
-                              </button>
-                            </div>
-                          ) : null}
+                            </p>
+                          </Link>
                         </div>
-                        <div className="row-span-3 mb-12">
-                          {set.description.length <= 50 ? (
-                            <p className="text-gray-500">{set.description}</p>
-                          ) : (
-                              <p className="text-gray-500">
-                                {set.description.substring(0, 50)}...
-                              </p>
-                            )}
-                        </div>
-
-                        <div className="row-span-1 mt-2">
+                      </div>
+                      <div className="mb-4 h-20">
+                        {set.description.length <= 150 ? (
+                          <p className="text-gray-500">{set.description}</p>
+                        ) : (
+                          <p className="text-gray-500">
+                            {set.description.substring(0, 150)}...
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex justify-between">
+                        <div className=" mt-1">
                           <p>{set.numberOfCards} cards</p>
                         </div>
+                        <button
+                          className="focus:outline-none tooltip"
+                          onClick={() => handleRemoveSet(set.studySet_id)}
+                        >
+                          <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
+                          <span className="tooltiptext w-20">remove</span>
+                        </button>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
+            </div>
 
-              {/* folders */}
-              <div className="mt-8 mb-4">
-                {isMember === true ? (
-                  <p className="text-lg text-gray-500">
-                    Folders
-                  </p>
-                ) : null}
+            {/* folders */}
+            <div className="mt-8 mb-4">
+              {isMember === true ? (
+                <p className="text-lg text-gray-500">Folders</p>
+              ) : null}
 
-                <hr />
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {folders.map((item) => {
-                  return (
-                    <div
-                      className="col-span-2 bg-white dark:bg-gray-800 mt-6 border-b-2  
+              <hr />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {folders.map((item) => {
+                return (
+                  <div
+                    className="col-span-2 bg-white dark:bg-gray-800 mt-6 border-b-2  
              hover:border-gray-300 hover:shadow-lg rounded-md shadow-md flex justify-between"
-                      key={item.folder_id}
-                    >
-                      <div className="w-full">
-                        <Link
-                          href={{
-                            pathname: "/folder/[id]",
-                            query: { id: item.folder_id },
-                          }}
-                        >
-                          <div className="cursor-pointer flex flex-1 items-center p-4">
-                            <div className="flex-1 pl-1 mr-16">
-                              <div className="font-medium dark:text-white flex">
-                                {room.ownerName ===
-                                  auth.userResponse?.username ? (
-                                    item.color ? (
-                                      <FolderOpenRoundedIcon
-                                        className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
-                                      />
-                                    ) : (
-                                        <FolderOpenRoundedIcon className={`mr-2`} />
-                                      )
-                                  ) : (
-                                    <FolderOpenRoundedIcon className={`mr-2`} />
-                                  )}
+                    key={item.folder_id}
+                  >
+                    <div className="w-full">
+                      <Link
+                        href={{
+                          pathname: "/folder/[id]",
+                          query: { id: item.folder_id },
+                        }}
+                      >
+                        <div className="cursor-pointer flex flex-1 items-center p-4">
+                          <div className="flex-1 pl-1 mr-16">
+                            <div className="font-medium dark:text-white flex">
+                              {room.ownerName ===
+                              auth.userResponse?.username ? (
+                                item.color ? (
+                                  <FolderOpenRoundedIcon
+                                    className={`mr-2 text-${item.color?.toLocaleLowerCase()}-400`}
+                                  />
+                                ) : (
+                                  <FolderOpenRoundedIcon className={`mr-2`} />
+                                )
+                              ) : (
+                                <FolderOpenRoundedIcon className={`mr-2`} />
+                              )}
 
-                                <p>{item.title}</p>
-                              </div>
-                              <div className="text-gray-600 dark:text-gray-200 text-sm">
-                                {item.numberOfSets <= 1
-                                  ? item.numberOfSets + " set"
-                                  : item.numberOfSets + " set"}
-                              </div>
+                              <p>{item.title}</p>
                             </div>
-                            <div className="text-gray-600 dark:text-gray-200 text-xs">
-                              {item.createdDate}
+                            <div className="text-gray-600 dark:text-gray-200 text-sm">
+                              {item.numberOfSets <= 1
+                                ? item.numberOfSets + " set"
+                                : item.numberOfSets + " set"}
                             </div>
                           </div>
-                        </Link>
-                      </div>
-
-                      {room.ownerName === auth.userResponse?.username ? (
-                        <div className="my-auto px-4">
-                          <button
-                            onClick={() => handleRemoveFolder(item.folder_id)}
-                            className="tooltip text-right flex justify-end focus:outline-none"
-                          >
-                            <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
-                                <span className="tooltiptext w-32">
-                                  remove this folder
-                              </span>
-                          </button>
+                          <div className="text-gray-600 dark:text-gray-200 text-xs">
+                            {item.createdDate}
+                          </div>
                         </div>
-                      ) : null}
+                      </Link>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {room.ownerName === auth.userResponse?.username ? (
+                      <div className="my-auto px-4">
+                        <button
+                          onClick={() => handleRemoveFolder(item.folder_id)}
+                          className="tooltip text-right flex justify-end focus:outline-none"
+                        >
+                          <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
+                          <span className="tooltiptext w-32">
+                            remove this folder
+                          </span>
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
+        )}
         {isShowRemoveFolderModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className=" w-full absolute flex items-center justify-center bg-modal">
@@ -426,8 +404,8 @@ const library = () => {
                         </svg>
                       </div>
                     ) : (
-                        "Remove"
-                      )}
+                      "Remove"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveFolderModal}
@@ -473,8 +451,8 @@ const library = () => {
                         </svg>
                       </div>
                     ) : (
-                        "Remove"
-                      )}
+                      "Remove"
+                    )}
                   </button>
                   <button
                     onClick={closeRemoveSetModal}

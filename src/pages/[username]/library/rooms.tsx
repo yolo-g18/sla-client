@@ -1,10 +1,8 @@
 import LibraryLayout from "../../../components/layout/LibraryLayout";
 import { useSelector } from "react-redux";
 import { RootStore } from "../../../utils/TypeScript";
-import { IFolder } from "../../../utils/TypeScript";
 import React from "react";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
-import Grid from "@material-ui/core/Grid";
 import { deleteAPI } from "../../../utils/FetchData";
 import { getAPI } from "../../../utils/FetchData";
 import Link from "next/link";
@@ -15,7 +13,6 @@ import { PARAMS } from "../../../common/params";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { ALERT } from "../../../redux/types/alertType";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -29,7 +26,7 @@ const rooms = (props: any) => {
 
   const router = useRouter();
   const {
-    query: { username },
+    query: { username, search_query },
   } = router;
 
   const dispatch = useDispatch();
@@ -54,6 +51,16 @@ const rooms = (props: any) => {
         dispatch({ type: ALERT, payload: { loading: false } });
         setRooms(res.data);
 
+        if (search_query) {
+          setRooms(
+            res.data.filter((item: IRoom) =>
+              item.name
+                .toLowerCase()
+                .includes(search_query.toString().toLowerCase())
+            )
+          );
+        }
+
         if (rooms.length === 0) setIsShowEmpty(true);
         else setIsShowEmpty(false);
       } catch (err) {
@@ -62,7 +69,7 @@ const rooms = (props: any) => {
     }
 
     excute();
-  }, [user._id, alert.success]);
+  }, [user._id, alert.success, search_query]);
 
   // remove room from listRoom of user
   async function removeRoom() {
@@ -99,6 +106,19 @@ const rooms = (props: any) => {
 
     setIsToastOpen(false);
   };
+
+  if (search_query && rooms.length === 0)
+    return (
+      <div>
+        <LibraryLayout>
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-xl font-semibold text-gray-600">
+              No rooms matching {search_query} found
+            </p>
+          </div>
+        </LibraryLayout>
+      </div>
+    );
 
   return (
     <div>
@@ -149,10 +169,8 @@ const rooms = (props: any) => {
                       onClick={() => handleRemoveRoom(item.room_id)}
                       className="tooltip text-right flex justify-end focus:outline-none"
                     >
-                      <HighlightOffIcon className="hover:text-yellow-500 text-gray-700" />
-                                <span className="tooltiptext w-32">
-                                  delete this room
-                              </span>
+                      <DeleteOutlinedIcon className="hover:text-yellow-500 text-gray-700" />
+                      <span className="tooltiptext w-32">delete this room</span>
                     </button>
                   </div>
                 ) : null

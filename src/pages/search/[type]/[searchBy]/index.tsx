@@ -313,7 +313,7 @@ const index = () => {
                 className={`${
                   currentPage <= 1
                     ? "text-gray-300"
-                    : "hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                    : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
                 } focus:outline-none mx-4`}
                 onClick={() => handlePageChange("prev")}
                 disabled={currentPage <= 1}
@@ -327,7 +327,7 @@ const index = () => {
                 className={`${
                   currentPage >= totalPages
                     ? "text-gray-300"
-                    : "hover:bg-green-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                    : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
                 } focus:outline-none mx-4`}
                 onClick={() => handlePageChange("next")}
                 disabled={currentPage >= totalPages}

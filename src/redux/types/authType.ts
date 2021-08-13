@@ -7,6 +7,7 @@ export interface IAuth {
   refreshToken?: string
   expiresAt?: Date
   userResponse?: IUser
+  roles?:string[]
 }
 
 export interface IAuthType{

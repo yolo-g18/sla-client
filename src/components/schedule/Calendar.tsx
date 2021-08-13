@@ -184,10 +184,11 @@ const Calendar = (props: Props) => {
               } else listTemp[index].isDone = true;
             } catch (err) {
               console.log(err);
+              dispatch({ type: ALERT, payload: { loading: false } });
             }
           }
         });
-        if (!alert.loading) setListEvent(listTemp);
+        if (!alert.loading) setListEvent(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }

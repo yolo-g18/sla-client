@@ -30,7 +30,7 @@ function Alert(props: AlertProps) {
 }
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const colorFolderList: String[] = [];
@@ -41,20 +41,34 @@ const LibraryLayout = (props: Props) => {
 
   const router = useRouter();
   const {
-    query: { username },
+    query: { username, type, search_query },
   } = router;
 
   //call api get user profile by username de lay ra fullname, address, email, school, job de hien thi
   useEffect(() => {
+    if (!username) return;
     dispatch(getUserByUsername(`${username}`));
   }, [username]);
+
+  // useEffect(() => {
+  //   if (auth.userResponse?.username !== user.username && type !== "0") {
+  //     console.log("tai sao ha");
+
+  //     router.push(`/${user.username}/library/sets?type=0`);
+  //   }
+  // }, [type]);
 
   function handleAddNew() {
     if (router.pathname.includes("sets")) {
       router.push({
         pathname: "/set/add",
       });
-    } else setShowModal(true);
+    } else {
+      setShowModal(true);
+      setTitle("Untitle");
+      setName("Untitle");
+      setDescription("");
+    }
   }
 
   const { auth, alert } = useSelector((state: RootStore) => state);
@@ -129,98 +143,121 @@ const LibraryLayout = (props: Props) => {
   }, [title]);
 
   const handleSubmit = async (e: FormSubmit) => {
-    {
-      // create new folder and create new room
-      setIsDescriptionTyping(false);
+    e.preventDefault();
+    // create new folder and create new room
+    setIsDescriptionTyping(false);
 
-      if (router.pathname.includes("folders")) {
-        e.preventDefault();
-        const color = "" + color_folder.current?.value;
-        const creator_id = "" + user._id;
-        const data = { title, description, color, creator_id };
-        try {
-          dispatch({ type: ALERT, payload: { loading: true } });
-          const res = await postAPI(
-            `${PARAMS.ENDPOINT}folder/createFolder`,
-            data
-          );
-          dispatch({
-            type: ALERT,
-            payload: { loading: false, success: "ss" },
-          });
-          setMessageToast("folder created");
-          setTypeToast("success");
-          setIsToastOpen(true);
-        } catch (err) {
-          dispatch({ type: ALERT, payload: { loading: false } });
-          setMessageToast("An error occurred");
-          setTypeToast("error");
-          setIsToastOpen(true);
-        }
-      }
-
-      if (router.pathname.includes("rooms")) {
-        //creating new room
-        setIsNameTyping(false);
-        e.preventDefault();
-        const owner_id = "" + user._id;
-        const data = { owner_id, name, description };
-        try {
-          dispatch({ type: ALERT, payload: { loading: true } });
-          const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
-
-          dispatch({ type: ALERT, payload: { loading: false } });
-        } catch (err) {
-          dispatch({ type: ALERT, payload: { loading: false } });
-          setMessageToast("An error occurred");
-          setTypeToast("error");
-
-          setIsToastOpen(true);
-        }
-
-        // get id of just created room
-        let maxIdRoom = 0;
-
-        try {
-          dispatch({ type: ALERT, payload: { loading: true } });
-          const res = await getAPI(`${PARAMS.ENDPOINT}room/getMaxIdRoom`);
-          maxIdRoom = res.data;
-          dispatch({ type: ALERT, payload: { loading: false } });
-        } catch (err) {
-          dispatch({ type: ALERT, payload: { loading: false } });
-          setMessageToast("An error occurred");
-          setTypeToast("error");
-          setIsToastOpen(true);
-        }
-
-        // set creator is member
-        const roomMember = {
-          room_id: maxIdRoom,
-          member_id: owner_id,
-        };
-
-        dispatch({ type: ALERT, payload: { loading: true } });
-        try {
-          const res = await putAPI(
-            `${PARAMS.ENDPOINT}room/addMemberToRoom`,
-            roomMember
-          );
-
-          dispatch({
-            type: ALERT,
-            payload: { loading: false, success: "abc" },
-          });
-
-          setMessageToast("room created");
-          setTypeToast("success");
-          setIsToastOpen(true);
-        } catch (err) {
-          dispatch({ type: ALERT, payload: { loading: false } });
-        }
-      }
-
-      setShowModal(false);
+    if (title.trim().length <= 0) {
+      setTitleErr("Title is required.");
+    } else if (title.trim().length > 20) {
+      setTitleErr("Title cannot exceed 20 character.");
+    } else {
+      setTitleErr("");
     }
+
+    if (name.trim().length <= 0) {
+      setNameErr("Name is required.");
+    } else if (name.trim().length > 20) {
+      setNameErr("Name cannot exceed 20 character.");
+    } else {
+      setNameErr("");
+    }
+
+    if (description.trim().length > 150) {
+      setDescErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescErr("");
+    }
+
+    if (titleErr || nameErr || descErr) {
+      return;
+    }
+    if (router.pathname.includes("folders")) {
+      const color = "" + color_folder.current?.value;
+      const creator_id = "" + user._id;
+      const data = { title, description, color, creator_id };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(
+          `${PARAMS.ENDPOINT}folder/createFolder`,
+          data
+        );
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "ss" },
+        });
+        setMessageToast("folder created");
+        setTypeToast("success");
+        setIsToastOpen(true);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
+    }
+
+    if (router.pathname.includes("rooms")) {
+      //creating new room
+      setIsNameTyping(false);
+      e.preventDefault();
+      const owner_id = "" + user._id;
+      const data = { owner_id, name, description };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
+
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+
+        setIsToastOpen(true);
+      }
+
+      // get id of just created room
+      let maxIdRoom = 0;
+
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/getMaxIdRoom`);
+        maxIdRoom = res.data;
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
+      }
+
+      // set creator is member
+      const roomMember = {
+        room_id: maxIdRoom,
+        member_id: owner_id,
+      };
+
+      dispatch({ type: ALERT, payload: { loading: true } });
+      try {
+        const res = await putAPI(
+          `${PARAMS.ENDPOINT}room/addMemberToRoom`,
+          roomMember
+        );
+
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "abc" },
+        });
+
+        setMessageToast("room created");
+        setTypeToast("success");
+        setIsToastOpen(true);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    }
+
+    setShowModal(false);
   };
 
   //handel close toast
@@ -233,31 +270,75 @@ const LibraryLayout = (props: Props) => {
   };
   //valid form add
   useEffect(() => {
-    if (title.length <= 0) {
+    if (title.trim().length <= 0) {
       setTitleErr("Title is required.");
-    } else if (title.length > 20) {
+    } else if (title.trim().length > 20) {
       setTitleErr("Title cannot exceed 20 character.");
     } else {
       setTitleErr("");
     }
 
-    if (name.length <= 0) {
+    if (name.trim().length <= 0) {
       setNameErr("Name is required.");
-    } else if (title.length > 20) {
+    } else if (name.trim().length > 20) {
       setNameErr("Name cannot exceed 20 character.");
     } else {
       setNameErr("");
     }
 
-    if (description.length > 150) {
+    if (description.trim().length > 150) {
       setDescErr("Description cannot exceed 150 characters.");
     } else {
       setDescErr("");
     }
   }, [title, description, name]);
 
-  if (!username) {
-    return <></>;
+  const [keyWord, setKeyWord] = useState(
+    search_query ? search_query.toString() : ""
+  );
+  const seachHandle = () => {
+    setTimeout(() => {}, 1000);
+    if (!user.username) return;
+    if (router.pathname.indexOf("/sets") !== -1) {
+      console.log("username: " + user.username);
+
+      if (type) {
+        router.push(
+          `/${
+            user.username
+          }/library/sets?type=${type}&search_query=${keyWord.trim()}`
+        );
+      } else
+        router.push(
+          `/${user.username}/library/sets?search_query=${keyWord.trim()}`
+        );
+    }
+    if (router.pathname.indexOf("/folders") !== -1) {
+      router.push(
+        `/${user.username}/library/folders?search_query=${keyWord.trim()}`
+      );
+    }
+    if (router.pathname.indexOf("/rooms") !== -1) {
+      router.push(
+        `/${user.username}/library/rooms?search_query=${keyWord.trim()}`
+      );
+    }
+  };
+
+  useEffect(() => seachHandle(), [keyWord]);
+
+  if (!user._id) {
+    return (
+      <>
+        <AppLayout title={`${username} | SLA`} desc="library">
+          <div className="col-span-2 text-center mx-auto mt-24">
+            <p className="text-3xl font-semibold text-gray-700">
+              Not found {username}
+            </p>
+          </div>
+        </AppLayout>
+      </>
+    );
   }
 
   return (
@@ -267,12 +348,8 @@ const LibraryLayout = (props: Props) => {
           <div className="col-span-1 px-2">
             <div className="flex flex-col justify-between items-center pt-10">
               <img
-                className="w-56 h-56 my-auto rounded-full object-cover object-center opacity-50"
-                src={`${
-                  auth.userResponse?.avatar
-                    ? auth.userResponse?.avatar
-                    : "../../user.svg"
-                }`}
+                className="w-56 h-56 my-auto rounded-full object-cover object-center"
+                src={`${user.avatar ? user.avatar : "../../user.svg"}`}
                 alt="Avatar Upload"
               />
               <div className=" px-2 w-full justify-between">
@@ -290,25 +367,36 @@ const LibraryLayout = (props: Props) => {
                 </p>
                 <p className="text-left mt-4 text-sm">
                   {user.schoolName ? (
-                    <DomainIcon
-                      fontSize="small"
-                      className="text-gray-600 -mt-1"
-                    />
-                  ) : null}{" "}
-                  {user.schoolName}
-                  <br />
+                    <span>
+                      <DomainIcon
+                        fontSize="small"
+                        className="text-gray-600 -mt-1"
+                      />{" "}
+                      {user.schoolName}
+                      <br />
+                    </span>
+                  ) : null}
                   {user.address ? (
-                    <RoomIcon fontSize="small" className="text-gray-600" />
-                  ) : null}{" "}
-                  {user.address}
-                  <br />
+                    <span>
+                      <RoomIcon fontSize="small" className="text-gray-600" />{" "}
+                      {user.address}
+                      <br />
+                    </span>
+                  ) : null}
+
                   <span>
                     {user.major ? (
-                      <ClassIcon fontSize="small" className="text-gray-600" />
-                    ) : null}{" "}
-                    {user.major}
+                      <span>
+                        {" "}
+                        <ClassIcon
+                          fontSize="small"
+                          className="text-gray-600"
+                        />{" "}
+                        {user.major}
+                        <br />
+                      </span>
+                    ) : null}
                   </span>
-                  <br />
                   <span>
                     {user.email ? (
                       <MailOutlineIcon
@@ -399,37 +487,43 @@ const LibraryLayout = (props: Props) => {
             <div className="flex justify-between mt-4">
               <div className="col-span-2 flex justify-around text-md text-gray-600  cursor-pointer">
                 <div className="text-gray-900 py-3 flex flex-grow">
-                  {router.pathname.indexOf("/sets") !== -1 ? (
+                  {router.pathname.indexOf("/sets") !== -1 &&
+                  user.username === auth.userResponse?.username ? (
                     <SelectBox
-                      items={itemsSetsFilter}
-                      searchKeyWord=""
+                      items={
+                        auth.userResponse?.username === user.username
+                          ? itemsSetsFilter
+                          : itemsSetsFilter.slice(0, 1)
+                      }
                       typeResult="sets"
-                    />
-                  ) : null}
-                  {router.pathname.indexOf("/folders") !== -1 ? (
-                    <SelectBox
-                      items={itemsFoldersFilter}
-                      searchKeyWord=""
-                      typeResult="folder"
                     />
                   ) : null}
                 </div>
               </div>
               <div className="flex flex-wrap right-2 ">
                 <div className="text-gray-900 py-3 flex relative ">
-                  <svg
-                    className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
-                  </svg>
-                  <input
-                    type="text"
-                    className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
-                    bg-gray-100 dark:bg-gray-800 text-gray-400"
-                    placeholder="Search"
-                  />
+                  <form>
+                    <svg
+                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
+                    </svg>
+                    <input
+                      type="text"
+                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
+                  bg-gray-100 dark:bg-gray-800 text-gray-400"
+                      placeholder="Search"
+                      value={keyWord}
+                      onChange={(e) => {
+                        setKeyWord(e.target.value);
+                      }}
+                      onKeyPress={(e) => {
+                        e.key === "Enter" && e.preventDefault();
+                      }}
+                    />
+                  </form>
                 </div>
                 <div className="py-3 flex relative">
                   {user.username === auth.userResponse?.username ? (
@@ -458,9 +552,9 @@ const LibraryLayout = (props: Props) => {
             hidden
             className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12"
           >
-            <div className="relative w-auto my-6 max-w-3xl">
+            <div className="relative w-auto my-6">
               {/*content*/}
-              <div className="border-0 rounded-md shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="border-0 rounded-md shadow-md flex flex-col w-full bg-white outline-none focus:outline-none p-2">
                 {/*header*/}
                 <div className="justify-between px-4 pb-6 pt-8 rounded-t">
                   <p className="text-gray-700 font-semibold text-lg text-center">
@@ -477,9 +571,9 @@ const LibraryLayout = (props: Props) => {
                         <InputGroup
                           type="text"
                           setValue={setTitle}
+                          value={title}
                           placeholder="Title"
                           error={titleErr}
-                          required
                           label="Title"
                         />
                       </>
@@ -488,9 +582,9 @@ const LibraryLayout = (props: Props) => {
                         <InputGroup
                           type="text"
                           setValue={setName}
+                          value={name}
                           placeholder="Name"
                           error={nameErr}
-                          required
                           label="Name"
                         />
                       </>
@@ -499,6 +593,7 @@ const LibraryLayout = (props: Props) => {
                     <InputGroup
                       type="text"
                       setValue={setDescription}
+                      value={description}
                       placeholder="Description"
                       error={descErr}
                       label="Description"
@@ -532,7 +627,14 @@ const LibraryLayout = (props: Props) => {
                   </div>
 
                   {/*footer*/}
-                  <div className="flex items-center justify-end px-12 py-6">
+                  <div className="flex justify-between px-12 py-6">
+                    <button
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
                     <button
                       className=" bg-blue-500 text-white w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-blue-600"
                       type="submit"
@@ -556,13 +658,6 @@ const LibraryLayout = (props: Props) => {
                       ) : (
                         "Create"
                       )}
-                    </button>
-                    <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-gray-300"
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
                     </button>
                   </div>
                 </form>

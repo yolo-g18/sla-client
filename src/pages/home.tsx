@@ -15,14 +15,8 @@ import { useState } from "react";
 
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import EventIcon from "@material-ui/icons/Event";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
-import CircularProgress, {
-  CircularProgressProps,
-} from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import dayjs from "dayjs";
 import {
@@ -32,7 +26,6 @@ import {
   getTimeInDay,
 } from "../components/schedule/convertTime";
 import { putEvent } from "../redux/actions/eventAction";
-import { route } from "next/dist/next-server/server/router";
 import router from "next/router";
 import { eventHandleDispatch } from "../redux/actions/eventHandleAction";
 
@@ -54,6 +47,8 @@ const home = () => {
             todayObj.startOf("day")
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
+        dispatch({ type: ALERT, payload: { loading: false } });
+
         const listTemp: IEventRes[] = [...res.data];
         listTemp.map(async (item, index) => {
           if (item.isLearnEvent) {
@@ -72,7 +67,7 @@ const home = () => {
             }
           }
         });
-        if (!alert.loading) dispatch(putEvent(res.data));
+        if (!alert.loading) dispatch(putEvent(listTemp));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -97,9 +92,7 @@ const home = () => {
         );
         dispatch({ type: ALERT, payload: { loading: false } });
         setNumberSetsCreated(listSSCreatedRes.data.length);
-        setList4StudySetCreated(listSSCreatedRes.data);
-
-        console.log(JSON.stringify(listSSCreatedRes.data.slice(0, 6)));
+        setList4StudySetCreated(listSSCreatedRes.data.slice(0, 6));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -114,8 +107,6 @@ const home = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
         setNumberSetsLearning(listSSLearningRes.data.length);
         setList4StudySetLearning(listSSLearningRes.data.slice(0, 6));
-
-        console.log(JSON.stringify(listSSLearningRes.data));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -132,6 +123,8 @@ const home = () => {
     router.push("/schedule");
   };
 
+  const [dateNow, setDateNow] = useState(new Date());
+
   if (numberOfSetsCreated === 0 && numberOfSetsLearning === 0) {
     return (
       <AppLayout2 title="home" desc="home">
@@ -146,7 +139,7 @@ const home = () => {
             <Link href="/set/add">
               <button
                 type="button"
-                className="w-40 text-md rounded-sm px-4 mx-2 py-2
+                className="w-44 text-md rounded-sm px-4 mx-2 py-2
                       text-md font-bold bg-blue-500 hover:bg-blue-600 
                    text-white focus:outline-none"
               >
@@ -172,13 +165,8 @@ const home = () => {
                 </p>
               </div>
               <div className="mb-6">
-                <div className="rounded-md w-full p-4 overflow-auto mb-6">
-                  <div className="w-full flex items-center justify-between">
-                    <p className="text-gray-800 dark:text-white text-xl font-medium">
-                      Calendar
-                    </p>
-                  </div>
-                  <p className="text-gray-800 text-md font-medium mb-4 w-full">
+                <div className="rounded-md w-full mb-6">
+                  <p className="text-gray-800 text-md font-medium mb-4">
                     {event.length
                       ? formatUTCToDate(event[0]?.fromTime)
                       : "No task at this day"}
@@ -186,9 +174,8 @@ const home = () => {
                   {event.slice(0, 9).map((evn, index) => {
                     return (
                       <article
-                        onClick={() => viewEventhandle(evn)}
                         key={index}
-                        className={`cursor-pointer  rounded-md p-1 flex text-gray-700 mb-2 
+                        className={`cursor-pointer rounded-md flex text-gray-700 mb-2 
                     focus:outline-none`}
                       >
                         <span className="flex-none pr-2 my-auto">
@@ -207,33 +194,44 @@ const home = () => {
                             className={`bg-${evn.color?.toLowerCase()}-500 w-2 h-2 rounded-full mx-auto mt-2`}
                           ></div>
                         </span>
-                        <div className="">
-                          <header className="mb-1 text-sm truncate">
+                        <div className="w-full pr-16">
+                          <header className="mb-1 text-sm w-full">
                             {evn.isLearnEvent ? (
-                              <span
-                                className={`font-semibold ${
-                                  evn.isDone
-                                    ? "text-gray-400 "
-                                    : "text-gray-800"
-                                }`}
-                              >
-                                {evn.name}{" "}
+                              <div className="flex justify-between">
+                                <div
+                                  className={`font-semibold hover:text-gray-800 hover:underline truncate 
+                                  ${
+                                    evn.isDone
+                                      ? "text-gray-400 "
+                                      : "text-gray-800 "
+                                  } `}
+                                  onClick={() => viewEventhandle(evn)}
+                                >
+                                  {evn.name}{" "}
+                                </div>
+
                                 {evn.isDone ? (
                                   <CheckCircleIcon
                                     className="text-blue-600 ml-2"
                                     fontSize="small"
                                   />
                                 ) : null}
-                              </span>
+                              </div>
                             ) : (
-                              <span className="font-semibold truncate">
+                              <div
+                                className={`font-semibold truncate hover:underline
+                                ${
+                                  new Date(evn.toTime) < dateNow
+                                    ? " text-gray-400 line-through"
+                                    : "text-gray-800 "
+                                }
+                              `}
+                                onClick={() => viewEventhandle(evn)}
+                              >
                                 {evn.name}
-                              </span>
+                              </div>
                             )}
                           </header>
-                          <p className="text-gray-600 text-sm">
-                            {evn.isLearnEvent ? null : evn.description}
-                          </p>
                           <footer className="text-gray-500 mt-2 text-sm">
                             {evn.isLearnEvent ? null : (
                               <p>
@@ -246,6 +244,11 @@ const home = () => {
                       </article>
                     );
                   })}
+                  <Link href="/schedule">
+                    <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                      Show more <ChevronRightIcon fontSize="small" />
+                    </p>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -272,63 +275,55 @@ const home = () => {
                       </Link>{" "}
                     </div>
                   </div>
-                  <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                  <div className=" grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4 w-full my-4">
                     {list4StudySetLeaning.map((set, index) => {
                       return (
-                        <div className="col-span-1 ">
+                        <div key={index} className="col-span-1">
                           <div
-                            key={index}
-                            className="grid grid-rows-5 flex-col col-span-1 rounded-md p-2 h-40 my-4 bg-white 
-                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
+                            className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
                           >
-                            <div className="row-span-1 w-full flex flex-row mb-2">
-                              <div className="w-full">
-                                <p className="text-gray-800 dark:text-white text-xl font-medium leading-none">
-                                  <a
-                                    href={`/set/${set.studySetId}`}
-                                    className="hover:underline"
-                                  >
-                                    {set.studySetName.length <= 6
-                                      ? set.studySetName
-                                      : set.studySetName.substring(0, 6) +
-                                        "..."}{" "}
-                                  </a>
-                                  {set.color ? (
-                                    <FiberManualRecordIcon
-                                      className={`text-${set.color?.toLowerCase()}-400`}
-                                    />
-                                  ) : null}
-                                  <FiberManualRecordIcon
-                                    className={`text-yellow-50-400`}
-                                  />
-                                  {"  "}
-                                  <a href={`/${set.owner}/library/sets`}>
+                            <div className=" w-full flex flex-row mb-2">
+                              <div className="w-full flex justify-between my-auto">
+                                <Link href={`/set/${set.studySetId}`}>
+                                  <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                    {set.color ? (
+                                      <FiberManualRecordIcon
+                                        className={`py-1 ${set.color.toLowerCase()}`}
+                                      />
+                                    ) : null}
+                                    {set.studySetName}
+                                  </p>
+                                </Link>
+                                <Link href={`/${set.owner}/library/sets`}>
+                                  <p className="my-auto ml-2">
                                     <span className="text-gray-500 text-sm hover:underline">
                                       {set.owner}
                                     </span>
-                                  </a>
-                                </p>
+                                  </p>
+                                </Link>
                               </div>
                             </div>
-                            <div className="row-span-3 mb-12">
-                              {set.ssDescription.length <= 50 ? (
+                            <div className="mb-4 h-20">
+                              {set.ssDescription.length <= 120 ? (
                                 <p className="text-gray-500">
                                   {set.ssDescription}
                                 </p>
                               ) : (
                                 <p className="text-gray-500">
-                                  {set.ssDescription.substring(0, 60)}...
+                                  {set.ssDescription.substring(0, 120)}...
                                 </p>
                               )}
                             </div>
-                            <div>
-                              <p className="text-gray-500 text-sm">
-                                Progress: {Math.round(set.progress * 100)}%
-                              </p>
-                            </div>
-
-                            <div className="row-span-1 mt-1">
-                              <p>{set.numberOfCards} cards</p>
+                            <div className="flex justify-between">
+                              <div className=" mt-1">
+                                <p>{set.numberOfCards} cards</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-500 text-sm">
+                                  Progress: {Math.round(set.progress * 100)}%
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -355,40 +350,37 @@ const home = () => {
                       return (
                         <div className=" col-span-1" key={index}>
                           <div
-                            className="grid grid-rows-5 flex-row col-span-1 rounded-md p-2 h-40 my-4 bg-white dark:bg-gray-800 
-                        hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200"
+                            className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
                           >
-                            <div className="row-span-1 w-full mb-2">
-                              <div className="w-full">
-                                <p className="text-gray-800 dark:text-white text-xl font-medium ">
-                                  <a
-                                    href={`/set/${set.id}`}
-                                    className="hover:underline"
-                                  >
-                                    {set.title.length <= 6
-                                      ? set.title
-                                      : set.title.substring(0, 6) + "..."}{" "}
-                                  </a>
-                                  <a href={`/${set.creator}/library/sets`}>
+                            <div className=" w-full flex flex-row mb-2">
+                              <div className="w-full flex justify-between my-auto">
+                                <Link href={`/set/${set.id}`}>
+                                  <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                    {set.title}
+                                  </p>
+                                </Link>
+                                <Link href={`/${set.creator}/library/sets`}>
+                                  <p className="my-auto ml-2">
                                     <span className="text-gray-500 text-sm hover:underline">
                                       {set.creator}
                                     </span>
-                                  </a>
-                                </p>
+                                  </p>
+                                </Link>
                               </div>
                             </div>
-                            <div className="row-span-3 mb-12">
-                              {set.description.length <= 50 ? (
+                            <div className="mb-4 h-20">
+                              {set.description.length <= 100 ? (
                                 <p className="text-gray-500">
                                   {set.description}
                                 </p>
                               ) : (
                                 <p className="text-gray-500">
-                                  {set.description.substring(0, 50)}...
+                                  {set.description.substring(0, 100)}...
                                 </p>
                               )}
                             </div>
-                            <div className="row-span-1 mt-2">
+                            <div className=" mt-1">
                               <p>{set.numberOfCards} cards</p>
                             </div>
                           </div>

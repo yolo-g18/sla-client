@@ -11,6 +11,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import CreateNewFolderOutlinedIcon from "@material-ui/icons/CreateNewFolderOutlined";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import RemoveCircleRoundedIcon from "@material-ui/icons/RemoveCircleRounded";
 import { useEffect, useRef, useState } from "react";
 import _ from "lodash";
 import {

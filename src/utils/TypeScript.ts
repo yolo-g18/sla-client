@@ -83,6 +83,8 @@ export interface ISearch {
     id?:number
     front: string
     back: string
+    q?:number
+    color?: string
   }
 
   export interface ICardLearning {
@@ -230,6 +232,7 @@ export interface INewRoom {
   export interface IGuestRoom{
     user_id:number
     userName?:string
+    avatar?: string
 
   }
   export interface IUserResultSearch {
@@ -301,4 +304,22 @@ export interface ILearnActionPayload {
   learnDate?: Date
   isDone?: boolean
   evnID?:number
+}
+
+export interface IFeedback {
+  userName?: string
+  rating?:number
+  feedback?:string
+  avatar?:string
+}
+
+export interface IReport {
+  id?:number
+  ssId:number
+  ssTitle?:string
+  reporter?:string
+  content?:string
+  user_avatar?:string
+  checked?:boolean
+  createdTime?: Date
 }

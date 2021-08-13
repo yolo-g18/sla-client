@@ -23,6 +23,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { useMemo } from "react";
+import { route } from "next/dist/next-server/server/router";
+import { RouterRounded } from "@material-ui/icons";
 
 //alert
 function Alert(props: AlertProps) {
@@ -34,10 +36,6 @@ interface ITag {
   text: string;
 }
 
-// const QuillNoSSRWrapper = dynamic(import("react-quill"), {
-//   ssr: false,
-//   loading: () => <p>...</p>,
-// });
 const QuillNoSSRWrapper = dynamic(
   async () => {
     const { default: RQ } = await import("react-quill");
@@ -151,9 +149,6 @@ const SetEditLayout = (props: Props) => {
           image: imageHandler,
         },
       },
-      ImageResize: {
-        displaySize: true,
-      },
     }),
     []
   );
@@ -243,14 +238,14 @@ const SetEditLayout = (props: Props) => {
   useEffect(() => {
     if (title.length <= 0) {
       setTitleErr("Title is required.");
-    } else if (title.length > 20) {
-      setTitleErr("Title cannot exceed 20 character.");
+    } else if (title.length > 50) {
+      setTitleErr("Title cannot exceed 50 character.");
     } else {
       setTitleErr("");
     }
 
-    if (desc.length > 150) {
-      setDescErr("Description cannot exceed 150 characters.");
+    if (desc.length > 250) {
+      setDescErr("Description cannot exceed 250 characters.");
     } else {
       setDescErr("");
     }
@@ -292,11 +287,10 @@ const SetEditLayout = (props: Props) => {
 
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, addData);
-        dispatch({ type: ALERT, payload: { loading: false } });
-
-        setIsToastOpen(true);
-        setTypeToast("success");
-        setMessageToast("😎 Your study set created!");
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "😎 Your study set created!" },
+        });
 
         router.push({
           pathname: "/set/[id]",
@@ -308,11 +302,10 @@ const SetEditLayout = (props: Props) => {
         dispatch({ type: ALERT, payload: { errors: err.response.data } });
         setIsToastOpen(true);
         setTypeToast("error");
-        setMessageToast("An error occurred");
+        ("An error occurred");
       }
     } else {
       //check list card delete
-
       if (listCardsDelete.length !== 0) {
         listCardsDelete.map((id) => {
           deleteCardById(id);
@@ -341,14 +334,13 @@ const SetEditLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "😎 Update successful!" },
         });
-        setIsToastOpen(true);
-        setTypeToast("success");
-        setMessageToast("😎 Your study set updated!");
         router.push({
           pathname: "/set/[id]",
           query: { id: props.id },
         });
       } catch (err) {
+        console.log(err);
+
         dispatch({ type: ALERT, payload: { loading: false } });
         setIsToastOpen(true);
         setTypeToast("error");
@@ -421,6 +413,14 @@ const SetEditLayout = (props: Props) => {
     }
   };
 
+  const [showModalConfirm, setShowModalConfirm] = useState(false);
+
+  const confirmCancel = () => {
+    if (router.pathname.indexOf("/set/add") === -1)
+      router.push(`/set/${props.id}`);
+    else router.push(`/${auth.userResponse?.username}/library/sets`);
+  };
+
   if (
     auth.userResponse?.username !== creatorName &&
     router.pathname.indexOf("/set/add") === -1
@@ -470,15 +470,22 @@ const SetEditLayout = (props: Props) => {
               </div>
               <div className="flex">
                 {router.pathname.indexOf("/set/add") === -1 ? (
-                  <Link href={`/set/${props.id}`}>
-                    <button
-                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
-                      type="button"
-                    >
-                      Back to set
-                    </button>
-                  </Link>
-                ) : null}
+                  <button
+                    onClick={() => setShowModalConfirm(true)}
+                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
+                    type="button"
+                  >
+                    Back to set
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowModalConfirm(true)}
+                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                )}
 
                 <button
                   onClick={
@@ -559,115 +566,87 @@ const SetEditLayout = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div className="h-full mt-4 w-full">
-              <div className="flex justify-between">
-                <div className="mb-2">
-                  <h1 className="text-md mt-4 ">Add cards</h1>
-                  <small className="text-gray-500">
-                    * Click into card to edit
-                  </small>
-                </div>
-
-                <div className="flex my-auto">
-                  <div className="mx-4 text-center my-auto py-1">
-                    <p>{cards.length} cards</p>
+            {router.pathname.indexOf("/set/add") !== -1 ? (
+              <div className="h-full mt-4 w-full">
+                <div className="flex justify-between">
+                  <div className="mb-2">
+                    <h1 className="text-md mt-4 ">Add cards</h1>
+                    <small className="text-gray-500">
+                      * Click into card to edit
+                    </small>
                   </div>
-                  {router.pathname.indexOf("/set/add") !== -1 ? (
+
+                  <div className="flex my-auto">
+                    <div className="mx-4 text-center my-auto py-1">
+                      <p>{cards.length} cards</p>
+                    </div>
                     <button
                       onClick={() => setShowModalRemoveAll(true)}
                       className={`
-            text-white w-24 py-1 rounded-sm text-sm font-medium  focus:outline-none
-             ${
-               cards.length <= 2
-                 ? "bg-gray-300"
-                 : "bg-yellow-500 hover:bg-yellow-600"
-             }`}
+                        text-white w-24 py-1 rounded-sm text-sm font-medium  focus:outline-none
+                        ${
+                          cards.length <= 2
+                            ? "bg-gray-300"
+                            : "bg-yellow-500 hover:bg-yellow-600"
+                        }`}
                       disabled={cards.length <= 2}
                     >
                       {alert.loading ? "Saving..." : "Remove all"}
                     </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setIsReset(true);
-                        setIsChange(false);
-                      }}
-                      className={` tooltip text-white w-20 py-1 rounded-sm text-sm font-medium  focus:outline-none
-                        ${
-                          isChange || listCardsDelete.length !== 0
-                            ? "bg-yellow-500 hover:bg-yellow-600"
-                            : "bg-gray-300"
-                        }`}
-                      disabled={!(isChange || listCardsDelete.length !== 0)}
-                    >
-                      Reset
-                      <span className="tooltiptext w-32">
-                        Discard all Change
-                      </span>
-                    </button>
-                  )}
+                  </div>
+                </div>
+                <hr />
+                <div className=" w-full mb-44">
+                  {cards.map((card, index) => {
+                    return (
+                      <div key={index} className="rounded-md flex w-full my-4">
+                        <div className="flex justify-between w-full gap-3">
+                          <div
+                            className="card-overview  w-1/2 rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                            dangerouslySetInnerHTML={{ __html: card.front }}
+                            onClick={() => {
+                              setIsFront(true);
+                              handelCardOnClick(card.front, index);
+                            }}
+                          ></div>
+                          <div
+                            className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                            dangerouslySetInnerHTML={{ __html: card.back }}
+                            onClick={() => {
+                              setIsFront(false);
+                              handelCardOnClick(card.back, index);
+                            }}
+                          ></div>
+                        </div>
+
+                        <div className="">
+                          <button
+                            onClick={() => handelDeleteCard(index)}
+                            className="mx-2 tooltip focus:outline-none"
+                          >
+                            <DeleteOutlineIcon
+                              fontSize="small"
+                              className="hover:text-yellow-500 text-gray-700"
+                            />
+                            <span className="tooltiptext mt-2 w-20">
+                              remove
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <button
+                    onClick={addMoreCard}
+                    className="text-white w-32 py-2 mx-auto rounded-sm text-sm font-medium bg-blue-500 hover:bg-blue-600 mt-4 focus:outline-none"
+                    type="button"
+                  >
+                    Add more card
+                  </button>
                 </div>
               </div>
-              <hr />
-              <div className=" w-full mb-44">
-                {cards.map((card, index) => {
-                  return (
-                    <div className="rounded-xl flex w-full my-4">
-                      <div className="flex justify-between w-full gap-3">
-                        <div
-                          className="w-1/2  rounded-sm bg-white shadow-lg hover:bg-indigo-50"
-                          onClick={() => {
-                            setIsFront(true);
-                            handelCardOnClick(card.front, index);
-                          }}
-                        >
-                          <QuillNoSSRWrapper
-                            readOnly={true}
-                            theme="bubble"
-                            value={card.front}
-                            className="w-64"
-                          />
-                        </div>
-                        <div
-                          className="w-1/2 rounded-sm bg-white shadow-lg hover:bg-indigo-50"
-                          onClick={() => {
-                            setIsFront(false);
-                            handelCardOnClick(card.back, index);
-                          }}
-                        >
-                          <QuillNoSSRWrapper
-                            readOnly={true}
-                            theme="bubble"
-                            value={card.back}
-                            className="w-64"
-                          />
-                        </div>
-                      </div>
+            ) : null}
 
-                      <div className="">
-                        <button
-                          onClick={() => handelDeleteCard(index)}
-                          className="mx-2 tooltip focus:outline-none"
-                        >
-                          <DeleteOutlineIcon
-                            fontSize="small"
-                            className="hover:text-yellow-500 text-gray-700"
-                          />
-                          <span className="tooltiptext mt-2 w-20">remove</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-                <button
-                  onClick={addMoreCard}
-                  className="text-white w-32 py-2 mx-auto rounded-sm text-sm font-medium bg-blue-500 hover:bg-blue-600 mt-4 focus:outline-none"
-                  type="button"
-                >
-                  Add more card
-                </button>
-              </div>
-            </div>
             {/* show modal cf remove all */}
             {showModalRemoveAll ? (
               <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
@@ -771,6 +750,35 @@ const SetEditLayout = (props: Props) => {
                     className="text-white w-32 rounded mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
                   >
                     Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {showModalConfirm ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className=" w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-8">
+                  <p className="text-xl font-semibold">
+                    Are you sure want cancel?
+                  </p>
+                  <small>Your changes have not been saved</small>
+                </div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowModalConfirm(false)}
+                    className="  w-32 py-1 mx-4 rounded-sm bg-gray-100 border-2 text-gray-700 focus:outline-none hover:bg-gray-300"
+                  >
+                    No
+                  </button>
+                  <button
+                    onClick={confirmCancel}
+                    className="text-white w-32 rounded-sm mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
+                  >
+                    Yes
                   </button>
                 </div>
               </div>
