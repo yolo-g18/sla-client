@@ -151,6 +151,10 @@ const RoomLayout = (props: Props) => {
 
   const [isDefaultSearching, setIsDefaultSearching] = React.useState(true);
 
+  const [isShowLeaveRoomModal, setIsShowLeaveRoomModal] =
+  React.useState(false);
+
+
   React.useEffect(() => {
     // load detail data of room
 
@@ -688,6 +692,26 @@ const RoomLayout = (props: Props) => {
     }
   }
 
+  async function leaveRoom() {
+    dispatch({ type: ALERT, payload: { loading: true } });
+    try {
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}room/deleteMemberFromRoom/${id}/${auth.userResponse?._id}`
+      );
+
+      dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
+
+      router.push({
+        pathname: "/[username]/library/rooms",
+        query: { username: auth.userResponse?.username },
+      });
+    
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+    }
+
+    setIsShowLeaveRoomModal(false);
+  }
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -809,7 +833,7 @@ const RoomLayout = (props: Props) => {
                 {/* check member */}
                 {true && room.ownerName !== auth.userResponse?.username ? (
                   <button
-                    // onClick={shareLink}
+                    onClick={() => setIsShowLeaveRoomModal(true)}
                     className="mx-2 tooltip focus:outline-none"
                   >
                     <ExitToAppIcon
@@ -1331,6 +1355,53 @@ const RoomLayout = (props: Props) => {
             </div>
           </div>
         ) : null}
+         {isShowLeaveRoomModal ? (
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+          <div className=" w-full absolute flex items-center justify-center bg-modal">
+            <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="mb-8">
+                <p className="text-xl font-semibold">
+                Are you sure? This cannot be undone
+                </p>
+                <small></small>
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  onClick={leaveRoom}
+                  className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
+                >
+                  {alert.loading ? (
+                    <div className="flex justify-center items-center space-x-1">
+                      <svg
+                        fill="none"
+                        className="w-6 h-6 animate-spin"
+                        viewBox="0 0 32 32"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          clipRule="evenodd"
+                          d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                      "Yes, I wanna leave room"
+                    )}
+                </button>
+                <button
+                  onClick={()=>setIsShowLeaveRoomModal(false)}
+                  className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
         <Snackbar
           open={isToastOpen}
           autoHideDuration={6000}
