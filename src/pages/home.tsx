@@ -264,10 +264,7 @@ const home = () => {
                     </div>
                     <div className="flex flex-col">
                       <Link
-                        href={{
-                          pathname: "/[username]/library/sets",
-                          query: { username: auth.userResponse?.username },
-                        }}
+                        href={`/${auth.userResponse?.username}/library/sets`}
                       >
                         <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                           Show more <ChevronRightIcon fontSize="small" />

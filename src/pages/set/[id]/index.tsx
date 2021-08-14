@@ -47,8 +47,8 @@ const formats = [
   "color",
   "background",
   "underline",
-  "link",
   "image",
+  "video",
 ];
 
 const stars = Array(5).fill(0);
@@ -219,10 +219,14 @@ const index = () => {
     query: { id }, //id of folder get from path
   } = router;
 
+  //fetch data err
+  const [err, setErr] = useState(false);
+
   //frag ss learned
   const [isLearned, setIsLearned] = useState(false);
   //get data of set by id
   useEffect(() => {
+    setErr(false);
     setIsSuc(false);
     const fetchData = async () => {
       if (!id) {
@@ -266,6 +270,14 @@ const index = () => {
               `${PARAMS.ENDPOINT}learn/listCardSort?id=${id}`
             );
             setCards(cardResLearning.data);
+
+            if (cardColor !== "WHITE") {
+              setCards(
+                cardResLearning.data.filter(
+                  (item: ICard) => item.color === cardColor
+                )
+              );
+            }
             setIsLearned(true);
           } else {
             const cardRes = await getAPI(
@@ -285,7 +297,7 @@ const index = () => {
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log(err.response.data);
-        // router.push("/error");
+        setErr(true);
       }
     };
     fetchData();
@@ -450,8 +462,6 @@ const index = () => {
     }
   };
 
-  console.log("card current: " + JSON.stringify(cards[currentCard]));
-
   const deleteCard = async () => {
     let id = cards[currentCard].cardId;
     if (!id) {
@@ -610,7 +620,7 @@ const index = () => {
         const tempList: IFeedback[] = res.data;
         setListFeedBack(tempList.filter((fb) => fb.feedback));
       } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: true } });
+        dispatch({ type: ALERT, payload: { loading: false } });
         console.log(err);
       }
     };
@@ -685,7 +695,7 @@ const index = () => {
       } catch (err) {
         setIsSuc(false);
         console.log(err);
-        dispatch({ type: ALERT, payload: { loading: true } });
+        dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
 
@@ -695,10 +705,22 @@ const index = () => {
 
   const filterCardByColor = (color: string) => {
     setCardColor(color);
+    console.log("color: " + cardColor);
     setShowModalFilterCard(false);
   };
 
   console.log(cardColor);
+
+  if (err)
+    return (
+      <AppLayout title="Error" desc={"Error"}>
+        <div className="text-center mt-12">
+          <p className="text-3xl font-semibold text-gray-700">
+            You can not access this set 😑
+          </p>
+        </div>
+      </AppLayout>
+    );
 
   return (
     <div>
@@ -936,7 +958,7 @@ const index = () => {
                           setShowModalFilterCard(!showModalFilterCard)
                         }
                         className={`w-5 h-5 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md
-                                  bg-${cardColor}-400 cursor-pointer hover:bg-${cardColor}-300 `}
+                                  bg-${cardColor.toLowerCase()}-400 cursor-pointer hover:bg-${cardColor.toLowerCase()}-300 `}
                       ></div>
                       {showModalFilterCard ? (
                         <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
@@ -955,15 +977,19 @@ const index = () => {
                                   </div>
                                 );
                               })}
-
                               <div className="px-2">
                                 <div
                                   onClick={() => {
-                                    filterCardByColor("all");
+                                    filterCardByColor("WHITE");
                                   }}
                                   className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
-                                  focus:outline-none focus:shadow-outline bg-blue-400 hover:bg-blue-500`}
-                                ></div>
+                                  focus:outline-none focus:shadow-outline`}
+                                >
+                                  {" "}
+                                  <p className="text-md text-gray-700 font-medium hover:text-gray-500 hover:underline">
+                                    All
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1002,8 +1028,7 @@ const index = () => {
                             />
                             {card.color ? (
                               <FiberManualRecordIcon
-                                fontSize="small"
-                                className={`py-1 border-2 text-${card.color.toLowerCase()}-500`}
+                                className={`py-1 text-${card.color.toLowerCase()}-400`}
                               />
                             ) : (
                               <FiberManualRecordIcon
@@ -1056,7 +1081,7 @@ const index = () => {
                   <p className="text-lg text-gray-700 font-semibold cursor-pointer mb-4">
                     Feedback
                   </p>
-                  {creatorName !== auth.userResponse?.username ? (
+                  {creatorName !== auth.userResponse?.username && isLearned ? (
                     <p
                       onClick={() => setShowModalFeedback(true)}
                       className="text-gray-600 text-md font-normal hover:underline cursor-pointer"

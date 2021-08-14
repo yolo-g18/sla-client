@@ -44,6 +44,8 @@ const LibraryLayout = (props: Props) => {
     query: { username, type, search_query },
   } = router;
 
+  console.log("search_query: " + search_query);
+
   //call api get user profile by username de lay ra fullname, address, email, school, job de hien thi
   useEffect(() => {
     console.log("username: " + username);
