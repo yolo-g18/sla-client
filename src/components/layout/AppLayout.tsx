@@ -195,7 +195,7 @@ const AppLayout = (props: Props) => {
         >
           <div className="px-4 py-4 sm:px-6">
             <div className="flex items-center justify-between">
-              <p className="text-md text-gray-700 dark:text-white md:truncate">
+              <p className="text-sm text-gray-700 antialiased">
                 {item.description}
               </p>
               <div className="ml-2 flex-shrink-0 flex">
@@ -208,7 +208,7 @@ const AppLayout = (props: Props) => {
             </div>
             <div className="mt-2 sm:flex sm:justify-between">
               <div className="sm:flex">
-                <p className="flex items-center text-md font-light text-gray-500 dark:text-gray-300">
+                <p className="flex items-center text-xs font-light text-gray-500 antialiased">
                   {item.createdTime}
                 </p>
               </div>
@@ -351,14 +351,18 @@ const AppLayout = (props: Props) => {
                               aria-orientation="vertical"
                               aria-labelledby="options-menu"
                             >
+                              
+                             
                               {listNotification.length !== 0 ? (
                                 <p
                                   onClick={readAllNews}
-                                  className="px-4 py-4 sm:px-6 text-right text-xs font-light text-blue-500 cursor-pointer hover:text-gray-600"
+                                  className="flex-1 px-4 py-4 sm:px-6 text-right text-xs font-light text-blue-500 cursor-pointer hover:text-gray-600"
                                 >
                                   Mark read all
                                 </p>
                               ) : null}
+                              
+                              
 
                               <ul className="divide-y divide-gray-100">
                                 {listNotification.length === 0 ? (
