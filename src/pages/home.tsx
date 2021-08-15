@@ -83,6 +83,7 @@ const home = () => {
   >([]);
 
   useEffect(() => {
+    if (!auth.userResponse?._id) return;
     const fetchData = async () => {
       //list 6 ss created
       try {

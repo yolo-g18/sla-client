@@ -7,7 +7,7 @@ import { deleteAPI, getAPI, postAPI, putAPI } from "../../../utils/FetchData";
 import { ICard, IFeedback, RootStore } from "../../../utils/TypeScript";
 import { PARAMS } from "../../../common/params";
 import { ALERT } from "../../../redux/types/alertType";
-import _, { divide } from "lodash";
+import _ from "lodash";
 import dynamic from "next/dynamic";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";

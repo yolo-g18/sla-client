@@ -323,3 +323,10 @@ export interface IReport {
   checked?:boolean
   createdTime?: Date
 }
+
+export interface IReportSs {
+  reportId: number
+  content: string
+  reporter:string
+  reportedDate: string
+}
