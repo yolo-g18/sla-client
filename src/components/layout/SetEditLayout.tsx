@@ -367,7 +367,7 @@ const SetEditLayout = (props: Props) => {
     setCards(cardsTemp);
 
     let listCardsId: any[] = [...listCardsDelete];
-    listCardsId.push(cards[index].id);
+    listCardsId.push(cards[index].cardId);
     setListCardsDelete(listCardsId);
   };
 

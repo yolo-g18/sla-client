@@ -293,7 +293,7 @@ const library = () => {
                           <span className="tooltiptext w-20">remove</span>
                         </button>
                         ):null}
-                        
+
                       </div>
                     </div>
                   </div>

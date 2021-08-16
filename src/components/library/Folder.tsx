@@ -113,8 +113,8 @@ const Folder = () => {
   const [descErr, setDescErr] = useState("");
 
   React.useEffect(() => {
+    if (!id) return;
     // load detail data of folder
-
     async function excute() {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -133,6 +133,7 @@ const Folder = () => {
   }, [id, alert.success]);
 
   React.useEffect(() => {
+    if (!id) return;
     // list SS already in folder
 
     async function excute() {
@@ -242,6 +243,7 @@ const Folder = () => {
   ));
 
   React.useEffect(() => {
+    if (!auth.userResponse?._id) return;
     // load SS of user for adding to folder
     async function excute() {
       try {
@@ -510,13 +512,16 @@ const Folder = () => {
                           <div className=" mt-1">
                             <p>{set.numberOfCards} cards</p>
                           </div>
-                          <button
-                            className="focus:outline-none tooltip"
-                            onClick={() => setIsShowDeleteModal(true)}
-                          >
-                            <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
-                            <span className="tooltiptext w-20">remove</span>
-                          </button>
+                          {folder.creatorUserName ===
+                          auth.userResponse?.username ? (
+                            <button
+                              className="focus:outline-none tooltip"
+                              onClick={() => setIsShowDeleteModal(true)}
+                            >
+                              <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
+                              <span className="tooltiptext w-20">remove</span>
+                            </button>
+                          ) : null}
                         </div>
                       </div>
                     </div>

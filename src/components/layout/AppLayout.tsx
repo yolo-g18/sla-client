@@ -57,17 +57,14 @@ const AppLayout = (props: Props) => {
 
   const [totalPages, setTotalPages] = useState(0);
   React.useEffect(() => {
+    if (!auth.userResponse?._id) return;
     async function excute() {
       try {
-        // dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
           `${PARAMS.ENDPOINT}notify/getNotReadNewsNumber/${auth.userResponse?._id}`
         );
         setNotReadNewsNumber(res.data);
-        dispatch({ type: ALERT, payload: { loading: false } });
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
+      } catch (err) {}
     }
     excute();
     const interval = setInterval(() => excute(), 5000);
@@ -80,14 +77,10 @@ const AppLayout = (props: Props) => {
   React.useEffect(() => {
     async function excute() {
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}notify/get?page=${0}`);
-        dispatch({ type: ALERT, payload: { loading: false } });
         setNotificationList(res.data.content);
         setTotalPages(res.data.totalPages);
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
+      } catch (err) {}
     }
 
     excute();
@@ -296,12 +289,7 @@ const AppLayout = (props: Props) => {
                       Schedule
                     </a>
                   </Link>
-                  <Link
-                    href={{
-                      pathname: "/[username]/library/sets",
-                      query: { username: auth.userResponse.username },
-                    }}
-                  >
+                  <Link href={`/${auth.userResponse.username}/library/sets`}>
                     <a
                       className={`py-2 px-4 flex hover:underline ${
                         router.pathname.indexOf("/library") !== -1

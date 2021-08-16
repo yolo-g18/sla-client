@@ -102,20 +102,26 @@ const requests = () => {
       member_id: user_id,
     };
 
+    console.log(data);
+
     dispatch({ type: ALERT, payload: { loading: true } });
     try {
       const res = await putAPI(`${PARAMS.ENDPOINT}room/addMemberToRoom`, data);
 
       dispatch({ type: ALERT, payload: { loading: false } });
+      deleteInvitaion(user_id);
+      deleteRequest(user_id);
+      notifyAcceptAttendRoom(user_id);
+      setMessageToast("request accepted");
+      setTypeToast("success");
+      setIsToastOpen(true);
     } catch (err) {
+      console.log(err);
       dispatch({ type: ALERT, payload: { loading: false } });
+      setIsToastOpen(true);
+      setTypeToast("error");
+      setMessageToast("An error occurred");
     }
-    deleteInvitaion(user_id);
-    deleteRequest(user_id);
-    notifyAcceptAttendRoom(user_id);
-    setMessageToast("request accepted");
-    setTypeToast("success");
-    setIsToastOpen(true);
   }
 
   function handleRejectRequest(user_id: number) {
@@ -229,26 +235,13 @@ const requests = () => {
                       }}
                     >
                       <div className="cursor-pointer flex flex-1 items-center p-4">
-                        {item.avatar ? (
-                          <img
-                            className="w-12 h-12 my-auto rounded-full object-cover object-center"
-                            src={`${
-                              item.avatar ? item.avatar : "../../user.svg"
-                            }`}
-                            alt="Avatar Upload"
-                          />
-                        ) : (
-                          <svg
-                            width="40"
-                            height="40"
-                            fill="currentColor"
-                            className="text-gray-800"
-                            viewBox="0 0 1792 1792"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z" />
-                          </svg>
-                        )}
+                        <img
+                          className="w-12 h-12 my-auto rounded-full object-cover object-center"
+                          src={`${
+                            item.avatar ? item.avatar : "../../user.svg"
+                          }`}
+                          alt="Avatar Upload"
+                        />
                         <div className="flex-1 pl-1 mr-16">
                           <p className="text-sm text-gray-400">user</p>
                           <div className="text-lg font-bold hover:underline flex">
@@ -258,7 +251,6 @@ const requests = () => {
                       </div>
                     </Link>
                   </div>
-
                   <div className="my-auto px-2">
                     <button
                       onClick={() => acceptRequest(item.user_id)}

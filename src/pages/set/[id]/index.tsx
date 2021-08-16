@@ -7,7 +7,7 @@ import { deleteAPI, getAPI, postAPI, putAPI } from "../../../utils/FetchData";
 import { ICard, IFeedback, RootStore } from "../../../utils/TypeScript";
 import { PARAMS } from "../../../common/params";
 import { ALERT } from "../../../redux/types/alertType";
-import _, { divide } from "lodash";
+import _ from "lodash";
 import dynamic from "next/dynamic";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
@@ -19,32 +19,14 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import InputArea from "../../../components/input/InputArea";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { getUserByUsername } from "../../../redux/actions/userAction";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { FaStar } from "react-icons/fa";
+import { useClickOutside } from "../../../hook/useClickOutside";
 
 //alert
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
-let useClickOutside = (handler: any) => {
-  let domNode: any = useRef();
-
-  useEffect(() => {
-    let maybeHandler = (event: any) => {
-      if (!domNode.current.contains(event.target)) {
-        handler();
-      }
-    };
-
-    document.addEventListener("mousedown", maybeHandler);
-
-    return () => {
-      document.removeEventListener("mousedown", maybeHandler);
-    };
-  });
-
-  return domNode;
-};
 
 const QuillNoSSRWrapper = dynamic(
   async () => {
@@ -65,8 +47,8 @@ const formats = [
   "color",
   "background",
   "underline",
-  "link",
   "image",
+  "video",
 ];
 
 const stars = Array(5).fill(0);
@@ -106,6 +88,8 @@ const index = () => {
   const [listColors, setListColors] = useState<string[]>([]);
 
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
+  const [showModalFilterCard, setShowModalFilterCard] = useState(false);
+  const [cardColor, setCardColor] = useState("WHITE");
 
   const router = useRouter();
 
@@ -235,10 +219,14 @@ const index = () => {
     query: { id }, //id of folder get from path
   } = router;
 
+  //fetch data err
+  const [err, setErr] = useState(false);
+
   //frag ss learned
   const [isLearned, setIsLearned] = useState(false);
   //get data of set by id
   useEffect(() => {
+    setErr(false);
     setIsSuc(false);
     const fetchData = async () => {
       if (!id) {
@@ -282,6 +270,14 @@ const index = () => {
               `${PARAMS.ENDPOINT}learn/listCardSort?id=${id}`
             );
             setCards(cardResLearning.data);
+
+            if (cardColor !== "WHITE") {
+              setCards(
+                cardResLearning.data.filter(
+                  (item: ICard) => item.color === cardColor
+                )
+              );
+            }
             setIsLearned(true);
           } else {
             const cardRes = await getAPI(
@@ -301,19 +297,16 @@ const index = () => {
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log(err.response.data);
-        // router.push("/error");
+        setErr(true);
       }
     };
     fetchData();
-  }, [id, isSuc]);
-
-  console.log(cards);
+  }, [id, isSuc, cardColor]);
 
   useEffect(() => {
+    if (!creatorName) return;
     dispatch(getUserByUsername(`${creatorName}`));
   }, [creatorName]);
-
-  // console.log("card value: " + cards[0].front);
 
   //handel click open menu
   const handelExpandMoreBtnClick = () => {
@@ -324,12 +317,25 @@ const index = () => {
     setIsMenuOpen(false);
   });
 
+  let domNodeSsColor = useClickOutside(() => {
+    setShowModalColorPicker(false);
+  });
+
+  let domNodeFilterCard = useClickOutside(() => {
+    setShowModalFilterCard(false);
+  });
+
+  // let domNode = useClickOutside(() => {
+  //   setIsMenuOpen(false);
+  //   setShowModalColorPicker(false);
+  //   setShowModalFilterCard(false);
+  // });
+
   const handelEditOnclick = (index: number) => {
     setCurrentCard(index);
     setFront(cards[index].front);
     setBack(cards[index].back);
     setIsModalEditOpen(true);
-    console.log(currentCard);
   };
   const handelAddOnclick = () => {
     setFront("");
@@ -351,6 +357,8 @@ const index = () => {
           back: back,
         },
       ];
+      console.log(cardDataAdd);
+
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await postAPI(`${PARAMS.ENDPOINT}card/create`, cardDataAdd);
@@ -378,7 +386,7 @@ const index = () => {
     } else {
       const cardDataUpdate = [
         {
-          id: cards[currentCard].id,
+          id: cards[currentCard].cardId,
           studySet: id,
           front: front,
           back: back,
@@ -455,7 +463,7 @@ const index = () => {
   };
 
   const deleteCard = async () => {
-    let id = cards[currentCard].id;
+    let id = cards[currentCard].cardId;
     if (!id) {
       return;
     }
@@ -518,7 +526,6 @@ const index = () => {
     };
     fetchData();
   }, [id]);
-  console.log("da report chua: " + isReported);
 
   //remove err when user typing
   useEffect(() => {
@@ -613,7 +620,7 @@ const index = () => {
         const tempList: IFeedback[] = res.data;
         setListFeedBack(tempList.filter((fb) => fb.feedback));
       } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: true } });
+        dispatch({ type: ALERT, payload: { loading: false } });
         console.log(err);
       }
     };
@@ -688,7 +695,7 @@ const index = () => {
       } catch (err) {
         setIsSuc(false);
         console.log(err);
-        dispatch({ type: ALERT, payload: { loading: true } });
+        dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
 
@@ -696,39 +703,45 @@ const index = () => {
     setShowModalColorPicker(false);
   };
 
+  const filterCardByColor = (color: string) => {
+    setCardColor(color);
+    console.log("color: " + cardColor);
+    setShowModalFilterCard(false);
+  };
+
+  console.log(cardColor);
+
+  if (err)
+    return (
+      <AppLayout title="Error" desc={"Error"}>
+        <div className="text-center mt-12">
+          <p className="text-3xl font-semibold text-gray-700">
+            You can not access this set 😑
+          </p>
+        </div>
+      </AppLayout>
+    );
+
   return (
     <div>
       <AppLayout title={title} desc={desc}>
         <div className="grid lg:grid-cols-5 grid-cols-1 gap-8 h-full lg:w-4/5 mx-auto mt-6">
           <div className="col-span-1 px-4">
-            <div className="w-full flex items-center px-2">
+            <div className=" flex items-center px-2">
               <div>
-                {user.avatar ? (
-                  <img
-                    className="w-12 h-12 my-auto rounded-full object-cover object-center"
-                    src={`${user.avatar ? user.avatar : "../../user.svg"}`}
-                    alt="Avatar Upload"
-                  />
-                ) : (
-                  <svg
-                    width="40"
-                    height="40"
-                    fill="currentColor"
-                    className="text-gray-800"
-                    viewBox="0 0 1792 1792"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M1523 1339q-22-155-87.5-257.5t-184.5-118.5q-67 74-159.5 115.5t-195.5 41.5-195.5-41.5-159.5-115.5q-119 16-184.5 118.5t-87.5 257.5q106 150 271 237.5t356 87.5 356-87.5 271-237.5zm-243-699q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm512 256q0 182-71 347.5t-190.5 286-285.5 191.5-349 71q-182 0-348-71t-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z" />
-                  </svg>
-                )}
+                <img
+                  className="w-12 h-12 my-auto rounded-full object-cover object-center"
+                  src={`${user.avatar ? user.avatar : "../../user.svg"}`}
+                  alt="Avatar Upload"
+                />
               </div>
               <div className="px-3 mr-auto">
                 <small className="text-sm">create by </small>
-                <a href={`/${creatorName}/library/sets`}>
-                  <h4 className="font-bold text-md hover:underline">
+                <Link href={`/${creatorName}/library/sets`}>
+                  <h4 className="font-bold text-md hover:underline cursor-pointer">
                     {creatorName}
                   </h4>
-                </a>
+                </Link>
               </div>
             </div>
             <p>
@@ -744,7 +757,6 @@ const index = () => {
             </p>
             <br />
             <br />
-
             {tags ? (
               <div>
                 <hr />
@@ -771,12 +783,7 @@ const index = () => {
           <div className="col-span-4 mb-44 px-2">
             <div className=" flex justify-between">
               <div className="fex flex-col">
-                <Link
-                  href={{
-                    pathname: "/[username]/library/sets",
-                    query: { username: user.username },
-                  }}
-                >
+                <Link href={`/${creatorName}/library/sets`}>
                   <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                     <ChevronLeftIcon fontSize="small" /> Back to library
                   </p>
@@ -837,7 +844,7 @@ const index = () => {
                 {isLearned ? (
                   <div
                     className="w-full flex relative ml-2 my-auto"
-                    ref={domNode}
+                    ref={domNodeSsColor}
                   >
                     <div className="pt-1.5">
                       <div
@@ -936,7 +943,63 @@ const index = () => {
               </div>
             </div>
             <div className="h-full mt-4">
-              <h1 className="text-md mt-4 mb-2">{numberOfCard} cards</h1>
+              <div className="flex justify-between w-full">
+                <div>
+                  {" "}
+                  <h1 className="text-md mt-4 mb-2">{numberOfCard} cards</h1>
+                </div>
+                {/* filter card by color */}
+                {isLearned ? (
+                  <div className="ml-2 my-auto flex">
+                    <p>filter cards: </p>
+                    <div className="my-auto ml-2" ref={domNodeFilterCard}>
+                      <div
+                        onClick={() =>
+                          setShowModalFilterCard(!showModalFilterCard)
+                        }
+                        className={`w-5 h-5 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md
+                                  bg-${cardColor.toLowerCase()}-400 cursor-pointer hover:bg-${cardColor.toLowerCase()}-300 `}
+                      ></div>
+                      {showModalFilterCard ? (
+                        <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
+                          <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                            <div className="flex flex-wrap -mx-2">
+                              {listColors.map((color, index) => {
+                                return (
+                                  <div key={index} className="px-2">
+                                    <div
+                                      onClick={() => {
+                                        filterCardByColor(color);
+                                      }}
+                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                  bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                    ></div>
+                                  </div>
+                                );
+                              })}
+                              <div className="px-2">
+                                <div
+                                  onClick={() => {
+                                    filterCardByColor("WHITE");
+                                  }}
+                                  className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                  focus:outline-none focus:shadow-outline`}
+                                >
+                                  {" "}
+                                  <p className="text-md text-gray-700 font-medium hover:text-gray-500 hover:underline">
+                                    All
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+
               <hr />
               <div className=" w-full">
                 {cards.map((card, index) => {
@@ -947,11 +1010,11 @@ const index = () => {
                     >
                       <div className="flex justify-between w-full gap-3">
                         <div
-                          className="card-overview w-1/2 rounded-md bg-white shadow-lg border-b-1 p-6 text-center"
+                          className="card-overview w-1/2 rounded-md bg-white shadow-lg border-b-1 p-8 text-center"
                           dangerouslySetInnerHTML={{ __html: card.front }}
                         ></div>
                         <div
-                          className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-6 text-center"
+                          className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-9 text-center"
                           dangerouslySetInnerHTML={{ __html: card.back }}
                         ></div>
                         {isLearned ? (
@@ -963,11 +1026,21 @@ const index = () => {
                               className="h-5 w-5 my-auto mx-auto"
                               alt=""
                             />
+                            {card.color ? (
+                              <FiberManualRecordIcon
+                                className={`py-1 text-${card.color.toLowerCase()}-400`}
+                              />
+                            ) : (
+                              <FiberManualRecordIcon
+                                className={`py-1 text-gray-200 shadow-sm`}
+                              />
+                            )}
                           </div>
                         ) : null}
                       </div>
 
                       <div className="w-0">
+                        {/* show btn edit card when user is creator*/}
                         {auth.userResponse?.username === creatorName ? (
                           <div>
                             <button
@@ -1008,7 +1081,7 @@ const index = () => {
                   <p className="text-lg text-gray-700 font-semibold cursor-pointer mb-4">
                     Feedback
                   </p>
-                  {creatorName !== auth.userResponse?.username ? (
+                  {creatorName !== auth.userResponse?.username && isLearned ? (
                     <p
                       onClick={() => setShowModalFeedback(true)}
                       className="text-gray-600 text-md font-normal hover:underline cursor-pointer"
@@ -1024,14 +1097,7 @@ const index = () => {
                       <div className="flex justify-between items-center w-full">
                         <div className="mt-4 flex items-center space-x-4 py-2">
                           <div>
-                            <Link
-                              href={{
-                                pathname: "/[username]/library/sets",
-                                query: {
-                                  username: feedback.userName,
-                                },
-                              }}
-                            >
+                            <Link href={`/${feedback.userName}/library/sets`}>
                               <img
                                 className="w-12 h-12 my-auto rounded-full object-cover object-center cursor-pointer"
                                 src={`${
@@ -1045,14 +1111,7 @@ const index = () => {
                           </div>
                           <div className="text-sm font-semibold">
                             <div className="flex justify-between">
-                              <Link
-                                href={{
-                                  pathname: "/[username]/library/sets",
-                                  query: {
-                                    username: feedback.userName,
-                                  },
-                                }}
-                              >
+                              <Link href={`/${feedback.userName}/library/sets`}>
                                 <p className="hover:underline cursor-pointer truncate">
                                   {feedback.userName}
                                 </p>

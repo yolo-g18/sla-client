@@ -4,8 +4,8 @@ import dynamic from "next/dynamic";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import VolumeDownIcon from "@material-ui/icons/VolumeDown";
-import { useEffect, useRef, useState } from "react";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactCardFlip from "react-card-flip";
 import { useRouter } from "next/router";
 import { ICardLearning, RootStore } from "../../../utils/TypeScript";
@@ -41,43 +41,25 @@ function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const QuillNoSSRWrapper = dynamic(import("react-quill"), {
-  ssr: false,
-  loading: () => <p>...</p>,
-});
-
-const modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ size: [] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "image", "video"],
-    ["clean"],
-  ],
-  clipboard: {
-    matchVisual: false,
+const QuillNoSSRWrapper = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill");
+    return ({ forwardedRef, ...props }: any) => (
+      <RQ ref={forwardedRef} {...props} />
+    );
   },
-};
+  {
+    ssr: false,
+    loading: () => <p>...</p>,
+  }
+);
 
 const formats = [
-  "header",
-  "font",
-  "size",
   "bold",
   "italic",
+  "color",
+  "background",
   "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
   "image",
   "video",
 ];
@@ -128,11 +110,11 @@ const learn = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isAddHintFormOpen, setIsAddHintFormOpen] = useState(false);
   const [isEditCardFromOpen, setIsEditCardFromOpen] = useState(false);
-  const [isSetColorFromOpen, setIsSetColorFromOpen] = useState(false);
+  const [showModalSetColor, setShowModalSetColor] = useState(false);
   const [listCardsLearning, setListCardsLearning] = useState<ICardLearning[]>(
     []
   );
-  const [currenrCard, setCurrentCard] = useState(0);
+  const [currentCard, setCurrentCard] = useState(0);
   const [frontContent, setFrontContent] = useState("");
   const [backContent, setBackContent] = useState("");
   const [cardHint, setCardHint] = useState<string | undefined>("");
@@ -143,10 +125,124 @@ const learn = () => {
   const [messageToast, setMessageToast] = useState("");
   const [isChange, setIsChange] = useState(false);
   const [studySetTitle, setStudySetTitle] = useState("");
+  const [studySetId, setStudySetID] = useState(0);
   const [ssCreator, setSsCreator] = useState("");
+  const [currentCardColor, setCurrentCardColor] = useState<string | undefined>(
+    ""
+  );
 
   const [isContinue, setIsContinue] = useState(false);
   const [overralProgress, setOverralProgress] = useState(0);
+
+  //setup rich editor
+  const editorRefFront = useRef<any>(null);
+  const editorRefBack = useRef<any>(null);
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+
+        // file type is only image.
+        if (/^image\//.test(file.type)) {
+          saveToServer(file);
+        } else {
+          console.warn("You could only upload images.");
+        }
+      }
+    };
+  };
+  const imageHandler2 = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+
+        // file type is only image.
+        if (/^image\//.test(file.type)) {
+          saveToServer2(file);
+        } else {
+          console.warn("You could only upload images.");
+        }
+      }
+    };
+  };
+
+  const saveToServer = async (file: any) => {
+    const data = new FormData();
+    data.append("file", file);
+
+    try {
+      const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
+      insertToEditor(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const saveToServer2 = async (file: any) => {
+    const data = new FormData();
+    data.append("file", file);
+
+    try {
+      const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
+      insertToEditor2(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const insertToEditor = (url: string) => {
+    if (editorRefFront.current) {
+      editorRefFront.current.getEditor().insertEmbed(null, "image", url);
+    }
+  };
+  const insertToEditor2 = (url: string) => {
+    if (editorRefBack.current) {
+      editorRefBack.current.getEditor().insertEmbed(null, "image", url);
+    }
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          ["bold", "italic", "underline"],
+          [{ color: [] }, { background: [] }],
+          ["link", "image"],
+        ],
+
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    }),
+    []
+  );
+
+  const modules2 = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          ["bold", "italic", "underline"],
+          [{ color: [] }, { background: [] }],
+          ["link", "image"],
+        ],
+
+        handlers: {
+          image: imageHandler2,
+        },
+      },
+    }),
+    []
+  );
 
   // to count number of q > 3
   const [listQ, setListQ] = useState<{ index: number; q: number }[]>([]);
@@ -160,9 +256,12 @@ const learn = () => {
   } = router;
 
   const [isLearnByDay, setIsLearnByday] = useState(false);
+  //fetch data err
+  const [err, setErr] = useState(false);
 
   //fecth to get cards
   useEffect(() => {
+    setErr(false);
     if (!id) {
       return;
     }
@@ -173,6 +272,7 @@ const learn = () => {
           `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
         dispatch({ type: ALERT, payload: { loading: false } });
+        setStudySetID(studySetRes.data.studySetId);
         setStudySetTitle(studySetRes.data.title);
         setSsCreator(studySetRes.data.creatorName);
 
@@ -183,34 +283,61 @@ const learn = () => {
 
         setListCardsLearning(listCardLearingRes.data.listCardLearning);
         setOverralProgress(listCardLearingRes.data.progress);
-        if (!learn.isDone) {
+        setCurrentCardColor(
+          listCardLearingRes.data.listCardLearning[currentCard].color
+        );
+        console.log("update chua");
+        if (!learn.isDone && learn.learnDate) {
           console.log("tai sao nhay vao day");
-
-          const listCardLearingRes = await getAPI(
-            `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
-              learn.ssID
-            }&date=${convertTimeEvnLearn(learn.learnDate)}`
-          );
-          if (listCardLearingRes.data.length)
-            setListCardsLearning(listCardLearingRes.data);
+          try {
+            const listCardLearingRes = await getAPI(
+              `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                learn.ssID
+              }&date=${convertTimeEvnLearn(learn.learnDate)}`
+            );
+            if (listCardLearingRes.data.length) {
+              setListCardsLearning(listCardLearingRes.data);
+              setCurrentCardColor(listCardLearingRes.data[currentCard].color);
+              console.log("update chua");
+            }
+          } catch (err) {
+            console.log(err);
+          }
         }
         setIsContinue(false);
         dispatch({ type: ALERT, payload: { loading: false } });
-        console.log("legth: " + listCardsLearning.length);
-        setCardHint(
-          listCardsLearning[currenrCard]
-            ? listCardsLearning[currenrCard].hint
-            : ""
-        );
       } catch (err) {
         console.log("error is: " + err);
-        // router.push("/error");
+        setErr(true);
       }
     };
     fetchData();
     setIsChange(false);
   }, [id, isChange, isContinue]);
 
+  useEffect(() => {
+    if (listCardsLearning.length && currentCard < listCardsLearning.length)
+      setCurrentCardColor(listCardsLearning[currentCard].color);
+  }, [currentCard, isChange]);
+
+  //init color list
+  const [listColors, setListColors] = useState<string[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setListColors(res.data);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  //handle learn continue
   useEffect(() => {
     if (!id) {
       return;
@@ -230,8 +357,15 @@ const learn = () => {
     fetchData();
   }, [showLearningResultModal]);
 
+  //handle click outside menu
   let domNode = useClickOutside(() => {
     setIsMenuOpen(false);
+    setShowModalSetColor(false);
+  });
+
+  //handle click outside set color modal
+  let domNodeModalSetColor = useClickOutside(() => {
+    setShowModalSetColor(false);
   });
 
   //handel close toast
@@ -260,16 +394,16 @@ const learn = () => {
     console.log("q is: " + q_value);
     const data = {
       q: q_value,
-      cardId: listCardsLearning[currenrCard].cardId,
+      cardId: listCardsLearning[currentCard].cardId,
     };
 
     let listQTemp: { index: number; q: number }[] = [...listQ];
-    const listCheck = listQTemp.filter((tq) => tq.index === currenrCard);
+    const listCheck = listQTemp.filter((tq) => tq.index === currentCard);
     if (listCheck.length === 0) {
-      listQTemp.push({ index: currenrCard, q: q_value });
+      listQTemp.push({ index: currentCard, q: q_value });
     } else {
       listQTemp.map((qt) => {
-        if (qt.index === currenrCard) qt.q = q_value;
+        if (qt.index === currentCard) qt.q = q_value;
       });
     }
     setListQ(listQTemp);
@@ -289,18 +423,18 @@ const learn = () => {
   //show modal edit card
   const showModalEditcard = () => {
     setIsEditCardFromOpen(true);
-    setFrontContent(listCardsLearning[currenrCard].front);
-    setBackContent(listCardsLearning[currenrCard].back);
+    setFrontContent(listCardsLearning[currentCard].front);
+    setBackContent(listCardsLearning[currentCard].back);
   };
 
   //save hint when close modal hint
   const handelSaveHint = async () => {
-    if (cardHint === listCardsLearning[currenrCard].hint) {
+    if (cardHint === listCardsLearning[currentCard].hint) {
       setIsAddHintFormOpen(false);
       return;
     }
     const data = {
-      id: listCardsLearning[currenrCard].cardId,
+      id: listCardsLearning[currentCard].cardId,
       hint: cardHint,
     };
 
@@ -312,6 +446,7 @@ const learn = () => {
       dispatch({ type: ALERT, payload: { loading: false } });
       setIsChange(true);
     } catch (err) {
+      setIsChange(false);
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
@@ -322,22 +457,22 @@ const learn = () => {
   //open hint modal
   const openHintModal = () => {
     setIsAddHintFormOpen(true);
-    setCardHint(listCardsLearning[currenrCard].hint);
+    setCardHint(listCardsLearning[currentCard].hint);
   };
 
   const [switching, setSwitching] = useState(false);
   const switchCardHandle = (type: string) => {
     setSwitching(true);
-    if (type === "next" && currenrCard < listCardsLearning.length) {
+    if (type === "next" && currentCard < listCardsLearning.length) {
       setIsFlipped(false);
-      setCurrentCard(currenrCard + 1);
-      currenrCard + 1 >= listCardsLearning.length
+      setCurrentCard(currentCard + 1);
+      currentCard + 1 >= listCardsLearning.length
         ? setShowLearningResultModal(true)
         : setShowLearningResultModal(false);
     }
-    if (type === "prev" && currenrCard >= 0) {
+    if (type === "prev" && currentCard >= 0) {
       setIsFlipped(false);
-      setCurrentCard(currenrCard - 1);
+      setCurrentCard(currentCard - 1);
     }
     setTimeout(() => {
       setSwitching(false);
@@ -383,6 +518,7 @@ const learn = () => {
 
   //get feedback of current user
   useEffect(() => {
+    if (!id) return;
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -440,6 +576,89 @@ const learn = () => {
       console.log("data: " + JSON.stringify(data));
     }
   };
+
+  //handle edit card
+  const handleCardSave = async () => {
+    const data = [
+      {
+        id: listCardsLearning[currentCard].cardId,
+        studySet: studySetId,
+        front: frontContent,
+        back: backContent,
+      },
+    ];
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      console.log(data);
+
+      const res = await putAPI(`${PARAMS.ENDPOINT}card/edit`, data);
+      dispatch({
+        type: ALERT,
+        payload: { loading: false, success: "😎 Your card updated!" },
+      });
+      setIsChange(true);
+      setTypeToast("success");
+      setMessageToast("😎 Your card updated!");
+      setIsToastOpen(true);
+      setIsEditCardFromOpen(false);
+    } catch (err) {
+      setIsChange(false);
+      console.log(err);
+      dispatch({
+        type: ALERT,
+        payload: {
+          loading: false,
+          errors: { message: "An error occurred" },
+        },
+      });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+    }
+  };
+
+  const openModalSetColor = () => {
+    setShowModalSetColor(!showModalSetColor);
+    setCurrentCardColor(listCardsLearning[currentCard].color);
+  };
+
+  //set color for card
+  const setColorhandle = (color: string) => {
+    const data = {
+      id: listCardsLearning[currentCard].cardId,
+      color: color,
+    };
+    console.log(data);
+
+    const putColor = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await putAPI(`${PARAMS.ENDPOINT}card/color`, data);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        console.log(res);
+        setIsChange(true);
+      } catch (err) {
+        setIsChange(false);
+        console.log(err);
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    };
+
+    putColor();
+    setShowModalSetColor(false);
+  };
+
+  if (err)
+    return (
+      <AppLayput2 title="Error" desc={"Error"}>
+        <div className="text-center mt-12">
+          <p className="text-3xl font-semibold text-gray-700">
+            You can not access this set 😑
+          </p>
+        </div>
+      </AppLayput2>
+    );
 
   return (
     <div>
@@ -615,16 +834,28 @@ const learn = () => {
               </div>
             ) : (
               <div>
-                <div className="justify-center items-center flex text-gray-700 font-bold text-xl mb-4 w-full">
+                <div className="justify-center items-center flex text-gray-700 font-medium text-md mb-1 w-full">
                   <p>Practice Your Card</p>
                 </div>
                 <div className="flex justify-between w-full mb-2">
                   <div className="px-1">
                     <h1>
-                      {currenrCard + 1}/{listCardsLearning.length}
+                      {currentCard + 1}/{listCardsLearning.length}
                     </h1>
                   </div>
                   <div className="flex ">
+                    {currentCardColor ? (
+                      <FiberManualRecordIcon
+                        fontSize="medium"
+                        className={`text-${currentCardColor.toLowerCase()}-400`}
+                      />
+                    ) : (
+                      <FiberManualRecordIcon
+                        fontSize="medium"
+                        className={`text-gray-200`}
+                      />
+                    )}
+
                     <div ref={domNode}>
                       <button
                         className="px-1 focus: outline-none"
@@ -651,45 +882,91 @@ const learn = () => {
                                   <span>hint</span>
                                 </span>
                               </a>
-                              <a
-                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                              {auth.userResponse?.username === ssCreator ? (
+                                <a
+                                  className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
                             hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                                role="menuitem"
-                                onClick={showModalEditcard}
-                              >
-                                <span className="flex flex-col">
-                                  <span>edit</span>
-                                </span>
-                              </a>
+                                  role="menuitem"
+                                  onClick={showModalEditcard}
+                                >
+                                  <span className="flex flex-col">
+                                    <span>edit</span>
+                                  </span>
+                                </a>
+                              ) : null}
+
                               <a
-                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                             hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer hover:text-gray-400"
                                 role="menuitem"
-                                onClick={() => setIsSetColorFromOpen(true)}
                               >
-                                <span className="flex flex-col">
-                                  <span>set color</span>
-                                </span>
+                                <div className="flex flex-col">
+                                  <div
+                                    ref={domNodeModalSetColor}
+                                    onClick={openModalSetColor}
+                                  >
+                                    <span>set color</span>
+                                    {currentCardColor ? (
+                                      <div
+                                        className={`ml-2 w-2 h-2 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md 
+                                bg-${currentCardColor.toLowerCase()}-400 cursor-pointer hover:bg-${currentCardColor.toLowerCase()}-300 `}
+                                      ></div>
+                                    ) : (
+                                      <div
+                                        className={`ml-2 w-2 h-2 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md 
+                              bg-gray-200 cursor-pointer`}
+                                      ></div>
+                                    )}
+
+                                    {showModalSetColor ? (
+                                      <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
+                                        <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                                          <div className="flex flex-wrap -mx-2">
+                                            {listColors.map((color, index) => {
+                                              return (
+                                                <div
+                                                  key={index}
+                                                  className="px-2"
+                                                >
+                                                  {currentCardColor ===
+                                                  color ? (
+                                                    <div
+                                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                                    ></div>
+                                                  ) : (
+                                                    <div
+                                                      onClick={() => {
+                                                        setColorhandle(color);
+                                                      }}
+                                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                                    ></div>
+                                                  )}
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                </div>
                               </a>
                             </div>
                           </div>
                         </div>
                       ) : null}
                     </div>
-                    {/* <div>
-                      <button className="">
-                        <VolumeDownIcon />
-                      </button>
-                    </div> */}
                   </div>
                 </div>
                 <div>
                   {listCardsLearning.map((card, index) => {
-                    if (index === currenrCard)
+                    if (index === currentCard)
                       return (
                         <ReactCardFlip
                           isFlipped={isFlipped}
                           flipDirection="vertical"
+                          key={index}
                         >
                           <div onClick={flipCardHandel}>
                             <div
@@ -715,7 +992,73 @@ const learn = () => {
                 </div>
                 <div className="mt-6">
                   <p className="font-bold justify-center items-center flex text-gray-700 text-sm">
-                    *How well did you know this?
+                    <span>*How well did you know this?</span>
+                    <span className="tooltip hover:underline text-gray-700 font-medium text-md cursor-pointer ml-4">
+                      *tips
+                      <div className="tooltiptext2 w-52 p-2 text-left mr-6">
+                        <p className="mx-2">
+                          <span>
+                            <img
+                              src={`../../${qValueArr[5]}.svg`}
+                              className="h-4 w-4 mr-2 inline"
+                              alt=""
+                            />
+                          </span>
+                          Perfect response
+                        </p>
+                        <p className="mx-2">
+                          <span>
+                            <img
+                              src={`../../${qValueArr[4]}.svg`}
+                              className="h-4 w-4 mr-2 inline"
+                              alt=""
+                            />
+                          </span>
+                          Correct response after a hesitation
+                        </p>
+                        <p className="mx-2">
+                          <span>
+                            <img
+                              src={`../../${qValueArr[3]}.svg`}
+                              className="h-4 w-4 mr-2 inline"
+                              alt=""
+                            />
+                          </span>
+                          Correct response recalled with serious difficulty
+                        </p>
+                        <p className="mx-2">
+                          <span>
+                            <img
+                              src={`../../${qValueArr[2]}.svg`}
+                              className="h-4 w-4 mr-2 inline"
+                              alt=""
+                            />
+                          </span>
+                          Incorrect response; where the correct one seemed easy
+                          to recall
+                        </p>
+                        <p className="mx-2">
+                          <span>
+                            <img
+                              src={`../../${qValueArr[1]}.svg`}
+                              className="h-4 w-4 mr-2 inline"
+                              alt=""
+                            />
+                          </span>
+                          Incorrect response; the correct one remembered
+                        </p>
+                        <p className="mx-2">
+                          <span>
+                            <img
+                              src={`../../${qValueArr[0]}.svg`}
+                              className="h-4 w-4 mr-2 inline"
+                              alt=""
+                            />
+                          </span>
+                          Complete blackout
+                        </p>
+                      </div>
+                    </span>
                   </p>
                 </div>
                 <div className="justify-center items-center flex mt-2">
@@ -738,9 +1081,9 @@ const learn = () => {
                 </div>
                 <div className="justify-center items-center flex mt-6 ">
                   <button
-                    disabled={currenrCard === 0 ? true : false}
+                    disabled={currentCard === 0 ? true : false}
                     className={`${
-                      currenrCard === 0
+                      currentCard === 0
                         ? "text-gray-300"
                         : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300"
                     }  focus:outline-none mx-4`}
@@ -750,7 +1093,7 @@ const learn = () => {
                   </button>
                   <button
                     disabled={
-                      currenrCard === listCardsLearning.length ? true : false
+                      currentCard === listCardsLearning.length ? true : false
                     }
                     className="mx-4 hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
                     onClick={() => switchCardHandle("next")}
@@ -790,42 +1133,43 @@ const learn = () => {
         ) : null}
         {/* show modal edit card */}
         {isEditCardFromOpen ? (
-          <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12 ">
-            <div className="lg:h-1/2 py-6 rounded-xl px-4 bg-white">
-              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4">
+          <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
+            <div className="mx-2 py-2 rounded-md bg-white">
+              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-6 py-2">
                 <div className="col-span-1 flex lg:my-2 my-4">
                   <QuillNoSSRWrapper
                     modules={modules}
                     formats={formats}
                     theme="snow"
-                    className="max-h-80 relative mb-12 "
+                    className="editor relative mb-12"
+                    placeholder="front side content"
                     onChange={setFrontContent}
                     value={frontContent}
                   />
                 </div>
                 <div className="col-span-1 flex  lg:my-2 my-4">
                   <QuillNoSSRWrapper
-                    modules={modules}
+                    modules={modules2}
                     formats={formats}
                     theme="snow"
-                    className="max-h-80 border-0 relative mb-12"
+                    className="editor relative mb-12"
                     onChange={setBackContent}
                     value={backContent}
                   />
                 </div>
               </div>
-              <div className="flex justify-end px-4">
+              <div className="flex justify-end px-6 pb-2">
                 <button
-                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300"
+                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300"
                   type="button"
                   onClick={() => setIsEditCardFromOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
-                  className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600"
+                  className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600"
                   type="button"
-                  // onClick={handleCardSave}
+                  onClick={handleCardSave}
                 >
                   {alert.loading ? "Saving..." : "Save Changes"}
                 </button>

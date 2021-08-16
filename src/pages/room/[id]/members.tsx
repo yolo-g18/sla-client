@@ -198,7 +198,11 @@ const members = () => {
                     }}
                   >
                     <div className="cursor-pointer flex flex-1 items-center p-4">
-                      <FaceOutlinedIcon style={{ fontSize: 65 }} />
+                      <img
+                        className="w-12 h-12 my-auto rounded-full object-cover object-center"
+                        src={`${item.avatar ? item.avatar : "../../user.svg"}`}
+                        alt="Avatar Upload"
+                      />
                       <div className="flex-1 pl-1 mr-16">
                         <p className="text-sm text-gray-400">
                           {room.ownerName === item.userName
