@@ -30,21 +30,24 @@ const login = () => {
 
     e.preventDefault();
     const data = { username, password };
-    console.log(data);
     dispatch(loginAction(data));
   };
 
   const { auth, alert } = useSelector((state: RootStore) => state);
   const router = useRouter();
   useEffect(() => {
-    if (auth.authenticationToken) router.push("/home");
-  }, [auth.authenticationToken]);
+    if (auth.roles) {
+      if (auth.roles?.includes("ROLE_ADMIN")) {
+        router.push("/admin");
+      } else {
+        router.push("/home");
+      }
+    }
+  }, [auth.roles]);
 
   const clearError = () => {
     dispatch(clearError());
   };
-
-  console.log(auth);
 
   return (
     <div>

@@ -1,5 +1,5 @@
-import { useSelector, useDispatch } from "react-redux";
-import { RootStore } from "../utils/TypeScript";
+import { useDispatch } from "react-redux";
+import Link from "next/link";
 import { logout as logoutUser } from "../redux/actions/authAction";
 import { useEffect } from "react";
 
@@ -8,33 +8,38 @@ const landing = () => {
 
   useEffect(() => {
     dispatch(logoutUser());
-  });
+  }, []);
 
   return (
     <div>
-      <div className="flex relative z-20 items-center">
+      <div className="flex relative z-20 items-center ">
         <div className="container mx-auto px-6 flex flex-col justify-between items-center relative py-4">
-          <div className="flex flex-col">
-            <img
-              src="/images/person/11.webp"
-              className="rounded-full w-28 mx-auto"
-            />
-            <p className="text-3xl my-6 text-center dark:text-white">
-              Goodbye, I'm Charlie 🤘
-            </p>
-            <h2 className="max-w-3xl text-5xl md:text-6xl font-bold mx-auto dark:text-white text-gray-800 text-center py-2">
-              Building digital products, brands, and experiences.
-            </h2>
-            <div className="flex items-center justify-center mt-4">
-              <a
-                href=""
-                className="uppercase py-2 my-2 px-4 md:mt-16 bg-transparent dark:text-gray-800 dark:bg-white hover:dark:bg-gray-100 border-2 border-gray-800 text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white text-md"
-              >
-                CONNECT WITH ME
-              </a>
-            </div>
+          <img
+            src="goodbye_bg.png"
+            alt=""
+            width="500px"
+            className="my-auto backdrop-filter backdrop-blur-lg opacity-20"
+          />
+        </div>
+      </div>
+      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-md -mt-12">
+        <div className="flex absolute top-16">
+          <div className="ml-3 relative">
+            <Link href="/auth/login">
+              <button className="flex p-2 items-center text-gray-600 rounded-lg hover:text-gray-400 text-xl font-medium focus:outline-none">
+                Login
+              </button>
+            </Link>
+          </div>
+          <div className="px-0 ml-4 relative">
+            <Link href="/auth/register">
+              <button className="flex p-2 items-center text-gray-600 rounded-lg hover:text-gray-400 text-xl font-medium focus:outline-none">
+                Sign up
+              </button>
+            </Link>
           </div>
         </div>
+        <h1 className="text-6xl font-bold text-gray-700">Goodbye</h1>
       </div>
     </div>
   );

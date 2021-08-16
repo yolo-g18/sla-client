@@ -251,16 +251,6 @@ const index = () => {
             `${PARAMS.ENDPOINT}learn/listCardSort?id=${id}`
           );
           if (cardResLearning.data.length) {
-            //get color of SS
-            try {
-              const colorRes = await getAPI(
-                `${PARAMS.ENDPOINT}studySet/color?id=${id}`
-              );
-              setSSColor(colorRes.data);
-            } catch (err) {
-              console.log(err.response.data);
-            }
-
             //add new card not started to learning
             const insertCardLearning = await getAPI(
               `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
@@ -296,9 +286,16 @@ const index = () => {
           dispatch({ type: ALERT, payload: { loading: false } });
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
-        console.log(err.response.data);
+        console.log(err);
         setErr(true);
       }
+      //get color of SS
+      try {
+        const colorRes = await getAPI(
+          `${PARAMS.ENDPOINT}studySet/color?id=${id}`
+        );
+        setSSColor(colorRes.data);
+      } catch (err) {}
     };
     fetchData();
   }, [id, isSuc, cardColor]);
@@ -337,6 +334,9 @@ const index = () => {
     setBack(cards[index].back);
     setIsModalEditOpen(true);
   };
+
+  console.log(cards[currentCard]);
+
   const handelAddOnclick = () => {
     setFront("");
     setBack("");
@@ -386,7 +386,9 @@ const index = () => {
     } else {
       const cardDataUpdate = [
         {
-          id: cards[currentCard].cardId,
+          id: cards[currentCard].id
+            ? cards[currentCard].id
+            : cards[currentCard].cardId,
           studySet: id,
           front: front,
           back: back,
@@ -395,7 +397,6 @@ const index = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         console.log("card: " + JSON.stringify(cardDataUpdate));
-
         const res = await putAPI(`${PARAMS.ENDPOINT}card/edit`, cardDataUpdate);
         dispatch({
           type: ALERT,
@@ -463,7 +464,11 @@ const index = () => {
   };
 
   const deleteCard = async () => {
-    let id = cards[currentCard].cardId;
+    let card_id = cards[currentCard].id
+      ? cards[currentCard].id
+      : cards[currentCard].cardId;
+    console.log("card id: " + id);
+
     if (!id) {
       return;
     }
@@ -474,15 +479,19 @@ const index = () => {
       setShowDeleteCardModal(false);
       return;
     }
-    dispatch({ type: ALERT, payload: { loading: true } });
     try {
-      const res = await deleteAPI(`${PARAMS.ENDPOINT}card/delete?id=${id}`);
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await deleteAPI(
+        `${PARAMS.ENDPOINT}card/delete?id=${card_id}`
+      );
       dispatch({ type: ALERT, payload: { loading: false } });
+      console.log(res.data.status);
       setIsSuc(true);
       setMessageToast("Delete card successfully");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
+      console.log(err);
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("An error occurred");
       setTypeToast("error");
@@ -1270,7 +1279,7 @@ const index = () => {
         {showModalReport ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal px-2">
-              <div className="bg-white rounded-md shadow p-6 m-4 max-w-md ">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-md text-center">
                 <div className="mb-2 text-gray-600 text-md font-semibold">
                   <p>Report {title}</p>
                 </div>
@@ -1392,7 +1401,7 @@ const index = () => {
         ) : null}
         <Snackbar
           open={isToastOpen}
-          autoHideDuration={3000}
+          autoHideDuration={1000}
           onClose={handleClose}
         >
           <Alert

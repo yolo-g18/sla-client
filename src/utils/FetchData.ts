@@ -1,5 +1,33 @@
 import axios from 'axios'
+import dayjs from 'dayjs';
+import { PARAMS } from '../common/params';
+import { convertTimeToMySQl } from '../components/schedule/convertTime';
 
+
+
+axios.interceptors.response.use(async (response) => {
+  return response
+}, function (err) {
+  const expireAt = localStorage.getItem('expiresAt');
+  const dateNow = new Date()
+  if(new Date(convertTimeToMySQl(expireAt)) < dateNow && expireAt) {
+    console.log("co vao day ko");
+    return postAPIWithoutHeaders(`${PARAMS.ENDPOINT}auth/refresh/token`, 
+        {
+          refreshToken: localStorage.getItem("refresh-token"), 
+          username: localStorage.getItem("username")
+        }).then(res => {
+          if(res.status === 200) {
+            console.log("vao tan day co ah");
+            localStorage.setItem('access-token', res.data.authenticationToken);
+            localStorage.setItem('refresh-token', res.data.refreshToken);
+            localStorage.setItem('expiresAt', res.data.expiresAt);
+          }
+        })
+  }
+  return Promise.reject(err);
+}
+);
 
 export const getAPI = async (url: string) => {
 

@@ -81,6 +81,7 @@ export interface ISearch {
   export interface ICard {
     index?: number
     cardId?:number
+    id?:number
     front: string
     back: string
     q?:number

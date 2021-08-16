@@ -215,6 +215,7 @@ const AppLayout = (props: Props) => {
   return (
     <div>
       <Meta pageTitle={props.title} description={props.desc} />
+
       <main
         className="flex flex-col  overflow-hidden relative min-h-screen "
         style={{ background: "#F3F4F5" }}
@@ -311,6 +312,19 @@ const AppLayout = (props: Props) => {
                       Invitation
                     </a>
                   </Link>
+                  {auth.roles?.includes("ROLE_ADMIN") ? (
+                    <Link href="/admin">
+                      <a
+                        className={`py-2 px-4 hover:underline ${
+                          router.pathname.indexOf("/admin") !== -1
+                            ? "text-white font-bold"
+                            : "text-gray-200"
+                        }`}
+                      >
+                        Reports
+                      </a>
+                    </Link>
+                  ) : null}
                   <div className="flex flex-row ml-12 pl-4 text-center">
                     <div className="ml-3 relative pb-1">
                       <div

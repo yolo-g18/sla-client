@@ -52,6 +52,7 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     localStorage.setItem('access-token', res.data.authenticationToken);
     localStorage.setItem('refresh-token', res.data.refreshToken);
     localStorage.setItem('expiresAt', res.data.expiresAt);
+    localStorage.setItem('username', res.data.userResponse.username);
     
   } catch (err: any) {
     dispatch({ type: ALERT, payload: {loading:false, errors: err.response.data } })
@@ -84,14 +85,18 @@ export const logout = () =>
 async (dispatch: Dispatch<IAuthType | IAlertType>) => {
   
   console.log("calling logout");
-  
-  try {
-    await getAPI(`${PARAMS.ENDPOINT}auth/logout`)
-    localStorage.removeItem('access-token')
-    localStorage.removeItem('refresh-token')
-    localStorage.removeItem('expiresAt')
-  } catch (err: any) {
-    dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
+  if(localStorage.getItem("access-token")) {
+    try {
+      await getAPI(`${PARAMS.ENDPOINT}auth/logout`)
+      localStorage.removeItem('access-token')
+      localStorage.removeItem('refresh-token')
+      localStorage.removeItem('expiresAt')
+      localStorage.removeItem('username')
+    } catch (err: any) {
+      console.log(err);
+      
+      dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
+    }
   }
 }
 
