@@ -109,7 +109,7 @@ const invitation = () => {
     }
   }
   return (
-    <AppLayout title="Invitation" desc="Invitation">
+    <AppLayout title="INVITATION" desc="INVITATION">
       {invitationList.length > 0 ? (
         invitationList.length === 1 ? (
           <p className="text-lg font-thin text-gray-400 m-16">
@@ -135,7 +135,7 @@ const invitation = () => {
             <div className="flex justify-between border-b border-gray-300 px-10 py-4">
               <div>
                 <i className="fa fa-exclamation-triangle text-orange-500"></i>
-                <span className="font-bold text-gray-700 text-lg">
+                <span className="font-bold text-gray-700 text-base">
                   {item.userNameHost}
                 </span>
               </div>
@@ -147,9 +147,9 @@ const invitation = () => {
             </div>
 
             <div className="px-10 py-5 text-gray-600">
-              <p>Invite you to attend "{item.roomName}" room</p>
+              <p className="text-sm">Invite you to attend "{item.roomName}".</p>
               <br></br>
-              <p className="text-xs italic">{item.timeInvited}</p>
+              <p className="text-xs">{item.timeInvited}</p>
             </div>
 
             <div className="px-5 py-4 flex justify-end">

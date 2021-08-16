@@ -284,15 +284,16 @@ const library = () => {
                         <div className=" mt-1">
                           <p>{set.numberOfCards} cards</p>
                         </div>
-                        {auth.userResponse?.username === room.ownerName ? (
+                        {room.ownerName === auth.userResponse?.username ? (
                           <button
-                            className="focus:outline-none tooltip"
-                            onClick={() => handleRemoveSet(set.studySet_id)}
-                          >
-                            <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
-                            <span className="tooltiptext w-20">remove</span>
-                          </button>
-                        ) : null}
+                          className="focus:outline-none tooltip"
+                          onClick={() => handleRemoveSet(set.studySet_id)}
+                        >
+                          <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
+                          <span className="tooltiptext w-20">remove</span>
+                        </button>
+                        ):null}
+
                       </div>
                     </div>
                   </div>

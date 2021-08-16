@@ -652,7 +652,7 @@ const RoomLayout = (props: Props) => {
     const data = {
       creator_id: invitedPersonId,
       title: "Room Invitation",
-      description: auth.userResponse?.username + " invites you to " + room.name,
+      description: auth.userResponse?.username + " invited you attend '" + room.name+"'.",
       type: "invitation",
       link: "/invitation",
       isRead: false,
@@ -674,7 +674,7 @@ const RoomLayout = (props: Props) => {
       creator_id: room.ownerId,
       title: "Room Request Attendance",
       description:
-        auth.userResponse?.username + " wants to attend " + room.name,
+        auth.userResponse?.username + " sent request attend '" + room.name+"'.",
       type: "request",
       link: "/room/" + room.room_id + "/requests",
       isRead: false,
@@ -699,7 +699,7 @@ const RoomLayout = (props: Props) => {
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-
+      
       router.push({
         pathname: "/[username]/library/rooms",
         query: { username: auth.userResponse?.username },
@@ -831,7 +831,7 @@ const RoomLayout = (props: Props) => {
                   <span className="tooltiptext w-16">share</span>
                 </button>
                 {/* check member */}
-                {true && room.ownerName !== auth.userResponse?.username ? (
+                {isMember === true ?(
                   <button
                     onClick={() => setIsShowLeaveRoomModal(true)}
                     className="mx-2 tooltip focus:outline-none"
