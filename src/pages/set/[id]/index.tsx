@@ -84,6 +84,8 @@ const index = () => {
   const [creatorId, setCreatorId] = useState();
   const [isSuc, setIsSuc] = useState(false);
 
+  const [listCardsDefault, setListCardDefault] = useState<ICard[]>([]);
+
   const [ssColor, setSSColor] = useState("");
   const [listColors, setListColors] = useState<string[]>([]);
 
@@ -142,9 +144,7 @@ const index = () => {
     try {
       const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
       insertToEditor(res.data);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
   const saveToServer2 = async (file: any) => {
     const data = new FormData();
@@ -153,9 +153,7 @@ const index = () => {
     try {
       const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
       insertToEditor2(res.data);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const insertToEditor = (url: string) => {
@@ -286,7 +284,6 @@ const index = () => {
           dispatch({ type: ALERT, payload: { loading: false } });
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
-        console.log(err);
         setErr(true);
       }
       //get color of SS
@@ -335,8 +332,6 @@ const index = () => {
     setIsModalEditOpen(true);
   };
 
-  console.log(cards[currentCard]);
-
   const handelAddOnclick = () => {
     setFront("");
     setBack("");
@@ -357,7 +352,6 @@ const index = () => {
           back: back,
         },
       ];
-      console.log(cardDataAdd);
 
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -396,7 +390,6 @@ const index = () => {
       ];
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
-        console.log("card: " + JSON.stringify(cardDataUpdate));
         const res = await putAPI(`${PARAMS.ENDPOINT}card/edit`, cardDataUpdate);
         dispatch({
           type: ALERT,
@@ -467,7 +460,6 @@ const index = () => {
     let card_id = cards[currentCard].id
       ? cards[currentCard].id
       : cards[currentCard].cardId;
-    console.log("card id: " + id);
 
     if (!id) {
       return;
@@ -485,13 +477,11 @@ const index = () => {
         `${PARAMS.ENDPOINT}card/delete?id=${card_id}`
       );
       dispatch({ type: ALERT, payload: { loading: false } });
-      console.log(res.data.status);
       setIsSuc(true);
       setMessageToast("Delete card successfully");
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
-      console.log(err);
       dispatch({ type: ALERT, payload: { loading: false } });
       setMessageToast("An error occurred");
       setTypeToast("error");
@@ -530,7 +520,6 @@ const index = () => {
         setisReported(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        console.log("err: " + err);
       }
     };
     fetchData();
@@ -563,7 +552,6 @@ const index = () => {
         setReportContent("  ");
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        console.log(err);
         setMessageToast("An error occurred");
         setTypeToast("error");
         setIsToastOpen(true);
@@ -607,7 +595,6 @@ const index = () => {
         setFeedback(res.data.feedback);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        console.log(err);
       }
     };
 
@@ -630,7 +617,6 @@ const index = () => {
         setListFeedBack(tempList.filter((fb) => fb.feedback));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        console.log(err);
       }
     };
     fetchData();
@@ -660,13 +646,11 @@ const index = () => {
         setShowModalFeedback(false);
       } catch (err) {
         setIsSuccess(false);
-        console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
         setMessageToast("An error occurred");
         setTypeToast("error");
         setIsToastOpen(true);
       }
-      console.log("data: " + JSON.stringify(data));
     }
   };
 
@@ -680,18 +664,12 @@ const index = () => {
         setListColors(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
-        console.log(err);
       }
     };
     fetchData();
   }, []);
 
   const setColorhandle = (color: string) => {
-    console.log({
-      id: id,
-      color: color,
-    });
-
     const putColor = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
@@ -703,7 +681,6 @@ const index = () => {
         setIsSuc(true);
       } catch (err) {
         setIsSuc(false);
-        console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
@@ -712,13 +689,53 @@ const index = () => {
     setShowModalColorPicker(false);
   };
 
+  useEffect(() => {
+    if (!id) return;
+    const fetchData = async () => {
+      try {
+        const cardRes = await getAPI(`${PARAMS.ENDPOINT}card/list?id=${id}`);
+        setListCardDefault(cardRes.data);
+      } catch (err) {}
+    };
+
+    fetchData();
+  }, [id]);
+
   const filterCardByColor = (color: string) => {
     setCardColor(color);
-    console.log("color: " + cardColor);
     setShowModalFilterCard(false);
   };
 
-  console.log(cardColor);
+  const forkHandle = async () => {
+    const cardsData: ICard[] = [];
+    listCardsDefault.forEach((card, index) => {
+      cardsData.push({ front: card.front, back: card.back });
+    });
+    const data = {
+      creator: auth.userResponse?._id,
+      title: "(Forked) " + title,
+      description: desc,
+      tag: tags,
+      cards: cardsData,
+      isPublic: false,
+    };
+
+    console.log(data);
+
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await postAPI(`${PARAMS.ENDPOINT}studySet/create`, data);
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setTypeToast("success");
+      setMessageToast("😎 Forked!");
+      setIsToastOpen(true);
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+    }
+  };
 
   if (err)
     return (
@@ -916,6 +933,7 @@ const index = () => {
                             className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
                             hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
                             role="menuitem"
+                            onClick={forkHandle}
                           >
                             <span className="flex flex-col">
                               <span>Fork</span>

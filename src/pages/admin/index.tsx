@@ -41,6 +41,9 @@ const admin = () => {
   const [keyWord, setKeyWord] = useState("");
   const [isUpdated, setIsUpdated] = useState(false);
 
+  const [totalAllReports, setTotalAllReports] = useState(0);
+  const [totalPendingReports, setTotalPendingReports] = useState(0);
+  const [totalCheckedReports, setTotalCheckedReports] = useState(0);
   //to reload status checked report
   const [isChecked, setIsChecked] = useState(false);
 
@@ -57,6 +60,7 @@ const admin = () => {
           );
           setListReport(res.data.content);
           setTotalPages(res.data.totalPages);
+          setTotalAllReports(res.data.totalElements);
         } else if (filterBy === 1) {
           const res = await getAPI(
             `${
@@ -86,6 +90,35 @@ const admin = () => {
 
     fetchData();
   }, [currentPage, filterBy, isChecked]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allRp = await getAPI(
+        `${PARAMS.ENDPOINT}admin/report/all?page=${
+          currentPage - 1
+        }&sort=createdTime,${dateSort}`
+      );
+      setTotalAllReports(allRp.data.totalElements);
+      const pendingRp = await getAPI(
+        `${
+          PARAMS.ENDPOINT
+        }admin/report/filter?isChecked=false&sort=createdTime,${dateSort}&page=${
+          currentPage - 1
+        }`
+      );
+      setTotalPendingReports(pendingRp.data.totalElements);
+      const checkedRp = await getAPI(
+        `${
+          PARAMS.ENDPOINT
+        }admin/report/filter?isChecked=true&sort=createdTime,${dateSort}&page=${
+          currentPage - 1
+        }`
+      );
+      setTotalCheckedReports(checkedRp.data.totalElements);
+    };
+
+    fetchData();
+  }, [isChecked, currentPage]);
 
   const handleSubmit = async (e: FormSubmit) => {
     e.preventDefault();
@@ -279,7 +312,9 @@ const admin = () => {
         <div className="container mx-auto sm:px-8 max-w-7xl px-8 mb-24">
           <div className="py-8">
             <div className="w-full">
-              <h2 className="text-2xl leading-tight mb-6 font-b">Reports</h2>
+              <h2 className="text-2xl leading-tight mb-6 font-b text-medium">
+                Reports
+              </h2>
               <div className="mb-6 justify-between flex w-full">
                 <div className="flex gap-6">
                   <label className="inline-flex items-center">
@@ -290,7 +325,9 @@ const admin = () => {
                       onChange={() => setFilterBy(0)}
                       checked={filterBy === 0}
                     />
-                    <span className="ml-2 ">All</span>
+                    <span className="ml-2 text-sm font-medium">
+                      All ({totalAllReports}){" "}
+                    </span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -300,7 +337,9 @@ const admin = () => {
                       onChange={() => setFilterBy(1)}
                       checked={filterBy === 1}
                     />
-                    <span className="ml-2 text-sm font-medium">Pending</span>
+                    <span className="ml-2 text-sm font-medium">
+                      Pending ({totalPendingReports}){" "}
+                    </span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -312,7 +351,9 @@ const admin = () => {
                       }}
                       checked={filterBy === 2}
                     />
-                    <span className="ml-2 ">Checked</span>
+                    <span className="ml-2 text-sm font-medium">
+                      Checked ({totalCheckedReports}){" "}
+                    </span>
                   </label>
                 </div>
                 <form
@@ -334,7 +375,7 @@ const admin = () => {
                     className="flex-shrink-0 px-6 font-medium py-1 text-sm text-white bg-blue-500 rounded-sm shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 "
                     type="submit"
                   >
-                    Filter
+                    Search
                   </button>
                 </form>
               </div>
