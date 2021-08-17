@@ -112,11 +112,11 @@ const invitation = () => {
     <AppLayout title="INVITATION" desc="INVITATION">
       {invitationList.length > 0 ? (
         invitationList.length === 1 ? (
-          <p className="text-lg font-thin text-gray-400 m-16">
+          <p className="text-lg font-thin text-gray-400 mt-4 mb-6">
             You received {invitationList.length} invitation
           </p>
         ) : (
-          <p className="text-lg font-thin text-gray-400 m-16">
+          <p className="text-lg font-thin text-gray-400 mt-4 mb-6">
             You received {invitationList.length} invitations
           </p>
         )
@@ -128,10 +128,7 @@ const invitation = () => {
 
       {invitationList.map((item, index) => {
         return (
-          <div
-            key={index}
-            className="md:w-1/5 sm:w-full rounded-lg shadow-lg bg-white my-3"
-          >
+          <div key={index} className="rounded-lg shadow-lg bg-white my-3">
             <div className="flex justify-between border-b border-gray-300 px-10 py-4">
               <div>
                 <i className="fa fa-exclamation-triangle text-orange-500"></i>
@@ -154,21 +151,22 @@ const invitation = () => {
 
             <div className="px-5 py-4 flex justify-end">
               <button
-                onClick={() => acceptInvitation(item.roomId)}
-                className="bg-green-500 text-white w-28 py-1  mx-4 rounded-md text-sm font-medium hover:bg-green-600"
-              >
-                Accept
-              </button>
-              <button
                 onClick={() => handleRejectInvitation(item.roomId)}
-                className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-md text-sm font-medium hover:bg-gray-300"
+                className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
               >
                 Reject
+              </button>
+              <button
+                onClick={() => acceptInvitation(item.roomId)}
+                className="bg-blue-500 text-white w-28 py-1  mx-4 rounded-sm text-sm font-medium hover:bg-blue-600"
+              >
+                Accept
               </button>
             </div>
           </div>
         );
       })}
+      <div className="mb-44"></div>
       <Snackbar
         open={isToastOpen}
         autoHideDuration={6000}

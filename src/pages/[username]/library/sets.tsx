@@ -22,7 +22,7 @@ const sets = (props: any) => {
 
   const router = useRouter();
   const {
-    query: { type, search_query },
+    query: { type, search_query, color },
   } = router;
 
   const [listStudySetLeaning, setListStudySetLearning] = useState<
@@ -76,7 +76,14 @@ const sets = (props: any) => {
                   .includes(search_query.toString().toLowerCase())
               )
             );
-            console.log("co thay doi hong");
+          }
+
+          if (color !== "WHITE") {
+            setListStudySetLearning(
+              listSSLearningRes.data.filter(
+                (item: IStudySetLearning) => item.color == color
+              )
+            );
           }
         } catch (err) {
           dispatch({ type: ALERT, payload: { loading: false } });
@@ -88,19 +95,19 @@ const sets = (props: any) => {
         fetchLearningSets();
       }
       if (type === "1") {
-        console.log("cai nay la creted sets");
         fetchCreatedSets();
         setListStudySetLearning([]);
       }
       if (type === "2") {
-        console.log("cai nay la learning sets");
         fetchLearningSets();
         setlistStudySetCreated([]);
       }
     };
 
     fetchData();
-  }, [user._id, type, search_query]);
+  }, [user._id, type, search_query, color]);
+
+  console.log(listStudySetLeaning);
 
   if (
     search_query &&

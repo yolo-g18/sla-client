@@ -6,6 +6,7 @@ import { errorsApiRes, IUserLogin, IUserRegister } from '../../utils/TypeScript'
 import { postAPI, getAPI, postAPIWithoutHeaders } from '../../utils/FetchData'
 import { PARAMS } from '../../common/params'
 import { validLogin, validRegister } from '../../utils/Valid'
+import { USER } from '../types/userType'
 
 export const registerAction
   = (userRegister: IUserRegister) => async (dispatch: Dispatch<IAuthType | IAlertType>) => {
@@ -82,7 +83,7 @@ export const getUserProfile = () => async (dispatch: Dispatch<IAuthType | IAlert
 }
 
 export const logout = () => 
-async (dispatch: Dispatch<IAuthType | IAlertType>) => {
+async (dispatch: Dispatch<IAuthType | IAlertType >) => {
   
   console.log("calling logout");
   if(localStorage.getItem("access-token")) {
@@ -92,9 +93,9 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
       localStorage.removeItem('refresh-token')
       localStorage.removeItem('expiresAt')
       localStorage.removeItem('username')
+      dispatch({type: AUTH, payload: {userResponse: undefined}})
     } catch (err: any) {
       console.log(err);
-      
       dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
     }
   }

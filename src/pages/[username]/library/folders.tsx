@@ -29,7 +29,7 @@ const folder = () => {
   const router = useRouter();
 
   const {
-    query: { username, search_query },
+    query: { username, search_query, color },
   } = router;
 
   const [isShowRemoveModal, setIsShowRemoveModal] = React.useState(false);
@@ -65,14 +65,21 @@ const folder = () => {
           );
         }
 
-        if (folders.length === 0) setIsShowEmpty(false);
+        console.log(res.data.filter((item: IFolder) => item.color === color));
+        console.log(color);
+
+        if (color !== "WHITE") {
+          setFolders(res.data.filter((item: IFolder) => item.color === color));
+        }
+
+        if (res.data.length === 0) setIsShowEmpty(true);
         else setIsShowEmpty(false);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     }
     excute();
-  }, [user._id, alert.success, search_query]);
+  }, [user._id, alert.success, search_query, color]);
 
   // remove folder from listFolder of user
   async function removeFolder() {
@@ -133,7 +140,7 @@ const folder = () => {
   return (
     <div>
       <LibraryLayout>
-        {folders.length === 0 ? (
+        {isShowEmpty ? (
           <div className="col-span-2 text-center mx-auto mt-24">
             <p className="text-3xl font-semibold text-gray-700">
               This folder has no sets yet

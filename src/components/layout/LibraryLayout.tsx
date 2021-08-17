@@ -24,6 +24,7 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 import { GetStaticProps } from "next";
+import { useClickOutside } from "../../hook/useClickOutside";
 
 //alert
 function Alert(props: AlertProps) {
@@ -290,23 +291,22 @@ const LibraryLayout = (props: Props) => {
     }
   }, [title, description, name]);
 
-  const [keyWord, setKeyWord] = useState(
-    search_query ? search_query.toString() : ""
-  );
+  const [keyWord, setKeyWord] = useState("");
   const seachHandle = () => {
-    setTimeout(() => {}, 1000);
     if (!user.username) return;
     if (router.pathname.indexOf("/sets") !== -1) {
       if (type) {
         router.push(
-          `/${username}/library/sets?type=${type}&search_query=${keyWord.trim()}`
+          `/${username}/library/sets?type=${type}&color=${filterColor}&search_query=${keyWord.trim()}`
         );
       } else
-        router.push(`/${username}/library/sets?search_query=${keyWord.trim()}`);
+        router.push(
+          `/${username}/library/sets?color=${filterColor}&search_query=${keyWord.trim()}`
+        );
     }
     if (router.pathname.indexOf("/folders") !== -1) {
       router.push(
-        `/${username}/library/folders?search_query=${keyWord.trim()}`
+        `/${username}/library/folders?color=${filterColor}&search_query=${keyWord.trim()}`
       );
     }
     if (router.pathname.indexOf("/rooms") !== -1) {
@@ -314,7 +314,44 @@ const LibraryLayout = (props: Props) => {
     }
   };
 
-  useEffect(() => seachHandle(), [keyWord]);
+  const [listColors, setListColors] = useState<string[]>([]);
+  const [filterColor, setFilteColor] = useState("WHITE");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setListColors(res.data);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    };
+    fetchData();
+  }, []);
+
+  console.log(search_query);
+
+  const [showModalFilterByColor, setShowModalFilterByColor] = useState(false);
+  let domNodeFilterByColor = useClickOutside(() => {
+    setShowModalFilterByColor(false);
+  });
+
+  useEffect(() => seachHandle(), [keyWord, filterColor]);
+
+  const filterByColor = (color: string) => {
+    setFilteColor(color);
+    setShowModalFilterByColor(false);
+  };
+
+  // useEffect(() => {
+  //   if (!filterColor || !username || keyWord) return;
+  //   if (auth.userResponse?.username !== username) return;
+  //   if (router.pathname.indexOf("/sets") !== -1)
+  //     router.push(
+  //       `/${username}/library/sets?type=2&color=${filterColor}&search_query=${keyWord.trim()}`
+  //     );
+  // }, [filterColor]);
 
   if (!user._id) {
     return (
@@ -489,6 +526,66 @@ const LibraryLayout = (props: Props) => {
                     />
                   ) : null}
                 </div>
+                {(router.pathname.indexOf("/sets") !== -1 ||
+                  router.pathname.indexOf("/folders") !== -1) &&
+                username === auth.userResponse?.username ? (
+                  <div className="flex my-auto ml-4 font-medium">
+                    {router.pathname.indexOf("/sets") !== -1 ? (
+                      <p>Filter sets </p>
+                    ) : (
+                      <p>Filter folders </p>
+                    )}
+
+                    <div className="my-auto ml-2" ref={domNodeFilterByColor}>
+                      <div
+                        onClick={() =>
+                          setShowModalFilterByColor(!showModalFilterByColor)
+                        }
+                        className={`w-5 h-5 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md
+                                  ${
+                                    filterColor === "WHITE"
+                                      ? "bg-white"
+                                      : `bg-${filterColor.toLowerCase()}-400`
+                                  }  bg-white cursor-pointer hover:bg-${filterColor.toLowerCase()}-300 `}
+                      ></div>
+                      {showModalFilterByColor ? (
+                        <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
+                          <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                            <div className="flex flex-wrap -mx-2">
+                              {listColors.map((color, index) => {
+                                return (
+                                  <div key={index} className="px-2">
+                                    <div
+                                      onClick={() => {
+                                        filterByColor(color);
+                                      }}
+                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                  bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                    ></div>
+                                  </div>
+                                );
+                              })}
+                              <div className="px-2">
+                                <div
+                                  onClick={() => {
+                                    filterByColor("WHITE");
+                                  }}
+                                  className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                  focus:outline-none focus:shadow-outline`}
+                                >
+                                  {" "}
+                                  <p className="text-md text-gray-700 font-medium hover:text-gray-500 hover:underline">
+                                    All
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
               </div>
               <div className="flex flex-wrap right-2 ">
                 <div className="text-gray-900 py-3 flex relative ">

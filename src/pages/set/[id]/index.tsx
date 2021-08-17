@@ -22,6 +22,7 @@ import { getUserByUsername } from "../../../redux/actions/userAction";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { FaStar } from "react-icons/fa";
 import { useClickOutside } from "../../../hook/useClickOutside";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 //alert
 function Alert(props: AlertProps) {
@@ -92,6 +93,16 @@ const index = () => {
   const [showModalColorPicker, setShowModalColorPicker] = useState(false);
   const [showModalFilterCard, setShowModalFilterCard] = useState(false);
   const [cardColor, setCardColor] = useState("WHITE");
+
+  const [listFeedback, setListFeedBack] = useState<IFeedback[]>([]);
+
+  const [showModalFeedback, setShowModalFeedback] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackContentErr, setFeedbackContentErr] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const [hoverValue, setHoverValue] = useState(undefined);
 
   const router = useRouter();
 
@@ -275,6 +286,24 @@ const index = () => {
             setCards(cardRes.data);
             setIsLearned(false);
           }
+          try {
+            const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}`);
+            const tempList: IFeedback[] = res.data;
+            setListFeedBack(tempList.filter((fb) => fb.feedback));
+          } catch (err) {}
+          try {
+            const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}/me`);
+
+            setRating(res.data.rating);
+            setFeedback(res.data.feedback);
+          } catch (err) {}
+          try {
+            const res = await getAPI(
+              `${PARAMS.ENDPOINT}studySet/checkReprotExistence/${id}`
+            );
+
+            setisReported(res.data);
+          } catch (err) {}
           setTitle(studySetRes.data.title);
           setDesc(studySetRes.data.description);
           setIsPublic(studySetRes.data.public);
@@ -295,7 +324,7 @@ const index = () => {
       } catch (err) {}
     };
     fetchData();
-  }, [id, isSuc, cardColor]);
+  }, [id, isSuc, cardColor, isSuccess]);
 
   useEffect(() => {
     if (!creatorName) return;
@@ -558,15 +587,7 @@ const index = () => {
       }
     }
   };
-  const [listFeedback, setListFeedBack] = useState<IFeedback[]>([]);
 
-  const [showModalFeedback, setShowModalFeedback] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState("");
-  const [feedbackContentErr, setFeedbackContentErr] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  const [hoverValue, setHoverValue] = useState(undefined);
   const handleMouseOver = (newHoverValue: any) => {
     setHoverValue(newHoverValue);
   };
@@ -584,43 +605,43 @@ const index = () => {
     setFeedbackContentErr("");
   }, [feedbackContentErr]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}/me`);
-        dispatch({ type: ALERT, payload: { loading: false } });
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       dispatch({ type: ALERT, payload: { loading: true } });
+  //       const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}/me`);
+  //       dispatch({ type: ALERT, payload: { loading: false } });
 
-        setRating(res.data.rating);
-        setFeedback(res.data.feedback);
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
-    };
+  //       setRating(res.data.rating);
+  //       setFeedback(res.data.feedback);
+  //     } catch (err) {
+  //       dispatch({ type: ALERT, payload: { loading: false } });
+  //     }
+  //   };
 
-    fetchData();
-  }, [id]);
+  //   fetchData();
+  // }, [id]);
 
   const showFeedbackHandle = async () => {
     try {
     } catch (err) {}
   };
 
-  useEffect(() => {
-    setIsSuccess(false);
-    if (!id) return;
-    const fetchData = async () => {
-      try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}`);
-        const tempList: IFeedback[] = res.data;
-        setListFeedBack(tempList.filter((fb) => fb.feedback));
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
-    };
-    fetchData();
-  }, [id, isSuccess]);
+  // useEffect(() => {
+  //   setIsSuccess(false);
+  //   if (!id) return;
+  //   const fetchData = async () => {
+  //     try {
+  //       dispatch({ type: ALERT, payload: { loading: true } });
+  //       const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}`);
+  //       const tempList: IFeedback[] = res.data;
+  //       setListFeedBack(tempList.filter((fb) => fb.feedback));
+  //     } catch (err) {
+  //       dispatch({ type: ALERT, payload: { loading: false } });
+  //     }
+  //   };
+  //   fetchData();
+  // }, [id, isSuccess]);
 
   const sendFeedback = async () => {
     if (!id) return;
@@ -658,13 +679,9 @@ const index = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
-        dispatch({ type: ALERT, payload: { loading: false } });
         setListColors(res.data);
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
+      } catch (err) {}
     };
     fetchData();
   }, []);
@@ -747,6 +764,8 @@ const index = () => {
         </div>
       </AppLayout>
     );
+
+  console.log();
 
   return (
     <div>
@@ -978,7 +997,7 @@ const index = () => {
                 {/* filter card by color */}
                 {isLearned ? (
                   <div className="ml-2 my-auto flex">
-                    <p>filter cards: </p>
+                    <p>Filter cards </p>
                     <div className="my-auto ml-2" ref={domNodeFilterCard}>
                       <div
                         onClick={() =>
@@ -1415,6 +1434,16 @@ const index = () => {
                 </div>
               </div>
             </div>
+          </div>
+        ) : null}
+        {alert.loading ? (
+          <div className="w-full h-full fixed block top-0 left-0 backdrop-filter backdrop-blur-sm  z-50">
+            <span
+              className=" opacity-90 top-1/2 my-0 mx-auto block relative w-0 h-0 text-3xl font-bold"
+              style={{ top: "50%" }}
+            >
+              <CircularProgress thickness={6.0} color="primary" disableShrink />
+            </span>
           </div>
         ) : null}
         <Snackbar

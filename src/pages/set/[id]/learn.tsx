@@ -271,12 +271,10 @@ const learn = () => {
         const studySetRes = await getAPI(
           `${PARAMS.ENDPOINT}studySet/view?id=${id}`
         );
-        dispatch({ type: ALERT, payload: { loading: false } });
         setStudySetID(studySetRes.data.studySetId);
         setStudySetTitle(studySetRes.data.title);
         setSsCreator(studySetRes.data.creatorName);
 
-        dispatch({ type: ALERT, payload: { loading: true } });
         const listCardLearingRes = await getAPI(
           `${PARAMS.ENDPOINT}learn/continue?studySetId=${id}`
         );
@@ -325,12 +323,9 @@ const learn = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
-        dispatch({ type: ALERT, payload: { loading: false } });
         setListColors(res.data);
       } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
         console.log(err);
       }
     };
@@ -521,14 +516,11 @@ const learn = () => {
     if (!id) return;
     const fetchData = async () => {
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(`${PARAMS.ENDPOINT}feedback/${id}/me`);
-        dispatch({ type: ALERT, payload: { loading: false } });
 
         setRating(res.data.rating);
         setFeedback(res.data.feedback);
       } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
         console.log(err);
       }
     };
@@ -659,6 +651,21 @@ const learn = () => {
         </div>
       </AppLayput2>
     );
+
+  // if (alert.loading) {
+  //   return (
+  //     <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
+  //       <div className="w-full h-full fixed block top-0 left-0 bg-white  z-50">
+  //         <span
+  //           className=" opacity-90 top-1/2 my-0 mx-auto block relative w-0 h-0 text-3xl font-bold"
+  //           style={{ top: "50%" }}
+  //         >
+  //           Loading...
+  //         </span>
+  //       </div>
+  //     </AppLayput2>
+  //   );
+  // }
 
   return (
     <div>

@@ -156,7 +156,7 @@ const home = () => {
   return (
     <div>
       <AppLayout2 title="home" desc="home">
-        <div className="pt-4 pb-24 items-center mx-auto w-5/6 mb-44">
+        <div className=" pb-24 items-center mx-auto w-5/6 mb-44">
           <div className="grid lg:grid-cols-7 grid-cols-1 mt-12">
             <div className="col-span-2 px-2 ">
               <div className="flex flex-col">
@@ -169,15 +169,15 @@ const home = () => {
                 <div className="rounded-md w-full mb-6">
                   <p className="text-gray-800 text-md font-medium mb-4">
                     {event.length
-                      ? formatUTCToDate(event[0]?.fromTime)
-                      : "No task at this day"}
+                      ? formatUTCToDate(new Date())
+                      : `No task at ${formatUTCToDate(new Date())}`}
                   </p>
-                  {event.slice(0, 9).map((evn, index) => {
+                  {event.slice(0, 5).map((evn, index) => {
                     return (
                       <article
                         key={index}
-                        className={`cursor-pointer rounded-md flex text-gray-700 mb-2 
-                    focus:outline-none`}
+                        className={`cursor-pointer rounded-md flex text-gray-700 mb-4 
+                    focus:outline-none bg-white p-4 shadow-md hover:shadow-lg hover:border-b-2`}
                       >
                         <span className="flex-none pr-2 my-auto">
                           <div>

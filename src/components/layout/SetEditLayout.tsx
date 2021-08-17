@@ -25,6 +25,7 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { useMemo } from "react";
 import { route } from "next/dist/next-server/server/router";
 import { RouterRounded } from "@material-ui/icons";
+import { CircularProgress } from "@material-ui/core";
 
 //alert
 function Alert(props: AlertProps) {
@@ -201,7 +202,7 @@ const SetEditLayout = (props: Props) => {
         }
       };
       fetchData();
-    }, [props.id, isReset]);
+    }, [props.id, isReset, creatorName]);
   }
 
   // ===================================
@@ -450,14 +451,9 @@ const SetEditLayout = (props: Props) => {
         {alert.loading === true ? (
           <div>
             <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
-              Loading...
+              <CircularProgress thickness={6.0} color="primary" disableShrink />
             </h1>
           </div>
-        ) : auth.userResponse?.username !== creatorName &&
-          router.pathname.indexOf("/set/add") === -1 ? (
-          <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
-            Not permitted
-          </h1>
         ) : (
           <div className="lg:w-3/4 mx-auto mt-4 px-4 h-full">
             <div className="flex justify-between">
