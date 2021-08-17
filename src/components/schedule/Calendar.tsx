@@ -85,7 +85,7 @@ const Calendar = (props: Props) => {
   const [showModalView, setshowModalView] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<IEventRes | any>({});
-  const [calendarChange, setCalendarChange] = useState(false);
+  const [caledarChange, setCalendarChange] = useState(false);
 
   const [listColors, setListColors] = useState<string[]>([]);
 
@@ -124,11 +124,9 @@ const Calendar = (props: Props) => {
     setCalendarChange(true);
   };
 
-  console.log(calendarChange);
-
   //jump today
   const jumToToday = () => {
-    setDayObj(todayObj.subtract(0, "month"));
+    setDayObj(todayObj);
     setCalendarChange(true);
 
     const fetchData = async () => {
@@ -190,14 +188,16 @@ const Calendar = (props: Props) => {
             }
           }
         });
-        if (!alert.loading) setListEvent(res.data);
+        setListEvent(res.data);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
 
     fetchData();
-  }, [calendarChange, isSuccess]);
+  }, [caledarChange, isSuccess]);
+
+  console.log(listEvent);
 
   useEffect(() => {
     if (eventHandle.typeAction === 1) {

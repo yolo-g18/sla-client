@@ -49,10 +49,15 @@ const LibraryLayout = (props: Props) => {
 
   //call api get user profile by username de lay ra fullname, address, email, school, job de hien thi
   useEffect(() => {
-    console.log("username: " + username);
-    console.log("redux: " + user.username);
-
     if (!username) return;
+    if (
+      alert.success === "Folder created" ||
+      alert.success === "Room created"
+    ) {
+      setTypeToast("success");
+      setMessageToast(alert.success.toString());
+      setIsToastOpen(true);
+    }
     dispatch(getUserByUsername(`${username}`));
   }, [username]);
 
@@ -63,8 +68,8 @@ const LibraryLayout = (props: Props) => {
       });
     } else {
       setShowModal(true);
-      setTitle("Untitle");
-      setName("Untitle");
+      setTitle("Untitled");
+      setName("Untitled");
       setDescription("");
     }
   }
@@ -184,7 +189,7 @@ const LibraryLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "ss" },
         });
-        setMessageToast("folder created");
+        setMessageToast("Folder created");
         setTypeToast("success");
         setIsToastOpen(true);
       } catch (err) {
@@ -247,7 +252,7 @@ const LibraryLayout = (props: Props) => {
           payload: { loading: false, success: "abc" },
         });
 
-        setMessageToast("room created");
+        setMessageToast("Room created");
         setTypeToast("success");
         setIsToastOpen(true);
       } catch (err) {

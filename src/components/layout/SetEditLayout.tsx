@@ -340,8 +340,6 @@ const SetEditLayout = (props: Props) => {
           query: { id: props.id },
         });
       } catch (err) {
-        console.log(err);
-
         dispatch({ type: ALERT, payload: { loading: false } });
         setIsToastOpen(true);
         setTypeToast("error");
@@ -455,7 +453,7 @@ const SetEditLayout = (props: Props) => {
             </h1>
           </div>
         ) : (
-          <div className="lg:w-3/4 mx-auto mt-4 px-4 h-full">
+          <div className="lg:w-3/4 mx-auto mt-8 px-4 h-full">
             <div className="flex justify-between">
               <div className="flex flex-grow">
                 <h1 className="text-3xl font-semibold">

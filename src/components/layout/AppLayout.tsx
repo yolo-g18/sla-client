@@ -6,17 +6,27 @@ import { FormSubmit, RootStore, INotification } from "../../utils/TypeScript";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { getUserProfile } from "../../redux/actions/authAction";
-import { ddmItemsAdd, menuitem } from "../../common/listCommon";
-import link from "next/link";
+import { menuitem } from "../../common/listCommon";
 import { putSearchKeyword } from "../../redux/actions/searchAction";
 import React from "react";
-import { getAPI, putAPI } from "../../utils/FetchData";
+import { getAPI, postAPI, putAPI } from "../../utils/FetchData";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 import { useClickOutside } from "../../hook/useClickOutside";
 import AddIcon from "@material-ui/icons/Add";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import dayjs from "dayjs";
+import AddRoundedIcon from "@material-ui/icons/AddRounded";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import InputGroup from "../input/InputGroup";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 interface Props {
   title: string;
@@ -24,6 +34,8 @@ interface Props {
   children: React.ReactNode;
   search?: string;
 }
+
+const colorFolderList: String[] = [];
 
 const todayObj = dayjs();
 
@@ -36,6 +48,15 @@ const AppLayout = (props: Props) => {
   let domNode = useClickOutside(() => {
     setIsMenuOpen(false);
   });
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
 
   const [isOpenSidebar, setOpenSidebar] = useState(true);
   const { auth, alert, search } = useSelector((state: RootStore) => state);
@@ -178,6 +199,200 @@ const AppLayout = (props: Props) => {
     setCurrentPage(getCurrentPage + 1);
   }
 
+  const [showMenuCreate, setShowMenuCreate] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  // state in form add folder/room
+  const [title, setTitle] = useState("Untitled");
+  const [description, setDescription] = useState("");
+  const [name, setName] = useState("Untitled");
+  const [typeAdd, setTypeAdd] = useState(0);
+
+  //state of error input form
+  const [titleErr, setTitleErr] = useState("");
+  const [descErr, setDescErr] = useState("");
+  const [nameErr, setNameErr] = useState("");
+
+  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [typeToast, setTypeToast] = useState("success");
+  const [messageToast, setMessageToast] = useState("");
+
+  // set state for array color
+  const [colors, setColors]: [String[], (colors: String[]) => void] =
+    React.useState(colorFolderList);
+
+  React.useEffect(() => {
+    // call api folder color
+    async function excute() {
+      try {
+        const res = await getAPI(`${PARAMS.ENDPOINT}folder/getColorFolder`);
+        setColors(res.data);
+      } catch (err) {}
+    }
+    excute();
+  }, []);
+
+  let domNodeAddMenu = useClickOutside(() => {
+    setShowMenuCreate(false);
+  });
+
+  // load option for select of folder color
+  const listColorItems = colors.map((item) => (
+    <option key={item.toString()}>{item}</option>
+  ));
+
+  // get value of color in select
+  const [stateColorFolder, setStateColorFolder] = React.useState({ color: "" });
+
+  const formValue = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStateColorFolder({
+      ...stateColorFolder,
+      [event.target.name]: event.target.value.trim(),
+    });
+  };
+  const color_folder = React.useRef<HTMLSelectElement>(null);
+
+  //type 0: add folder, type = 1: add room
+  const handleAddNew = (type: number) => {
+    setTypeAdd(type);
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: FormSubmit) => {
+    e.preventDefault();
+    // create new folder and create new room
+
+    if (title.trim().length <= 0) {
+      setTitleErr("Title is required.");
+    } else if (title.trim().length > 20) {
+      setTitleErr("Title cannot exceed 20 character.");
+    } else {
+      setTitleErr("");
+    }
+
+    if (name.trim().length <= 0) {
+      setNameErr("Name is required.");
+    } else if (name.trim().length > 20) {
+      setNameErr("Name cannot exceed 20 character.");
+    } else {
+      setNameErr("");
+    }
+
+    if (description.trim().length > 150) {
+      setDescErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescErr("");
+    }
+
+    if (titleErr || nameErr || descErr) {
+      return;
+    }
+    if (typeAdd === 0) {
+      const color = "" + color_folder.current?.value;
+      const creator_id = "" + auth.userResponse?._id;
+      const data = { title, description, color, creator_id };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(
+          `${PARAMS.ENDPOINT}folder/createFolder`,
+          data
+        );
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "Folder created" },
+        });
+        router.push({
+          pathname: "/[username]/library/folders",
+          query: { username: auth.userResponse?.username },
+        });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+    } else {
+      //creating new room
+      e.preventDefault();
+      const owner_id = "" + auth.userResponse?._id;
+      const data = { owner_id, name, description };
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPI(`${PARAMS.ENDPOINT}room/createRoom`, data);
+
+        // set creator is member
+        const maxRoomRes = await getAPI(`${PARAMS.ENDPOINT}room/getMaxIdRoom`);
+        const maxIdRoom = maxRoomRes.data;
+        const roomMember = {
+          room_id: maxIdRoom,
+          member_id: owner_id,
+        };
+        const addMemberRes = await putAPI(
+          `${PARAMS.ENDPOINT}room/addMemberToRoom`,
+          roomMember
+        );
+        dispatch({
+          type: ALERT,
+          payload: { loading: false, success: "Room created" },
+        });
+        router.push({
+          pathname: "/[username]/library/rooms",
+          query: { username: auth.userResponse?.username },
+        });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+      }
+
+      // get id of just created room
+      let maxIdRoom = 0;
+
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await getAPI(`${PARAMS.ENDPOINT}room/getMaxIdRoom`);
+        maxIdRoom = res.data;
+        // set creator is member
+        const roomMember = {
+          room_id: maxIdRoom,
+          member_id: owner_id,
+        };
+        const addMemberRes = await putAPI(
+          `${PARAMS.ENDPOINT}room/addMemberToRoom`,
+          roomMember
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setIsToastOpen(true);
+        setTypeToast("error");
+        setMessageToast("An error occurred");
+      }
+    }
+
+    setShowModal(false);
+  };
+
+  //valid form add
+  useEffect(() => {
+    if (title.trim().length <= 0) {
+      setTitleErr("Title is required.");
+    } else if (title.trim().length > 20) {
+      setTitleErr("Title cannot exceed 20 character.");
+    } else {
+      setTitleErr("");
+    }
+
+    if (name.trim().length <= 0) {
+      setNameErr("Name is required.");
+    } else if (name.trim().length > 20) {
+      setNameErr("Name cannot exceed 20 character.");
+    } else {
+      setNameErr("");
+    }
+
+    if (description.trim().length > 150) {
+      setDescErr("Description cannot exceed 150 characters.");
+    } else {
+      setDescErr("");
+    }
+  }, [title, description, name]);
+
   const listNotification = notificationList.map((item) => {
     return (
       <li>
@@ -254,16 +469,69 @@ const AppLayout = (props: Props) => {
                   </div>
                 </form>
 
-                <div className="px-6 relative">
+                <div ref={domNodeAddMenu} className="px-6 relative ">
                   {/* create new drop down menu */}
-                  <Ddm
+                  <button
+                    className="hover:bg-blue-500 p-2 rounded-md"
+                    onClick={() => setShowMenuCreate(!showMenuCreate)}
+                  >
+                    <AddRoundedIcon fontSize="default" className="text-white" />
+                    <ExpandMoreIcon fontSize="small" className="text-white" />
+                  </button>
+                  {showMenuCreate ? (
+                    <div
+                      className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white 
+                    ring-1 ring-black ring-opacity-5"
+                    >
+                      <div
+                        className={`py-1`}
+                        role="menu"
+                        aria-orientation="vertical"
+                        aria-labelledby="options-menu"
+                      >
+                        <a
+                          className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                            hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                          role="menuitem"
+                        >
+                          <Link href="/set/add">
+                            <span className="flex flex-col">
+                              <span>Study set</span>
+                            </span>
+                          </Link>
+                        </a>
+                        <a
+                          className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                            hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                          role="menuitem"
+                          onClick={() => handleAddNew(0)}
+                        >
+                          <span className="flex flex-col">
+                            <span>Folder</span>
+                          </span>
+                        </a>
+                        <a
+                          className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                            hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                          role="menuitem"
+                          onClick={() => handleAddNew(1)}
+                        >
+                          <span className="flex flex-col">
+                            <span>Room</span>
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {/* <Ddm
                     icon={<AddIcon className="text-white" />}
                     withBackground={false}
                     forceOpen={false}
                     items={ddmItemsAdd.map((item) => {
                       return { label: item.label, link: item.link };
                     })}
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="flex items-center ">
@@ -353,8 +621,6 @@ const AppLayout = (props: Props) => {
                               aria-orientation="vertical"
                               aria-labelledby="options-menu"
                             >
-                              
-                             
                               {listNotification.length !== 0 ? (
                                 <p
                                   onClick={readAllNews}
@@ -363,8 +629,6 @@ const AppLayout = (props: Props) => {
                                   Mark read all
                                 </p>
                               ) : null}
-                              
-                              
 
                               <ul className="divide-y divide-gray-100">
                                 {listNotification.length === 0 ? (
@@ -510,6 +774,144 @@ const AppLayout = (props: Props) => {
             </div>
           </div>
         </footer>
+        {/* popup editor */}
+
+        {showModal ? (
+          <>
+            <div
+              hidden
+              className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12"
+            >
+              <div className="relative w-auto my-6">
+                {/*content*/}
+                <div className="border-0 rounded-md shadow-md flex flex-col w-full bg-white outline-none focus:outline-none p-2">
+                  {/*header*/}
+                  <div className="justify-between px-4 pb-6 pt-8 rounded-t">
+                    <p className="text-gray-700 font-semibold text-lg text-center">
+                      {typeAdd === 0 ? "Create Folder" : "Create Room"}
+                    </p>
+                  </div>
+                  {/*body*/}
+                  <form onSubmit={handleSubmit}>
+                    <div className="w-full px-4 flex-wrap">
+                      {typeAdd === 0 ? (
+                        <>
+                          <InputGroup
+                            type="text"
+                            setValue={setTitle}
+                            value={title}
+                            placeholder="Title"
+                            error={titleErr}
+                            label="Title"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <InputGroup
+                            type="text"
+                            setValue={setName}
+                            value={name}
+                            placeholder="Name"
+                            error={nameErr}
+                            label="Name"
+                          />
+                        </>
+                      )}
+
+                      <InputGroup
+                        type="text"
+                        setValue={setDescription}
+                        value={description}
+                        placeholder="Description"
+                        error={descErr}
+                        label="Description"
+                      />
+                      <div className="my-2">
+                        <small className="font-medium text-red-600">
+                          {alert.errors?.message}
+                        </small>
+                      </div>
+                      {typeAdd === 0 ? (
+                        <>
+                          <div className="relative mb-4">
+                            <div className="flex items-center justify-between">
+                              <label className="text-gray-700 text-sm font-bold mb-2">
+                                Colors
+                              </label>
+                            </div>
+                            <select
+                              id="color"
+                              className="block border border-grey-light w-full p-2 rounded-md mb-1 focus:border-purple-400 text-sm"
+                              ref={color_folder}
+                              name="color"
+                              onChange={formValue}
+                              value={stateColorFolder.color}
+                            >
+                              {listColorItems}
+                            </select>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+
+                    {/*footer*/}
+                    <div className="flex justify-between px-12 py-6">
+                      <button
+                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-gray-300"
+                        type="button"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className=" bg-blue-500 text-white w-28 py-1 mx-2 rounded-sm text-sm font-medium hover:bg-blue-600"
+                        type="submit"
+                      >
+                        {alert.loading ? (
+                          <div className="flex justify-center items-center space-x-1">
+                            <svg
+                              fill="none"
+                              className="w-6 h-6 animate-spin"
+                              viewBox="0 0 32 32"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                clipRule="evenodd"
+                                d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                                fill="currentColor"
+                                fillRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          "Create"
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : null}
+        <Snackbar
+          open={isToastOpen}
+          autoHideDuration={1000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={
+              typeToast === "success"
+                ? "success"
+                : typeToast === "error"
+                ? "error"
+                : "warning"
+            }
+          >
+            {messageToast}
+          </Alert>
+        </Snackbar>
       </main>
     </div>
   );
