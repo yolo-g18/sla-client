@@ -161,7 +161,9 @@ const requests = () => {
       creator_id: userId,
       title: "Room Attend Acceptance",
       description:
-       "Your request attend '" + room.name+"' has been approved. Now, you can see resources of this room.",
+        "Your request attend '" +
+        room.name +
+        "' has been approved. Now, you can see resources of this room.",
       type: "acceptance",
       link: "/room/" + room.room_id + "/library",
       isRead: false,

@@ -24,6 +24,7 @@ const Meta = ({ pageTitle, description }: Props) => {
       <meta name="image" property="og:image" content={`${url}/home.png`} />
       <link rel="icon" type="image/svg+xml" href="shuttle.svg" />
       <link rel="icon" type="image/svg+xml" href="../shuttle.svg" />
+      <link rel="icon" type="image/svg+xml" href="../../shuttle.svg" />
       <link rel="mask-icon" href="/icons/rocket.svg" />
       <meta property="og:type" content="website" />
       <meta name="twitter:card" content="summary" />

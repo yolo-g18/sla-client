@@ -177,6 +177,13 @@ export interface ISearch {
     createdDate: string;
     ownerName: string;
   };
+
+  //number sets, folders, members in room
+  export interface INumberEntity {
+    setNumbers?:number
+    folderNumbers?:number
+    memberNumbers?:number
+  }
   
 
 export interface INewRoom {
@@ -216,6 +223,7 @@ export interface INewRoom {
   export interface ISSResultSearch {
     id:number
     creator: string
+    creatorAvatar:string
     title: string 
     tag:string | ""
     description:string | ""

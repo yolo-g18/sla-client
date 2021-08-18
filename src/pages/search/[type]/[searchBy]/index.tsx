@@ -134,29 +134,31 @@ const index = () => {
                     >
                       <div className="flex justify-between w-full">
                         <Link href={`/set/${set.id}`}>
-                          <div className="hover:underline  font-bold text-xl cursor-pointer">
-                            {set.title.length <= 15
-                              ? set.title
-                              : set.title.substring(0, 15) + "..."}{" "}
-                          </div>
+                          <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                            {set.title}
+                          </p>
                         </Link>
                         <Link href={`/${set.creator}/library/sets`}>
-                          <div className="hover:underline  font-bold text-md cursor-pointer">
-                            {set.creator}
+                          <div className="flex">
+                            <img
+                              className="w-6 h-6 my-auto rounded-full object-cover object-center"
+                              src={`${
+                                set.creatorAvatar
+                                  ? set.creatorAvatar
+                                  : "../../user.svg"
+                              }`}
+                              alt="Avatar Upload"
+                            />
+                            <p className="font-medium text-md hover:underline ml-2 my-auto">
+                              {set.creator}
+                            </p>
                           </div>
                         </Link>
                       </div>
                       <div>
-                        {set.description ? (
-                          set.description.length <= 80 ? (
-                            <p className="text-gray-500">{set.description}</p>
-                          ) : (
-                            <p className="text-gray-500">
-                              {set.description.substring(0, 80)}...
-                            </p>
-                          )
-                        ) : null}
-                        {}
+                        <p className="text-sm font-normal text-gray-600 my-4">
+                          {set.description}
+                        </p>
                       </div>
                       <div className="flex flex-wrap">
                         {set.tag
@@ -170,7 +172,7 @@ const index = () => {
                                     className="my-1 mr-2 flex "
                                     onClick={() => tagOnClickHandler(tg)}
                                   >
-                                    <span className="px-4 py-1 rounded-xl truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer text-sm font-bold ">
+                                    <span className="px-4 py-1 rounded-xl text-sm truncate bg-gray-200 text-blue-500 hover:underline cursor-pointer font-bold ">
                                       {tg}
                                     </span>
                                   </div>
@@ -180,10 +182,34 @@ const index = () => {
                           : null}
                         {}
                       </div>
-                      <div className="flex flex-row">
+                      <div className="flex flex-row text-gray-600 font-medium my-4">
                         <p>{set.numberOfCards} cards</p>
                       </div>
-                      <div className="grid grid-cols-4 gap-4">{}</div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {set.first4Cards.slice(0, 2).map((card, index) => {
+                          return (
+                            <div
+                              key={index}
+                              className="rounded-md flex w-full my-4 relative"
+                            >
+                              <div className="flex justify-between w-full gap-3">
+                                <div
+                                  className=" w-1/2 rounded-md bg-gray-100 shadow-lg border-b-1 p-4  text-xs break-all"
+                                  dangerouslySetInnerHTML={{
+                                    __html: card.front ? card.front : "",
+                                  }}
+                                ></div>
+                                <div
+                                  className="card-overview w-1/2 rounded-md bg-gray-100 shadow-lg border-b-1 p-9  text-xs break-all"
+                                  dangerouslySetInnerHTML={{
+                                    __html: card.back ? card.back : "",
+                                  }}
+                                ></div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   );
                 })
@@ -213,7 +239,13 @@ const index = () => {
                           <div className="flex items-center p-4 justify-between">
                             <div>
                               <div className="flex">
-                                <FaceOutlinedIcon style={{ fontSize: 35 }} />{" "}
+                                <img
+                                  className="w-12 h-12 my-auto rounded-full object-cover object-center"
+                                  src={`${
+                                    user.avatar ? user.avatar : "../../user.svg"
+                                  }`}
+                                  alt="Avatar Upload"
+                                />
                                 <p className="font-bold text-xl ml-4 my-auto">
                                   {user.username}
                                 </p>

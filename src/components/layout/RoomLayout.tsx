@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import AppLayout from "./AppLayout";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import { useSelector } from "react-redux";
-import { RootStore } from "../../utils/TypeScript";
+import { INumberEntity, RootStore } from "../../utils/TypeScript";
 import React from "react";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
@@ -31,6 +31,9 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import InputGroup from "../input/InputGroup";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import FeaturedVideoIcon from "@material-ui/icons/FeaturedVideo";
+import PeopleIcon from "@material-ui/icons/People";
+import FolderOpenRoundedIcon from "@material-ui/icons/FolderOpenRounded";
 
 interface Props {
   children: React.ReactNode;
@@ -154,6 +157,8 @@ const RoomLayout = (props: Props) => {
 
   const [isShowLeaveRoomModal, setIsShowLeaveRoomModal] = React.useState(false);
 
+  const [numberEntity, setNumberEntity] = useState<INumberEntity>({});
+
   React.useEffect(() => {
     // load detail data of room
 
@@ -164,6 +169,11 @@ const RoomLayout = (props: Props) => {
         setRoom(res.data);
         setTitle(res.data.name);
         setDescription(res.data.description);
+        setNumberEntity({
+          setNumbers: res.data.setNumbers,
+          folderNumbers: res.data.folderNumbers,
+          memberNumbers: res.data.memberNumbers,
+        });
 
         dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
@@ -652,7 +662,11 @@ const RoomLayout = (props: Props) => {
     const data = {
       creator_id: invitedPersonId,
       title: "Room Invitation",
-      description: auth.userResponse?.username + " invited you attend '" + room.name+"'.",
+      description:
+        auth.userResponse?.username +
+        " invited you attend '" +
+        room.name +
+        "'.",
       type: "invitation",
       link: "/invitation",
       isRead: false,
@@ -674,7 +688,10 @@ const RoomLayout = (props: Props) => {
       creator_id: room.ownerId,
       title: "Room Request Attendance",
       description:
-        auth.userResponse?.username + " sent request attend '" + room.name+"'.",
+        auth.userResponse?.username +
+        " sent request attend '" +
+        room.name +
+        "'.",
       type: "request",
       link: "/room/" + room.room_id + "/requests",
       isRead: false,
@@ -699,7 +716,7 @@ const RoomLayout = (props: Props) => {
       );
 
       dispatch({ type: ALERT, payload: { loading: false, success: "ss" } });
-      
+
       router.push({
         pathname: "/[username]/library/rooms",
         query: { username: auth.userResponse?.username },
@@ -736,6 +753,51 @@ const RoomLayout = (props: Props) => {
               <div className="mt-4">
                 <p className="text-sm font-light text-gray-800">
                   {room.description}
+                </p>
+              </div>
+              <div className="mt-6">
+                <p className="mt-2 text-sm">
+                  <FeaturedVideoIcon
+                    fontSize="medium"
+                    className="text-gray-600 -mt-1"
+                  />{" "}
+                  <span className="mr-4">
+                    {" "}
+                    {numberEntity.setNumbers}{" "}
+                    {numberEntity.setNumbers
+                      ? numberEntity.setNumbers <= 1
+                        ? "Sets"
+                        : "Sets"
+                      : "Set"}
+                  </span>
+                </p>
+                <p className="mt-2 text-sm">
+                  <FolderOpenRoundedIcon
+                    fontSize="medium"
+                    className="text-gray-600 -mt-1"
+                  />{" "}
+                  <span className="mr-4">
+                    {numberEntity.folderNumbers}{" "}
+                    {numberEntity.folderNumbers
+                      ? numberEntity.folderNumbers <= 1
+                        ? "Folder"
+                        : "Folders"
+                      : "Folder"}
+                  </span>
+                </p>
+                <p className="mt-2 text-sm">
+                  <PeopleIcon
+                    fontSize="medium"
+                    className="text-gray-600 -mt-1"
+                  />{" "}
+                  <span className="mr-4">
+                    {numberEntity.memberNumbers}{" "}
+                    {numberEntity.memberNumbers
+                      ? numberEntity.memberNumbers <= 1
+                        ? "Member"
+                        : "Members"
+                      : "Member"}
+                  </span>
                 </p>
               </div>
             </div>
@@ -831,7 +893,7 @@ const RoomLayout = (props: Props) => {
                   <span className="tooltiptext w-16">share</span>
                 </button>
                 {/* check member */}
-                {isMember === true ?(
+                {isMember === true ? (
                   <button
                     onClick={() => setIsShowLeaveRoomModal(true)}
                     className="mx-2 tooltip focus:outline-none"

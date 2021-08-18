@@ -436,7 +436,7 @@ const AppLayout = (props: Props) => {
         style={{ background: "#F3F4F5" }}
       >
         <header
-          className=" z-40 top-0 sticky h-20 sm:h-16 flex items-center border-b-2 "
+          className=" z-40 top-0 sticky h-14 flex items-center border-b-2 "
           style={{ background: "#3273de" }}
         >
           {auth.userResponse ? (
@@ -450,7 +450,7 @@ const AppLayout = (props: Props) => {
                 <form onSubmit={handelSearchSubmit}>
                   <div className="relative text-gray-600 ml-6">
                     <svg
-                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-white pointer-events-none fill-current group-hover:text-white 
+                      className="absolute left-0 mt-2 w-4 h-4 ml-4 text-white pointer-events-none fill-current group-hover:text-white 
                       sm:block"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
@@ -459,7 +459,7 @@ const AppLayout = (props: Props) => {
                     </svg>
                     <input
                       type="text"
-                      className="block w-full py-1.5 pl-10 pr-4 rounded-md f
+                      className="block w-full py-1 pl-10 pr-4 rounded-md f
                       focus:outline-none focus:ring-2  bg-blue-500 hover:bg-blue-400 text-white placeholder-white"
                       // style={{ background: "#4b8cf7" }}
                       placeholder="Search..."

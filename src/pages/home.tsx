@@ -162,7 +162,7 @@ const home = () => {
               <div className="flex flex-col">
                 <div className="relative w-44 h-2 bg-blue-600 mb-2"></div>
                 <p className="text-lg font-bold text-blue-600">
-                  Today Task ({event?.length})
+                  Today's Task ({event?.length})
                 </p>
               </div>
               <div className="mb-6">
