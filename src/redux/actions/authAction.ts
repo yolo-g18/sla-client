@@ -41,8 +41,11 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
       }
       return dispatch({ type: ALERT, payload: { errors: errorRes, loading: false} })
     }
-
   try {
+    localStorage.setItem('access-token', "");
+    localStorage.setItem('refresh-token', "");
+    localStorage.setItem('expiresAt', "");
+    localStorage.setItem('username', "");
     dispatch({ type: ALERT, payload: { loading: true } })
 
     const res = await postAPIWithoutHeaders(`${PARAMS.ENDPOINT}auth/login`, userLogin);
@@ -54,7 +57,6 @@ async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     localStorage.setItem('refresh-token', res.data.refreshToken);
     localStorage.setItem('expiresAt', res.data.expiresAt);
     localStorage.setItem('username', res.data.userResponse.username);
-    
   } catch (err: any) {
     dispatch({ type: ALERT, payload: {loading:false, errors: err.response.data } })
   }

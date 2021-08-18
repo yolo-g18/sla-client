@@ -7,14 +7,49 @@ import InputGroup from "../../components/input/InputGroup";
 import { RootStore } from "../../utils/TypeScript";
 import Link from "next/link";
 import { loginAction, clearError } from "../../redux/actions/authAction";
+import { PARAMS } from "../../common/params";
+import { ALERT } from "../../redux/types/alertType";
+import { postAPIWithoutHeaders } from "../../utils/FetchData";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+//alert
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const emailRegex = new RegExp(PARAMS.EMAIL_REGEX);
 
 const login = () => {
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isUsernameTyping, setIsUsernameTyping] = useState(false);
   const [isPasswordTyping, setIsPasswordTyping] = useState(false);
 
+  const [emailErr, setEmailErr] = useState("");
+
+  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [typeToast, setTypeToast] = useState("success");
+  const [messageToast, setMessageToast] = useState("");
+
+  //handel close toast
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsToastOpen(false);
+  };
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!emailRegex.test(email)) {
+      setEmailErr("Email is invalid");
+    } else setEmailErr("");
+  }, [email]);
 
   useEffect(() => {
     setIsUsernameTyping(true);
@@ -24,13 +59,36 @@ const login = () => {
     setIsPasswordTyping(true);
   }, [password]);
 
-  const handleSubmit = (e: FormSubmit) => {
+  const handleSubmit = async (e: FormSubmit) => {
     setIsUsernameTyping(false);
     setIsPasswordTyping(false);
 
     e.preventDefault();
-    const data = { username, password };
-    dispatch(loginAction(data));
+    if (showResetPassword) {
+      if (emailErr) return;
+      try {
+        dispatch({ type: ALERT, payload: { loading: true } });
+        const res = await postAPIWithoutHeaders(
+          `${PARAMS.ENDPOINT}auth/forgotPassword`,
+          {
+            email,
+          }
+        );
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setMessageToast(
+          "You should have received a confirmation email notifying you that your password has been reset"
+        );
+        setTypeToast("success");
+        setIsToastOpen(true);
+        setShowModalPassword(false);
+      } catch (err) {
+        dispatch({ type: ALERT, payload: { loading: false } });
+        setEmailErr(err.response.data.message);
+      }
+    } else {
+      const data = { username, password };
+      dispatch(loginAction(data));
+    }
   };
 
   const { auth, alert } = useSelector((state: RootStore) => state);
@@ -49,11 +107,15 @@ const login = () => {
     dispatch(clearError());
   };
 
+  const [showResetPassword, setShowModalPassword] = useState(false);
+
+  const handelForgotPassword = async () => {};
+
   return (
     <div>
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
-          <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+          <div className="bg-white px-6 py-8 rounded shadow-lg text-black w-full">
             <h1 className="font-mono text-3xl mb-16 text-center">Join SLA</h1>
 
             <div className="mt-10">
@@ -65,7 +127,6 @@ const login = () => {
                   error={
                     !isUsernameTyping ? alert.errors?.errors?.username : ""
                   }
-                  required
                   label="Username"
                 />
                 <InputGroup
@@ -75,7 +136,6 @@ const login = () => {
                   error={
                     !isPasswordTyping ? alert.errors?.errors?.password : ""
                   }
-                  required
                   label="Password"
                 />
                 <div className="my-2">
@@ -85,13 +145,36 @@ const login = () => {
                 </div>
                 <Link href="#">
                   <a
-                    href="#"
                     className="text-sm float-right text-blue-600 hover:underline focus:text-blue-600"
+                    onClick={() => setShowModalPassword(!showResetPassword)}
                   >
-                    Forgot Password?
+                    {showResetPassword ? "Cancel" : "Forgot Password?"}
                   </a>
                 </Link>
-
+                {showResetPassword ? (
+                  <div>
+                    <p className="my-6 text-gray-700">Reset password</p>
+                    <InputGroup
+                      type="text"
+                      placeholder="Email"
+                      setValue={setEmail}
+                      error={emailErr}
+                      required
+                      label="Email"
+                    />
+                    {/* <div className="my-2">
+                      <small className="font-medium text-red-600">
+                        {resetPwsErr}
+                      </small>
+                    </div> */}
+                    <div className="   mx-auto text-center">
+                      <small className="text-gray-600 text-xs px-1 mb-2">
+                        *Enter your email address and we'll email you a reset
+                        password
+                      </small>
+                    </div>
+                  </div>
+                ) : null}
                 <button
                   className="w-full mt-10 text-center py-2 rounded bg-blue-500 hover:bg-blue-600
                  text-white hover:bg-green-dark focus:outline-none my-1"
@@ -112,6 +195,8 @@ const login = () => {
                         />
                       </svg>
                     </div>
+                  ) : showResetPassword ? (
+                    "Reset"
                   ) : (
                     "Login"
                   )}
@@ -132,6 +217,18 @@ const login = () => {
           </div>
         </div>
       </div>
+      <Snackbar
+        open={isToastOpen}
+        autoHideDuration={3000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={typeToast === "success" ? "success" : "error"}
+        >
+          {messageToast}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

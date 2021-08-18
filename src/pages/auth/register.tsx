@@ -57,7 +57,7 @@ const register = () => {
     <div>
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
-          <div className="bg-white px-6 py-8 rounded shadow-sm text-black w-full">
+          <div className="bg-white px-6 py-8 rounded shadow-lg text-black w-full">
             <h5 className="font-mono mb-1 text-center">Join SLA</h5>
             <h1 className="mb-8 text-3xl text-center">Sign up</h1>
             <form onSubmit={handleSubmit}>
@@ -90,7 +90,7 @@ const register = () => {
                   {alert.errors?.message}
                 </small>
               </div>
-              <button className="w-full text-center py-3 rounded-sm hover:bg-blue-600 bg-blue-500 text-white hover:bg-green-dark focus:outline-none my-1">
+              <button className="w-full text-center py-2 rounded-sm hover:bg-blue-600 bg-blue-500 text-white hover:bg-green-dark focus:outline-none mb-2 mt-8 ">
                 {alert.loading ? (
                   <div className="flex justify-center items-center space-x-1">
                     <svg
@@ -111,22 +111,6 @@ const register = () => {
                   "Create Account"
                 )}
               </button>
-              <div className="text-center text-sm text-grey-dark mt-4">
-                By signing up, you agree to the{" "}
-                <a
-                  className="no-underline border-b border-gray-400 text-grey-dark"
-                  href="#"
-                >
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a
-                  className="no-underline border-b border-gray-400 text-grey-dark"
-                  href="#"
-                >
-                  Privacy Policy
-                </a>
-              </div>
             </form>
           </div>
           <div className="text-grey-dark mt-6">

@@ -5,12 +5,12 @@ import { PARAMS } from "../../common/params";
 import InputGroup from "../../components/input/InputGroup";
 import ProfileSettingLayout from "../../components/layout/ProfileSettingLayout";
 import { ALERT } from "../../redux/types/alertType";
-import { putAPI } from "../../utils/FetchData";
+import { postAPI, postAPIWithoutHeaders, putAPI } from "../../utils/FetchData";
 import { FormSubmit, RootStore } from "../../utils/TypeScript";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
-import { isBuffer } from "lodash";
+import Link from "next/link";
 
 //alert
 function Alert(props: AlertProps) {
@@ -109,6 +109,31 @@ const account = () => {
       console.log(err.response.data.message);
     }
   };
+
+  const [showModalNotiResetPass, setShowModalNotiResetPass] = useState(false);
+  const resetPasswordHandle = async () => {
+    const email = auth.userResponse?.email;
+    try {
+      dispatch({ type: ALERT, payload: { loading: true } });
+      const res = await postAPIWithoutHeaders(
+        `${PARAMS.ENDPOINT}auth/forgotPassword`,
+        {
+          email,
+        }
+      );
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast(
+        "You should have received a confirmation email notifying you that your password has been reset"
+      );
+      setTypeToast("success");
+      setIsToastOpen(true);
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setIsToastOpen(true);
+      setTypeToast("error");
+      setMessageToast("An error occurred");
+    }
+  };
   return (
     <div>
       <ProfileSettingLayout>
@@ -142,10 +167,19 @@ const account = () => {
               error={reNewPwsErr}
               required
             />
+            <Link href="#">
+              <a
+                onClick={resetPasswordHandle}
+                className="text-sm float-right text-blue-600 hover:underline focus:text-blue-600"
+              >
+                Forgot Password?
+              </a>
+            </Link>
           </div>
+
           <div className="px-1">
             <button
-              className="w-36 mt-2 shadow bg-blue-500 hover:bg-blue-600 text-sm focus:outline-none text-white py-2 rounded-sm"
+              className="w-32 mt-10 shadow bg-blue-500 hover:bg-blue-600 text-sm focus:outline-none text-white py-2 rounded-sm"
               type="button"
               onClick={handleSubmit}
             >
@@ -171,6 +205,7 @@ const account = () => {
             </button>
           </div>
         </form>
+
         <Snackbar
           open={isToastOpen}
           autoHideDuration={3000}
