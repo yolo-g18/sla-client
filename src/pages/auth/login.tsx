@@ -100,6 +100,10 @@ const login = () => {
       } else {
         router.push("/home");
       }
+    } else {
+      if (localStorage.getItem("access-token")) {
+        router.push("/home");
+      }
     }
   }, [auth.roles]);
 

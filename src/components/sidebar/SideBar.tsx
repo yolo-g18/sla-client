@@ -57,7 +57,9 @@ const SideBar = (props: Props) => {
                     style={{ background: "#F3F4F5" }}
                   >
                     {link.icon}
-                    <span className="mx-4 text-md w-40 ">{link.label}</span>
+                    <span className="mx-4 w-40 text-md text-gray-600 cursor-pointer hover:text-gray-900 font-medium">
+                      {link.label}
+                    </span>
                   </a>
                 </Link>
               );

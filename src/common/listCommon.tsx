@@ -11,7 +11,7 @@ export const itemsFoldersFilter = [
 
 export const itemListProfile = [
   { label: "Profile", link: "/me/profile" },
-  { label: "Learning custom", link: "/me/learning-custom" },
+  { label: "Setting", link: "/me/learning-custom" },
   { label: "Account", link: "/me/account" },
 ];
 
@@ -21,8 +21,12 @@ export const menuitem = [
     link: "/me/profile",
   },
   {
+    label: "Account",
+    link: "/me/account",
+  },
+  {
     label: "Setting",
-    link: "/setting",
+    link: "/me/learning-custom",
   },
   {
     label: "Help",

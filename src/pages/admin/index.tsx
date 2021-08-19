@@ -123,11 +123,12 @@ const admin = () => {
   const handleSubmit = async (e: FormSubmit) => {
     e.preventDefault();
     setFilterBy(0);
+    setKeyWord(keyWord.trim());
     const fetchData = async () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(
-          `${PARAMS.ENDPOINT}admin/report?content=${keyWord}&page=${
+          `${PARAMS.ENDPOINT}admin/report?content=${keyWord.trim()}&page=${
             currentPage - 1
           }&sort=createdTime,${dateSort}`
         );

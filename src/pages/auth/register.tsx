@@ -51,6 +51,12 @@ const register = () => {
     });
   }
 
+  useEffect(() => {
+    if (localStorage.getItem("access-token")) {
+      router.push("/home");
+    }
+  }, []);
+
   console.log(alert.loading);
 
   return (

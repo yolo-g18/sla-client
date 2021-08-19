@@ -203,13 +203,6 @@ const sets = (props: any) => {
                                 {set.studySetName}
                               </p>
                             </Link>
-                            <Link href={`/${set.owner}/library/sets`}>
-                              <p className="my-auto ml-2">
-                                <span className="text-gray-500 text-sm hover:underline">
-                                  {set.owner}
-                                </span>
-                              </p>
-                            </Link>
                           </div>
                         </div>
                         <div className="mb-4 h-20 text-sm">
@@ -221,13 +214,35 @@ const sets = (props: any) => {
                             </p>
                           )}
                         </div>
-                        <div>
-                          <p className="text-blue-500 font-medium text-sm">
-                            Progress: {Math.round(set.progress * 100)}%
-                          </p>
-                        </div>
-                        <div className=" mt-1">
-                          <p>{set.numberOfCards} cards</p>
+                        <div className="flex justify-between">
+                          <div>
+                            <div>
+                              <p className="text-blue-500 font-medium text-sm">
+                                Progress: {Math.round(set.progress * 100)}%
+                              </p>
+                            </div>
+                            <div className="font-semibold text-gray-500">
+                              <p>{set.numberOfCards} cards</p>
+                            </div>
+                          </div>
+                          <Link href={`/${set.owner}/library/sets`}>
+                            <div className="flex">
+                              <img
+                                className="w-5 h-5 my-auto rounded-full object-cover object-center"
+                                src={`${
+                                  set.creatorAvatar
+                                    ? set.creatorAvatar
+                                    : "../../user.svg"
+                                }`}
+                                alt="Avatar Upload"
+                              />
+                              <p className="my-auto ml-2">
+                                <span className="text-gray-600 font-medium text-md hover:underline">
+                                  {set.owner}
+                                </span>
+                              </p>
+                            </div>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -253,20 +268,13 @@ const sets = (props: any) => {
                     <div className=" col-span-1" key={index}>
                       <div
                         className="flex-col col-span-1 rounded-md my-4 bg-white 
-                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
+                          hover:border-gray-300 hover:shadow-lg duration-150 cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
                       >
                         <div className=" w-full flex flex-row mb-2">
                           <div className="w-full flex justify-between my-auto">
                             <Link href={`/set/${set.id}`}>
                               <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
                                 {set.title}
-                              </p>
-                            </Link>
-                            <Link href={`/${set.creator}/library/sets`}>
-                              <p className="my-auto ml-2">
-                                <span className="text-gray-500 text-sm hover:underline">
-                                  {set.creator}
-                                </span>
                               </p>
                             </Link>
                           </div>
@@ -280,8 +288,30 @@ const sets = (props: any) => {
                             </p>
                           )}
                         </div>
-                        <div className=" mt-1">
-                          <p>{set.numberOfCards} cards</p>
+                        <div className="flex justify-between">
+                          <div className=" mt-1 font-semibold text-gray-500">
+                            <p>{set.numberOfCards} cards</p>
+                          </div>
+                          <div>
+                            <Link href={`/${set.creator}/library/sets`}>
+                              <div className="flex">
+                                <img
+                                  className="w-5 h-5 my-auto rounded-full object-cover object-center"
+                                  src={`${
+                                    set.creatorAvatar
+                                      ? set.creatorAvatar
+                                      : "../../user.svg"
+                                  }`}
+                                  alt="Avatar Upload"
+                                />
+                                <p className="my-auto ml-2">
+                                  <span className="text-gray-600 font-medium text-md hover:underline">
+                                    {set.creator}
+                                  </span>
+                                </p>
+                              </div>
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>

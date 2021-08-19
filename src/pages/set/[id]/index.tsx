@@ -566,6 +566,8 @@ const index = () => {
     if (reportContent.length === 0) {
       setReportContentErr("Report content required");
       return;
+    } else if (reportContent.length > 500) {
+      setReportContentErr("cannot exceed 500 character");
     } else {
       setReportContentErr("");
       try {
@@ -783,7 +785,7 @@ const index = () => {
               <div className="px-3 mr-auto">
                 <small className="text-sm">create by </small>
                 <Link href={`/${creatorName}/library/sets`}>
-                  <a className="font-bold text-md hover:underline cursor-pointer">
+                  <a className="font-medium text-md hover:underline cursor-pointer">
                     {creatorName}
                   </a>
                 </Link>

@@ -464,7 +464,7 @@ const LibraryLayout = (props: Props) => {
           </div>
           <div className=" col-span-2 px-2">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 border-b border-gray-200">
-              <div className="col-span-1 grid grid-cols-3 gap-2 mt-4 justify-around text-md text-gray-600 cursor-pointe">
+              <div className="col-span-1 grid grid-cols-3 gap-2 mt-4 justify-around text-md text-gray-600 cursor-pointer">
                 <Link href={`/${username}/library/sets?color=WHITE`}>
                   <a
                     className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${

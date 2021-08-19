@@ -395,7 +395,9 @@ const Folder = () => {
           <div className="col-span-3 mb-44">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
-                <Link href={`/${folder.creatorUserName}/library/folders`}>
+                <Link
+                  href={`/${folder.creatorUserName}/library/folders?color=WHITE`}
+                >
                   <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                     <ChevronLeftIcon /> Back to library folder
                   </p>
@@ -481,7 +483,7 @@ const Folder = () => {
                     <div className=" col-span-1" key={index}>
                       <div
                         className="flex-col col-span-1 rounded-md my-4 bg-white 
-                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
+                          hover:border-gray-300 hover:shadow-lg duration-150 cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
                       >
                         <div className=" w-full flex flex-row mb-2">
                           <div className="w-full flex justify-between my-auto">

@@ -38,7 +38,7 @@ const ProfileSettingLayout = (props: Props) => {
                   query: { username: auth.userResponse?.username },
                 }}
               >
-                <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+                <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800 ">
                   <ChevronLeftIcon />
                   go to your library
                 </p>

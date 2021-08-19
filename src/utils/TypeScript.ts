@@ -102,6 +102,7 @@ export interface ISearch {
     userID:number
     studySetId: number
     owner: string
+    creatorAvatar?:string
     studySetName: string  
     ssDescription: string | ""
     progress: number
@@ -124,6 +125,7 @@ export interface ISearch {
   export interface IStudySetInfo2 {
     id?:number
     creator?:string
+    creatorAvatar?:string
     title: string
     description: string | ""
     tag?:string 

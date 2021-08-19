@@ -16,20 +16,17 @@ export default function index() {
       } else {
         router.push("/home");
       }
+    } else {
+      if (localStorage.getItem("access-token")) {
+        router.push("/home");
+      }
     }
   }, [auth.roles]);
 
   return (
     <div>
       <div className="flex relative z-20 items-center ">
-        <div className="container mx-auto px-6 flex flex-col justify-between items-center relative py-4">
-          {/* <img
-            src="goodbye_bg.png"
-            alt=""
-            width="500px"
-            className="my-auto backdrop-filter backdrop-blur-lg opacity-20"
-          /> */}
-        </div>
+        <div className="container mx-auto px-6 flex flex-col justify-between items-center relative py-4"></div>
       </div>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-md -mt-12">
         <div className="flex absolute top-16">

@@ -29,16 +29,8 @@ const learningCustom = () => {
   const dispatch = useDispatch();
   const { auth, alert } = useSelector((state: RootStore) => state);
 
-  const [favourTimeFrom, setFavourTimeFrom] = useState<Date | null>(
-    auth.userResponse?.favourTimeFrom
-      ? auth.userResponse.favourTimeFrom
-      : new Date(todayObj.toString())
-  );
-  const [favourTimeTo, setFavourTimeTo] = useState<Date | null>(
-    auth.userResponse?.favourTimeTo
-      ? auth.userResponse.favourTimeTo
-      : new Date(todayObj.toString())
-  );
+  const [favourTimeFrom, setFavourTimeFrom] = useState<Date | null>(new Date());
+  const [favourTimeTo, setFavourTimeTo] = useState<Date | null>(new Date());
 
   const [timeInputErr, setTimeInputErr] = useState("");
 
@@ -54,19 +46,18 @@ const learningCustom = () => {
 
     setIsToastOpen(false);
   };
+
+  console.log(auth.userResponse?.favourTimeFrom);
+
   useEffect(() => {
-    setFavourTimeFrom(
-      auth.userResponse?.favourTimeFrom
-        ? auth.userResponse?.favourTimeFrom
-        : new Date(todayObj.toString())
-    );
-    setFavourTimeTo(
-      auth.userResponse?.favourTimeTo
-        ? auth.userResponse?.favourTimeTo
-        : new Date(todayObj.toString())
-    );
-    console.log("init: " + favourTimeTo + ":" + favourTimeFrom);
-  }, [auth.userResponse]);
+    if (auth.userResponse?.favourTimeFrom) {
+      console.log("sao nhay vao day dc ha");
+      setFavourTimeFrom(auth.userResponse?.favourTimeFrom);
+    }
+    if (auth.userResponse?.favourTimeTo) {
+      setFavourTimeTo(auth.userResponse?.favourTimeTo);
+    }
+  }, [auth.userResponse?.favourTimeTo, auth.userResponse?.favourTimeFrom]);
 
   useEffect(() => {
     const from = new Date(
@@ -82,7 +73,6 @@ const learningCustom = () => {
         setTimeInputErr("");
       }
     }
-    console.log("changing...: " + favourTimeTo + ":" + favourTimeFrom);
   }, [favourTimeFrom, favourTimeTo]);
 
   const handleSubmit = async () => {
@@ -93,8 +83,6 @@ const learningCustom = () => {
       favourTimeTo: favourTimeTo,
     };
 
-    console.log(data);
-
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await putAPI(`${PARAMS.ENDPOINT}me/changeFavorTime`, data);
@@ -104,7 +92,6 @@ const learningCustom = () => {
       setTypeToast("success");
       setIsToastOpen(true);
     } catch (err) {
-      console.log(err);
       dispatch({ type: ALERT, payload: { loading: false } });
       setIsToastOpen(true);
       setTypeToast("error");
@@ -138,7 +125,7 @@ const learningCustom = () => {
                     }}
                   />
                 </div>
-                <div className="col-span-1 w-full flex">
+                <div className="col-span-1 w-full">
                   <KeyboardTimePicker
                     margin="normal"
                     id="time-picker"
@@ -150,10 +137,10 @@ const learningCustom = () => {
                       "aria-label": "change time",
                     }}
                   />
-                  <small className="font-medium text-red-600">
-                    {timeInputErr}
-                  </small>
                 </div>
+                <small className="font-medium text-red-600">
+                  {timeInputErr}
+                </small>
               </div>
             </MuiPickersUtilsProvider>
           </div>
