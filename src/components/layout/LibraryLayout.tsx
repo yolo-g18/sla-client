@@ -465,12 +465,7 @@ const LibraryLayout = (props: Props) => {
           <div className=" col-span-2 px-2">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 border-b border-gray-200">
               <div className="col-span-1 grid grid-cols-3 gap-2 mt-4 justify-around text-md text-gray-600 cursor-pointe">
-                <Link
-                  href={{
-                    pathname: "/[username]/library/sets",
-                    query: { username: username },
-                  }}
-                >
+                <Link href={`/${username}/library/sets?color=WHITE`}>
                   <a
                     className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/sets") !== -1
@@ -481,12 +476,7 @@ const LibraryLayout = (props: Props) => {
                     <p className="font-bold">Sets</p>
                   </a>
                 </Link>
-                <Link
-                  href={{
-                    pathname: "/[username]/library/folders",
-                    query: { username: username },
-                  }}
-                >
+                <Link href={`/${username}/library/folders?color=WHITE`}>
                   <a
                     className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
                       router.pathname.indexOf("/folders") !== -1

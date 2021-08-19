@@ -46,6 +46,12 @@ const folder = () => {
   React.useEffect(() => {
     // list all folders of user
     async function excute() {
+      if (!user._id) return;
+      if (alert.success === "Folder created") {
+        setTypeToast("success");
+        setMessageToast(alert.success.toString());
+        setIsToastOpen(true);
+      }
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const res = await getAPI(

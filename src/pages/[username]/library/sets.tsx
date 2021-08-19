@@ -212,8 +212,8 @@ const sets = (props: any) => {
                             </Link>
                           </div>
                         </div>
-                        <div className="mb-4 h-20">
-                          {set.ssDescription.length <= 150 ? (
+                        <div className="mb-4 h-20 text-sm">
+                          {set.ssDescription.length <= 100 ? (
                             <p className="text-gray-500">{set.ssDescription}</p>
                           ) : (
                             <p className="text-gray-500">
@@ -222,7 +222,7 @@ const sets = (props: any) => {
                           )}
                         </div>
                         <div>
-                          <p className="text-gray-500 text-sm">
+                          <p className="text-blue-500 font-medium text-sm">
                             Progress: {Math.round(set.progress * 100)}%
                           </p>
                         </div>
@@ -271,7 +271,7 @@ const sets = (props: any) => {
                             </Link>
                           </div>
                         </div>
-                        <div className="mb-4 h-20">
+                        <div className="mb-4 h-20 text-sm">
                           {set.description.length <= 150 ? (
                             <p className="text-gray-500">{set.description}</p>
                           ) : (

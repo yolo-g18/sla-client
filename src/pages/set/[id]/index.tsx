@@ -783,21 +783,21 @@ const index = () => {
               <div className="px-3 mr-auto">
                 <small className="text-sm">create by </small>
                 <Link href={`/${creatorName}/library/sets`}>
-                  <h4 className="font-bold text-md hover:underline cursor-pointer">
+                  <a className="font-bold text-md hover:underline cursor-pointer">
                     {creatorName}
-                  </h4>
+                  </a>
                 </Link>
               </div>
             </div>
             <p>
-              <span className=" text-xl font-bold">{title}</span>
+              <span className="text-md font-bold">{title}</span>
               <br />
               <br />
               <hr />
               <br />
               <span className="text-sm text-gray-700">about</span>
               <br />
-              <span>{desc}</span>
+              <span className="text-sm">{desc}</span>
               <br />
             </p>
             <br />

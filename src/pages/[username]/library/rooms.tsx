@@ -179,11 +179,11 @@ const rooms = (props: any) => {
             </div>
           ))
         )}
-       
+
         {isShowRemoveModal ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
             <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-xl shadow p-6 m-4 max-w-xs max-h-full text-center">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
                 <div className="mb-4"></div>
                 <div className="mb-8">
                   <p className="text-xl font-semibold">
@@ -197,7 +197,7 @@ const rooms = (props: any) => {
                 <div className="flex justify-center">
                   <button
                     onClick={removeRoom}
-                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                    className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
                     {alert.loading ? (
                       <div className="flex justify-center items-center space-x-1">
@@ -221,7 +221,7 @@ const rooms = (props: any) => {
                   </button>
                   <button
                     onClick={closeRemoveRoomModal}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-green-500 hover:bg-green-600"
+                    className=" text-white w-32 py-1 mx-4 rounded-sm bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>

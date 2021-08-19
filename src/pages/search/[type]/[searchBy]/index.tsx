@@ -200,7 +200,7 @@ const index = () => {
                                   }}
                                 ></div>
                                 <div
-                                  className="card-overview w-1/2 rounded-md bg-gray-100 shadow-lg border-b-1 p-9  text-xs break-all"
+                                  className="w-1/2 rounded-md bg-gray-100 shadow-lg border-b-1 p-4  text-xs break-all"
                                   dangerouslySetInnerHTML={{
                                     __html: card.back ? card.back : "",
                                   }}

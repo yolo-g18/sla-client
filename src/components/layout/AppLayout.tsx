@@ -301,10 +301,9 @@ const AppLayout = (props: Props) => {
           type: ALERT,
           payload: { loading: false, success: "Folder created" },
         });
-        router.push({
-          pathname: "/[username]/library/folders",
-          query: { username: auth.userResponse?.username },
-        });
+        router.push(
+          `/${auth.userResponse?.username}/library/folders?color=WHITE`
+        );
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -472,7 +471,7 @@ const AppLayout = (props: Props) => {
                 <div ref={domNodeAddMenu} className="px-6 relative ">
                   {/* create new drop down menu */}
                   <button
-                    className="hover:bg-blue-500 p-2 rounded-md"
+                    className="hover:bg-blue-500 p-1 rounded-md"
                     onClick={() => setShowMenuCreate(!showMenuCreate)}
                   >
                     <AddRoundedIcon fontSize="default" className="text-white" />

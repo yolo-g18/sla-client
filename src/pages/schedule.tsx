@@ -26,7 +26,9 @@ const todayObj = dayjs();
 
 const schedule = () => {
   const dispatch = useDispatch();
-  const { alert, event } = useSelector((state: RootStore) => state);
+  const { alert, event, eventHandle } = useSelector(
+    (state: RootStore) => state
+  );
   const [dateNow, setDateNow] = useState(new Date());
 
   useEffect(() => {
@@ -39,25 +41,26 @@ const schedule = () => {
           )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
         );
         const listTemp: IEventRes[] = [...res.data];
-        listTemp.map(async (item, index) => {
-          if (item.isLearnEvent) {
-            try {
-              const res = await getAPI(
-                `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
-                  item.description
-                }&date=${convertTimeEvnLearn(item.fromTime)}`
-              );
-              dispatch({ type: ALERT, payload: { loading: false } });
-              if (res.data.length) {
-                listTemp[index].isDone = false;
-              } else listTemp[index].isDone = true;
-            } catch (err) {
-              console.log(err);
-              dispatch({ type: ALERT, payload: { loading: false } });
+        Promise.all(
+          listTemp.map(async (item, index) => {
+            if (item.isLearnEvent) {
+              try {
+                const res = await getAPI(
+                  `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                    item.description
+                  }&date=${convertTimeEvnLearn(item.fromTime)}`
+                );
+                dispatch({ type: ALERT, payload: { loading: false } });
+                if (res.data.length) {
+                  listTemp[index].isDone = false;
+                } else listTemp[index].isDone = true;
+              } catch (err) {
+                console.log(err);
+                dispatch({ type: ALERT, payload: { loading: false } });
+              }
             }
-          }
-        });
-        if (!alert.loading) dispatch(putEvent(res.data));
+          })
+        ).then(() => dispatch(putEvent(res.data)));
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -153,11 +156,11 @@ const schedule = () => {
                         ) : (
                           <div
                             className={`font-semibold truncate hover:underline
-                                ${
-                                  new Date(evn.toTime) < dateNow
-                                    ? " text-gray-400 line-through"
-                                    : "text-gray-800 "
-                                }`}
+                              ${
+                                new Date(evn.toTime) < dateNow
+                                  ? " text-gray-400 line-through"
+                                  : "text-gray-800 "
+                              }`}
                             onClick={() => viewEventhandle(evn)}
                           >
                             {evn.name}

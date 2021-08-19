@@ -306,6 +306,8 @@ export interface IEventHandle {
   typeAction?: number
   currentEvn?: IEventRes | undefined
   time?: Date
+  dateFrom?:Date
+  dateTo?:Date
 }
 
 export interface ILearnActionPayload {

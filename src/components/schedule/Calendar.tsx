@@ -128,23 +128,7 @@ const Calendar = (props: Props) => {
   const jumToToday = () => {
     setDayObj(todayObj);
     setCalendarChange(true);
-
-    const fetchData = async () => {
-      try {
-        dispatch({ type: ALERT, payload: { loading: true } });
-        const res = await getAPI(
-          `${PARAMS.ENDPOINT}event?from=${convertTimeToMySQl(
-            todayObj.startOf("day")
-          )}&to=${convertTimeToMySQl(todayObj.endOf("day"))}`
-        );
-        dispatch({ type: ALERT, payload: { loading: false } });
-        dispatch(putEvent(res.data));
-      } catch (err) {
-        dispatch({ type: ALERT, payload: { loading: false } });
-      }
-    };
-
-    fetchData();
+    showMoreHandle(todayObj.startOf("day"), todayObj.endOf("day"));
   };
   const showModalViewEventHandle = (evn: IEventRes) => {
     setshowModalView(true);
@@ -170,25 +154,26 @@ const Calendar = (props: Props) => {
           )}`
         );
         const listTemp: IEventRes[] = [...res.data];
-        listTemp.map(async (item, index) => {
-          if (item.isLearnEvent) {
-            try {
-              const res = await getAPI(
-                `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
-                  item.description
-                }&date=${convertTimeEvnLearn(item.fromTime)}`
-              );
-              dispatch({ type: ALERT, payload: { loading: false } });
-              if (res.data.length) {
-                listTemp[index].isDone = false;
-              } else listTemp[index].isDone = true;
-            } catch (err) {
-              console.log(err);
-              dispatch({ type: ALERT, payload: { loading: false } });
+        Promise.all(
+          listTemp.map(async (item, index) => {
+            if (item.isLearnEvent) {
+              try {
+                const res = await getAPI(
+                  `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                    item.description
+                  }&date=${convertTimeEvnLearn(item.fromTime)}`
+                );
+                dispatch({ type: ALERT, payload: { loading: false } });
+                if (res.data.length) {
+                  listTemp[index].isDone = false;
+                } else listTemp[index].isDone = true;
+              } catch (err) {
+                console.log(err);
+                dispatch({ type: ALERT, payload: { loading: false } });
+              }
             }
-          }
-        });
-        setListEvent(res.data);
+          })
+        ).then(() => setListEvent(res.data));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -196,8 +181,6 @@ const Calendar = (props: Props) => {
 
     fetchData();
   }, [caledarChange, isSuccess]);
-
-  console.log(listEvent);
 
   useEffect(() => {
     if (eventHandle.typeAction === 1) {
@@ -245,8 +228,27 @@ const Calendar = (props: Props) => {
           )}&to=${convertTimeToMySQl(dateTo)}`
         );
 
-        dispatch({ type: ALERT, payload: { loading: false } });
-        dispatch(putEvent(res.data));
+        const listTemp: IEventRes[] = [...res.data];
+        Promise.all(
+          listTemp.map(async (item, index) => {
+            if (item.isLearnEvent) {
+              try {
+                const res = await getAPI(
+                  `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                    item.description
+                  }&date=${convertTimeEvnLearn(item.fromTime)}`
+                );
+                if (res.data.length) {
+                  listTemp[index].isDone = false;
+                } else listTemp[index].isDone = true;
+              } catch (err) {
+                console.log(err);
+              }
+            }
+          })
+        ).then(() => {
+          dispatch(putEvent(listTemp));
+        });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
