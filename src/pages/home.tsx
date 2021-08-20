@@ -50,24 +50,25 @@ const home = () => {
         dispatch({ type: ALERT, payload: { loading: false } });
 
         const listTemp: IEventRes[] = [...res.data];
-        listTemp.map(async (item, index) => {
-          if (item.isLearnEvent) {
-            try {
-              const res = await getAPI(
-                `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
-                  item.description
-                }&date=${convertTimeEvnLearn(item.fromTime)}`
-              );
-              dispatch({ type: ALERT, payload: { loading: false } });
-              if (res.data.length) {
-                listTemp[index].isDone = false;
-              } else listTemp[index].isDone = true;
-            } catch (err) {
-              console.log(err);
+        Promise.all(
+          listTemp.map(async (item, index) => {
+            if (item.isLearnEvent) {
+              try {
+                const res = await getAPI(
+                  `${PARAMS.ENDPOINT}learn/learnByDate?studySet=${
+                    item.description
+                  }&date=${convertTimeEvnLearn(item.fromTime)}`
+                );
+                dispatch({ type: ALERT, payload: { loading: false } });
+                if (res.data.length) {
+                  listTemp[index].isDone = false;
+                } else listTemp[index].isDone = true;
+              } catch (err) {
+                console.log(err);
+              }
             }
-          }
-        });
-        if (!alert.loading) dispatch(putEvent(listTemp));
+          })
+        ).then(() => dispatch(putEvent(listTemp)));
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -265,7 +266,7 @@ const home = () => {
                     </div>
                     <div className="flex flex-col">
                       <Link
-                        href={`/${auth.userResponse?.username}/library/sets`}
+                        href={`/${auth.userResponse?.username}/library/sets?color=WHITE&search_query=`}
                       >
                         <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                           Show more <ChevronRightIcon fontSize="small" />
@@ -317,7 +318,9 @@ const home = () => {
                                   <p>{set.numberOfCards} cards</p>
                                 </div>
                               </div>
-                              <Link href={`/${set.owner}/library/sets`}>
+                              <Link
+                                href={`/${set.owner}/library/sets?color=WHITE&search_query=`}
+                              >
                                 <div className="flex">
                                   <img
                                     className="w-5 h-5 my-auto rounded-full object-cover object-center"
@@ -389,7 +392,9 @@ const home = () => {
                                 <p>{set.numberOfCards} cards</p>
                               </div>
                               <div>
-                                <Link href={`/${set.creator}/library/sets`}>
+                                <Link
+                                  href={`/${set.creator}/library/sets?color=WHITE&search_query=`}
+                                >
                                   <div className="flex">
                                     <img
                                       className="w-5 h-5 my-auto rounded-full object-cover object-center"

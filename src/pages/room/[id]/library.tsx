@@ -271,7 +271,7 @@ const library = () => {
                           </Link>
                         </div>
                       </div>
-                      <div className="mb-4 h-20">
+                      <div className="mb-4 h-20 text-sm">
                         {set.description.length <= 150 ? (
                           <p className="text-gray-500">{set.description}</p>
                         ) : (
@@ -281,19 +281,18 @@ const library = () => {
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <div className=" mt-1">
+                        <div className=" mt-1 font-semibold text-gray-500">
                           <p>{set.numberOfCards} cards</p>
                         </div>
                         {room.ownerName === auth.userResponse?.username ? (
                           <button
-                          className="focus:outline-none tooltip"
-                          onClick={() => handleRemoveSet(set.studySet_id)}
-                        >
-                          <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
-                          <span className="tooltiptext w-20">remove</span>
-                        </button>
-                        ):null}
-
+                            className="focus:outline-none tooltip"
+                            onClick={() => handleRemoveSet(set.studySet_id)}
+                          >
+                            <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
+                            <span className="tooltiptext w-20">remove</span>
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   </div>

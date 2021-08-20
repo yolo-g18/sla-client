@@ -1,0 +1,117 @@
+"filename", "language", "TypeScript", "TypeScript React", "JavaScript", "JSON", "XML", "Markdown", "CSS", "HTML", "Log", "comment", "blank", "total"
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/README.md", "Markdown", 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 15, 35
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/a.json", "JSON", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/next-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 3
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/package-lock.json", "JSON", 0, 0, 0, 5654, 0, 0, 0, 0, 0, 0, 1, 5655
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/package.json", "JSON", 0, 0, 0, 52, 0, 0, 0, 0, 0, 0, 1, 53
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/postcss.config.js", "JavaScript", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/blackboard.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/draft.svg", "XML", 0, 0, 0, 0, 59, 0, 0, 0, 0, 1, 1, 61
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/grinning.svg", "XML", 0, 0, 0, 0, 48, 0, 0, 0, 0, 1, 1, 50
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/happy.svg", "XML", 0, 0, 0, 0, 49, 0, 0, 0, 0, 1, 1, 51
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/home.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/library.svg", "XML", 0, 0, 0, 0, 65, 0, 0, 0, 0, 1, 1, 67
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/neutral.svg", "XML", 0, 0, 0, 0, 41, 0, 0, 0, 0, 1, 1, 43
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/notebook.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/sad.svg", "XML", 0, 0, 0, 0, 42, 0, 0, 0, 0, 1, 1, 44
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/schedule.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/shuttle.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/smile.svg", "XML", 0, 0, 0, 0, 42, 0, 0, 0, 0, 1, 1, 44
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/sosad.svg", "XML", 0, 0, 0, 0, 52, 0, 0, 0, 0, 1, 1, 54
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/telescope.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/user.svg", "XML", 0, 0, 0, 0, 97, 0, 0, 0, 0, 1, 1, 99
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/vercel.svg", "XML", 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/common/listCommon.tsx", "TypeScript React", 0, 50, 0, 0, 0, 0, 0, 0, 0, 9, 6, 65
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/common/params.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/addTagForm/AddTagForm.tsx", "TypeScript React", 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 5, 45
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/card/SimpleLevelsCard.tsx", "TypeScript React", 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 5, 46
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/data/TaskList.tsx", "TypeScript React", 0, 237, 0, 0, 0, 0, 0, 0, 0, 0, 6, 243
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/ddm/DropDownMenu.tsx", "TypeScript React", 0, 111, 0, 0, 0, 0, 0, 0, 0, 1, 14, 126
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/ddm/SelectBox.tsx", "TypeScript React", 0, 115, 0, 0, 0, 0, 0, 0, 0, 0, 16, 131
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/event/Event.tsx", "TypeScript React", 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 3, 43
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/input/InputArea.tsx", "TypeScript React", 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 4, 42
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/input/InputGroup.tsx", "TypeScript React", 0, 54, 0, 0, 0, 0, 0, 0, 0, 8, 6, 68
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/inputtext/InputText.tsx", "TypeScript React", 0, 94, 0, 0, 0, 0, 0, 0, 0, 0, 5, 99
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/AppLayout.tsx", "TypeScript React", 0, 828, 0, 0, 0, 0, 0, 0, 0, 23, 69, 920
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/LibraryLayout.tsx", "TypeScript React", 0, 687, 0, 0, 0, 0, 0, 0, 0, 22, 59, 768
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/ProfileSettingLayout.tsx", "TypeScript React", 0, 57, 0, 0, 0, 0, 0, 0, 0, 0, 4, 61
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/RoomLayout.tsx", "TypeScript React", 0, 1356, 0, 0, 0, 0, 0, 0, 0, 21, 108, 1485
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/SearchLayout.tsx", "TypeScript React", 0, 153, 0, 0, 0, 0, 0, 0, 0, 0, 8, 161
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/SetEditLayout.tsx", "TypeScript React", 0, 244, 0, 0, 0, 0, 0, 0, 0, 540, 23, 807
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/library/Folder.tsx", "TypeScript React", 0, 698, 0, 0, 0, 0, 0, 0, 0, 21, 55, 774
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/loading/Loading.tsx", "TypeScript React", 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 3, 21
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/optionsListProfile/index.tsx", "TypeScript React", 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1, 12
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/pagination/Pagination.tsx", "TypeScript React", 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 3, 43
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/schedule/Calendar.tsx", "TypeScript React", 0, 1179, 0, 0, 0, 0, 0, 0, 0, 16, 71, 1266
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/schedule/convertTime.ts", "TypeScript", 60, 0, 0, 0, 0, 0, 0, 0, 0, 5, 12, 77
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/schedule/fakeData.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/set/Set.tsx", "TypeScript React", 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 3, 41
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/sidebar/SideBar.tsx", "TypeScript React", 0, 82, 0, 0, 0, 0, 0, 0, 0, 0, 6, 88
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/site/Meta.tsx", "TypeScript React", 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 5, 41
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/togle/Toggle.tsx", "TypeScript React", 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 3, 37
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/hook/useClickOutside.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 21
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/lib/gtag.js", "JavaScript", 0, 0, 13, 0, 0, 0, 0, 0, 0, 2, 3, 18
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/[username]/library/folders.tsx", "TypeScript React", 0, 248, 0, 0, 0, 0, 0, 0, 0, 7, 28, 283
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/[username]/library/rooms.tsx", "TypeScript React", 0, 228, 0, 0, 0, 0, 0, 0, 0, 3, 20, 251
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/[username]/library/sets.tsx", "TypeScript React", 0, 310, 0, 0, 0, 0, 0, 0, 0, 2, 18, 330
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/_app.tsx", "TypeScript React", 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 3, 18
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/_document.tsx", "TypeScript React", 0, 73, 0, 0, 0, 0, 0, 0, 0, 2, 8, 83
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/active-account/[username].tsx", "TypeScript React", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 3, 45
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/admin/index.tsx", "TypeScript React", 0, 745, 0, 0, 0, 0, 0, 0, 0, 8, 34, 787
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/api/hello.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 11
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/auth/login.tsx", "TypeScript React", 0, 213, 0, 0, 0, 0, 0, 0, 0, 5, 23, 241
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/auth/register.tsx", "TypeScript React", 0, 122, 0, 0, 0, 0, 0, 0, 0, 0, 15, 137
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/error.tsx", "TypeScript React", 0, 298, 0, 0, 0, 0, 0, 0, 0, 0, 2, 300
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/folder/[id]/index.tsx", "TypeScript React", 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 3, 12
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/goodbye.tsx", "TypeScript React", 0, 40, 0, 0, 0, 0, 0, 0, 0, 4, 5, 49
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/home.tsx", "TypeScript React", 0, 405, 0, 0, 0, 0, 0, 0, 0, 3, 20, 428
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/index.tsx", "TypeScript React", 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 4, 60
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/invitation.tsx", "TypeScript React", 0, 161, 0, 0, 0, 0, 0, 0, 0, 3, 22, 186
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/landing.tsx", "TypeScript React", 0, 44, 0, 0, 0, 0, 0, 0, 0, 0, 5, 49
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/me/account.tsx", "TypeScript React", 0, 208, 0, 0, 0, 0, 0, 0, 0, 2, 17, 227
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/me/learning-custom.tsx", "TypeScript React", 0, 172, 0, 0, 0, 0, 0, 0, 0, 2, 20, 194
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/me/profile.tsx", "TypeScript React", 0, 274, 0, 0, 0, 0, 0, 0, 0, 10, 26, 310
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/room/[id]/library.tsx", "TypeScript React", 0, 436, 0, 0, 0, 0, 0, 0, 0, 9, 44, 489
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/room/[id]/members.tsx", "TypeScript React", 0, 276, 0, 0, 0, 0, 0, 0, 0, 6, 34, 316
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/room/[id]/requests.tsx", "TypeScript React", 0, 261, 0, 0, 0, 0, 0, 0, 0, 5, 31, 297
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/schedule.tsx", "TypeScript React", 0, 186, 0, 0, 0, 0, 0, 0, 0, 0, 11, 197
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/search/[type]/[searchBy]/index.tsx", "TypeScript React", 0, 363, 0, 0, 0, 0, 0, 0, 0, 0, 15, 378
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/[id]/edit.tsx", "TypeScript React", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 4, 18
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/[id]/index.tsx", "TypeScript React", 0, 726, 0, 0, 0, 0, 0, 0, 0, 725, 24, 1475
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/[id]/learn.tsx", "TypeScript React", 0, 218, 0, 0, 0, 0, 0, 0, 0, 973, 14, 1205
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/add.tsx", "TypeScript React", 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 3, 12
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/temp.tsx", "TypeScript React", 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 3, 12
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/authAction.ts", "TypeScript", 91, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 108
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/eventAction.ts", "TypeScript", 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 13
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/eventHandleAction.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/learnAction.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/searchAction.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 20
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/userAction.ts", "TypeScript", 20, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 24
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/alertReducer.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 14
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/authReducer.ts", "TypeScript", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 14
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/eventHandleReducer.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 13
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/eventReducer.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 14
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/index.ts", "TypeScript", 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 19
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/learnReducer.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 13
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/searchReducer.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 14
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/userReducer.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 14
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/store.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/alertType.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/authType.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/eventHandleType.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/eventType.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/learnType.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/searchType.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/userType.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/utils/FetchData.ts", "TypeScript", 66, 0, 0, 0, 0, 0, 0, 0, 0, 6, 10, 82
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/utils/TypeScript.ts", "TypeScript", 296, 0, 0, 0, 0, 0, 0, 0, 0, 1, 49, 346
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/utils/Valid.ts", "TypeScript", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 51
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/Home.module.css", "CSS", 0, 0, 0, 0, 0, 0, 105, 0, 0, 0, 17, 122
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/card.css", "CSS", 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 2, 14
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/globals.css", "CSS", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 4
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/tooltip.css", "CSS", 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 10, 73
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/tailwind.config.js", "JavaScript", 0, 0, 23, 0, 0, 0, 0, 0, 0, 1, 1, 25
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/temp.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 219, 0, 6, 26, 251
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/tsconfig.json", "JSON", 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 1, 20
+"/Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/yarn-error.log", "Log", 0, 0, 0, 0, 0, 0, 0, 0, 2641, 0, 426, 3067
+"Total", "-", 792, 12442, 42, 5725, 505, 20, 183, 219, 2641, 2464, 1635, 26668

@@ -1,0 +1,193 @@
+Date : 2021-08-19 20:20:07
+Directory : /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client
+Total : 115 files,  22569 codes, 2464 comments, 1635 blanks, all 26668 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| TypeScript React |         54 |     12,442 |      2,430 |        950 |     15,822 |
+| JSON             |          4 |      5,725 |          0 |          4 |      5,729 |
+| Log              |          1 |      2,641 |          0 |        426 |      3,067 |
+| TypeScript       |         31 |        792 |         16 |        170 |        978 |
+| XML              |         16 |        505 |          9 |          9 |        523 |
+| HTML             |          1 |        219 |          6 |         26 |        251 |
+| CSS              |          4 |        183 |          0 |         30 |        213 |
+| JavaScript       |          3 |         42 |          3 |          5 |         50 |
+| Markdown         |          1 |         20 |          0 |         15 |         35 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                              | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                 |        115 |     22,569 |      2,464 |      1,635 |     26,668 |
+| public                                                                                            |         16 |        505 |          9 |          9 |        523 |
+| src                                                                                               |         85 |     13,247 |      2,446 |      1,122 |     16,815 |
+| src/common                                                                                        |          2 |         55 |          9 |          7 |         71 |
+| src/components                                                                                    |         26 |      6,293 |        657 |        498 |      7,448 |
+| src/components/addTagForm                                                                         |          1 |         40 |          0 |          5 |         45 |
+| src/components/card                                                                               |          1 |         41 |          0 |          5 |         46 |
+| src/components/data                                                                               |          1 |        237 |          0 |          6 |        243 |
+| src/components/ddm                                                                                |          2 |        226 |          1 |         30 |        257 |
+| src/components/event                                                                              |          1 |         40 |          0 |          3 |         43 |
+| src/components/input                                                                              |          2 |         92 |          8 |         10 |        110 |
+| src/components/inputtext                                                                          |          1 |         94 |          0 |          5 |         99 |
+| src/components/layout                                                                             |          6 |      3,325 |        606 |        271 |      4,202 |
+| src/components/library                                                                            |          1 |        698 |         21 |         55 |        774 |
+| src/components/loading                                                                            |          1 |         18 |          0 |          3 |         21 |
+| src/components/optionsListProfile                                                                 |          1 |         11 |          0 |          1 |         12 |
+| src/components/pagination                                                                         |          1 |         40 |          0 |          3 |         43 |
+| src/components/schedule                                                                           |          3 |      1,241 |         21 |         84 |      1,346 |
+| src/components/set                                                                                |          1 |         38 |          0 |          3 |         41 |
+| src/components/sidebar                                                                            |          1 |         82 |          0 |          6 |         88 |
+| src/components/site                                                                               |          1 |         36 |          0 |          5 |         41 |
+| src/components/togle                                                                              |          1 |         34 |          0 |          3 |         37 |
+| src/hook                                                                                          |          1 |         16 |          0 |          5 |         21 |
+| src/lib                                                                                           |          1 |         13 |          2 |          3 |         18 |
+| src/pages                                                                                         |         30 |      6,168 |      1,770 |        462 |      8,400 |
+| src/pages/[username]                                                                              |          3 |        786 |         12 |         66 |        864 |
+| src/pages/[username]/library                                                                      |          3 |        786 |         12 |         66 |        864 |
+| src/pages/active-account                                                                          |          1 |         42 |          0 |          3 |         45 |
+| src/pages/admin                                                                                   |          1 |        745 |          8 |         34 |        787 |
+| src/pages/api                                                                                     |          1 |          7 |          1 |          3 |         11 |
+| src/pages/auth                                                                                    |          2 |        335 |          5 |         38 |        378 |
+| src/pages/folder                                                                                  |          1 |          9 |          0 |          3 |         12 |
+| src/pages/folder/[id]                                                                             |          1 |          9 |          0 |          3 |         12 |
+| src/pages/me                                                                                      |          3 |        654 |         14 |         63 |        731 |
+| src/pages/room                                                                                    |          3 |        973 |         20 |        109 |      1,102 |
+| src/pages/room/[id]                                                                               |          3 |        973 |         20 |        109 |      1,102 |
+| src/pages/search                                                                                  |          1 |        363 |          0 |         15 |        378 |
+| src/pages/search/[type]                                                                           |          1 |        363 |          0 |         15 |        378 |
+| src/pages/search/[type]/[searchBy]                                                                |          1 |        363 |          0 |         15 |        378 |
+| src/pages/set                                                                                     |          4 |        967 |      1,698 |         45 |      2,710 |
+| src/pages/set/[id]                                                                                |          3 |        958 |      1,698 |         42 |      2,698 |
+| src/redux                                                                                         |         22 |        303 |          1 |         74 |        378 |
+| src/redux/actions                                                                                 |          6 |        151 |          1 |         31 |        183 |
+| src/redux/reducers                                                                                |          8 |         94 |          0 |         21 |        115 |
+| src/redux/types                                                                                   |          7 |         49 |          0 |         18 |         67 |
+| src/utils                                                                                         |          3 |        399 |          7 |         73 |        479 |
+| styles                                                                                            |          4 |        183 |          0 |         30 |        213 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                          | language         | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/README.md                                      | Markdown         |         20 |          0 |         15 |         35 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/a.json                                         | JSON             |          0 |          0 |          1 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/next-env.d.ts                                  | TypeScript       |          0 |          2 |          1 |          3 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/package-lock.json                              | JSON             |      5,654 |          0 |          1 |      5,655 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/package.json                                   | JSON             |         52 |          0 |          1 |         53 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/postcss.config.js                              | JavaScript       |          6 |          0 |          1 |          7 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/blackboard.svg                          | XML              |          1 |          0 |          0 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/draft.svg                               | XML              |         59 |          1 |          1 |         61 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/grinning.svg                            | XML              |         48 |          1 |          1 |         50 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/happy.svg                               | XML              |         49 |          1 |          1 |         51 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/home.svg                                | XML              |          1 |          0 |          0 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/library.svg                             | XML              |         65 |          1 |          1 |         67 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/neutral.svg                             | XML              |         41 |          1 |          1 |         43 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/notebook.svg                            | XML              |          1 |          0 |          0 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/sad.svg                                 | XML              |         42 |          1 |          1 |         44 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/schedule.svg                            | XML              |          1 |          0 |          0 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/shuttle.svg                             | XML              |          1 |          0 |          0 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/smile.svg                               | XML              |         42 |          1 |          1 |         44 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/sosad.svg                               | XML              |         52 |          1 |          1 |         54 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/telescope.svg                           | XML              |          1 |          0 |          0 |          1 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/user.svg                                | XML              |         97 |          1 |          1 |         99 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/public/vercel.svg                              | XML              |          4 |          0 |          0 |          4 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/common/listCommon.tsx                      | TypeScript React |         50 |          9 |          6 |         65 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/common/params.ts                           | TypeScript       |          5 |          0 |          1 |          6 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/addTagForm/AddTagForm.tsx       | TypeScript React |         40 |          0 |          5 |         45 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/card/SimpleLevelsCard.tsx       | TypeScript React |         41 |          0 |          5 |         46 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/data/TaskList.tsx               | TypeScript React |        237 |          0 |          6 |        243 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/ddm/DropDownMenu.tsx            | TypeScript React |        111 |          1 |         14 |        126 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/ddm/SelectBox.tsx               | TypeScript React |        115 |          0 |         16 |        131 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/event/Event.tsx                 | TypeScript React |         40 |          0 |          3 |         43 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/input/InputArea.tsx             | TypeScript React |         38 |          0 |          4 |         42 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/input/InputGroup.tsx            | TypeScript React |         54 |          8 |          6 |         68 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/inputtext/InputText.tsx         | TypeScript React |         94 |          0 |          5 |         99 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/AppLayout.tsx            | TypeScript React |        828 |         23 |         69 |        920 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/LibraryLayout.tsx        | TypeScript React |        687 |         22 |         59 |        768 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/ProfileSettingLayout.tsx | TypeScript React |         57 |          0 |          4 |         61 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/RoomLayout.tsx           | TypeScript React |      1,356 |         21 |        108 |      1,485 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/SearchLayout.tsx         | TypeScript React |        153 |          0 |          8 |        161 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/layout/SetEditLayout.tsx        | TypeScript React |        244 |        540 |         23 |        807 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/library/Folder.tsx              | TypeScript React |        698 |         21 |         55 |        774 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/loading/Loading.tsx             | TypeScript React |         18 |          0 |          3 |         21 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/optionsListProfile/index.tsx    | TypeScript React |         11 |          0 |          1 |         12 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/pagination/Pagination.tsx       | TypeScript React |         40 |          0 |          3 |         43 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/schedule/Calendar.tsx           | TypeScript React |      1,179 |         16 |         71 |      1,266 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/schedule/convertTime.ts         | TypeScript       |         60 |          5 |         12 |         77 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/schedule/fakeData.ts            | TypeScript       |          2 |          0 |          1 |          3 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/set/Set.tsx                     | TypeScript React |         38 |          0 |          3 |         41 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/sidebar/SideBar.tsx             | TypeScript React |         82 |          0 |          6 |         88 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/site/Meta.tsx                   | TypeScript React |         36 |          0 |          5 |         41 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/components/togle/Toggle.tsx                | TypeScript React |         34 |          0 |          3 |         37 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/hook/useClickOutside.ts                    | TypeScript       |         16 |          0 |          5 |         21 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/lib/gtag.js                                | JavaScript       |         13 |          2 |          3 |         18 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/[username]/library/folders.tsx       | TypeScript React |        248 |          7 |         28 |        283 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/[username]/library/rooms.tsx         | TypeScript React |        228 |          3 |         20 |        251 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/[username]/library/sets.tsx          | TypeScript React |        310 |          2 |         18 |        330 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/_app.tsx                             | TypeScript React |         15 |          0 |          3 |         18 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/_document.tsx                        | TypeScript React |         73 |          2 |          8 |         83 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/active-account/[username].tsx        | TypeScript React |         42 |          0 |          3 |         45 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/admin/index.tsx                      | TypeScript React |        745 |          8 |         34 |        787 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/api/hello.ts                         | TypeScript       |          7 |          1 |          3 |         11 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/auth/login.tsx                       | TypeScript React |        213 |          5 |         23 |        241 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/auth/register.tsx                    | TypeScript React |        122 |          0 |         15 |        137 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/error.tsx                            | TypeScript React |        298 |          0 |          2 |        300 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/folder/[id]/index.tsx                | TypeScript React |          9 |          0 |          3 |         12 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/goodbye.tsx                          | TypeScript React |         40 |          4 |          5 |         49 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/home.tsx                             | TypeScript React |        405 |          3 |         20 |        428 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/index.tsx                            | TypeScript React |         56 |          0 |          4 |         60 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/invitation.tsx                       | TypeScript React |        161 |          3 |         22 |        186 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/landing.tsx                          | TypeScript React |         44 |          0 |          5 |         49 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/me/account.tsx                       | TypeScript React |        208 |          2 |         17 |        227 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/me/learning-custom.tsx               | TypeScript React |        172 |          2 |         20 |        194 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/me/profile.tsx                       | TypeScript React |        274 |         10 |         26 |        310 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/room/[id]/library.tsx                | TypeScript React |        436 |          9 |         44 |        489 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/room/[id]/members.tsx                | TypeScript React |        276 |          6 |         34 |        316 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/room/[id]/requests.tsx               | TypeScript React |        261 |          5 |         31 |        297 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/schedule.tsx                         | TypeScript React |        186 |          0 |         11 |        197 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/search/[type]/[searchBy]/index.tsx   | TypeScript React |        363 |          0 |         15 |        378 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/[id]/edit.tsx                    | TypeScript React |         14 |          0 |          4 |         18 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/[id]/index.tsx                   | TypeScript React |        726 |        725 |         24 |      1,475 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/[id]/learn.tsx                   | TypeScript React |        218 |        973 |         14 |      1,205 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/set/add.tsx                          | TypeScript React |          9 |          0 |          3 |         12 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/pages/temp.tsx                             | TypeScript React |          9 |          0 |          3 |         12 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/authAction.ts                | TypeScript       |         91 |          0 |         17 |        108 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/eventAction.ts               | TypeScript       |          8 |          0 |          5 |         13 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/eventHandleAction.ts         | TypeScript       |          7 |          0 |          2 |          9 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/learnAction.ts               | TypeScript       |          7 |          0 |          2 |          9 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/searchAction.ts              | TypeScript       |         18 |          0 |          2 |         20 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/actions/userAction.ts                | TypeScript       |         20 |          1 |          3 |         24 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/alertReducer.ts             | TypeScript       |         11 |          0 |          3 |         14 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/authReducer.ts              | TypeScript       |         10 |          0 |          4 |         14 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/eventHandleReducer.ts       | TypeScript       |         11 |          0 |          2 |         13 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/eventReducer.ts             | TypeScript       |         12 |          0 |          2 |         14 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/index.ts                    | TypeScript       |         17 |          0 |          2 |         19 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/learnReducer.ts             | TypeScript       |         11 |          0 |          2 |         13 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/searchReducer.ts            | TypeScript       |         11 |          0 |          3 |         14 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/reducers/userReducer.ts              | TypeScript       |         11 |          0 |          3 |         14 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/store.ts                             | TypeScript       |          9 |          0 |          4 |         13 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/alertType.ts                   | TypeScript       |          6 |          0 |          2 |          8 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/authType.ts                    | TypeScript       |         13 |          0 |          4 |         17 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/eventHandleType.ts             | TypeScript       |          6 |          0 |          3 |          9 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/eventType.ts                   | TypeScript       |          6 |          0 |          2 |          8 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/learnType.ts                   | TypeScript       |          6 |          0 |          3 |          9 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/searchType.ts                  | TypeScript       |          6 |          0 |          2 |          8 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/redux/types/userType.ts                    | TypeScript       |          6 |          0 |          2 |          8 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/utils/FetchData.ts                         | TypeScript       |         66 |          6 |         10 |         82 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/utils/TypeScript.ts                        | TypeScript       |        296 |          1 |         49 |        346 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/src/utils/Valid.ts                             | TypeScript       |         37 |          0 |         14 |         51 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/Home.module.css                         | CSS              |        105 |          0 |         17 |        122 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/card.css                                | CSS              |         12 |          0 |          2 |         14 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/globals.css                             | CSS              |          3 |          0 |          1 |          4 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/styles/tooltip.css                             | CSS              |         63 |          0 |         10 |         73 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/tailwind.config.js                             | JavaScript       |         23 |          1 |          1 |         25 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/temp.html                                      | HTML             |        219 |          6 |         26 |        251 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/tsconfig.json                                  | JSON             |         19 |          0 |          1 |         20 |
+| /Users/nguyenthaiduong/Desktop/yolo_g18/sla-client/yarn-error.log                                 | Log              |      2,641 |          0 |        426 |      3,067 |
+| Total                                                                                             |                  |     22,569 |      2,464 |      1,635 |     26,668 |
++---------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+

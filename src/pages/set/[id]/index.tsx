@@ -830,7 +830,9 @@ const index = () => {
           <div className="col-span-4 mb-44 px-2">
             <div className=" flex justify-between">
               <div className="fex flex-col">
-                <Link href={`/${creatorName}/library/sets`}>
+                <Link
+                  href={`/${creatorName}/library/sets?color=WHITE&search_query=`}
+                >
                   <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                     <ChevronLeftIcon fontSize="small" /> Back to library
                   </p>

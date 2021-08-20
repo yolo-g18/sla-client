@@ -128,7 +128,7 @@ const invitation = () => {
 
       {invitationList.map((item, index) => {
         return (
-          <div key={index} className="rounded-lg shadow-lg bg-white my-3">
+          <div key={index} className="rounded-lg shadow-lg bg-white my-3 w-96">
             <div className="flex justify-between border-b border-gray-300 px-10 py-4">
               <div>
                 <i className="fa fa-exclamation-triangle text-orange-500"></i>
@@ -149,7 +149,7 @@ const invitation = () => {
               <p className="text-xs">{item.timeInvited}</p>
             </div>
 
-            <div className="px-5 py-4 flex justify-end">
+            <div className="px-5 py-4 flex justify-around mx-auto">
               <button
                 onClick={() => handleRejectInvitation(item.roomId)}
                 className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"

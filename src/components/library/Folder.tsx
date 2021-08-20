@@ -375,7 +375,9 @@ const Folder = () => {
                   <h4 className="font-bold text-xl">{folder.title}</h4>
                   <small className="text-md">
                     create by{" "}
-                    <Link href={`/${folder.creatorUserName}/library/sets`}>
+                    <Link
+                      href={`/${folder.creatorUserName}/library/sets?color=WHITE&search_query=`}
+                    >
                       <span className="hover:underline cursor-pointer">
                         {" "}
                         {folder.creatorUserName}
@@ -396,7 +398,11 @@ const Folder = () => {
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
                 <Link
-                  href={`/${folder.creatorUserName}/library/folders?color=WHITE`}
+                  href={`/${
+                    !_.isEmpty(user)
+                      ? user.username
+                      : auth.userResponse?.username
+                  }/library/folders?color=WHITE&search_query=`}
                 >
                   <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                     <ChevronLeftIcon /> Back to library folder
@@ -501,7 +507,7 @@ const Folder = () => {
                             </Link>
                           </div>
                         </div>
-                        <div className="mb-4 h-20">
+                        <div className="mb-4 h-20 text-sm">
                           {set.description.length <= 150 ? (
                             <p className="text-gray-500">{set.description}</p>
                           ) : (
@@ -511,14 +517,16 @@ const Folder = () => {
                           )}
                         </div>
                         <div className="flex justify-between">
-                          <div className=" mt-1">
+                          <div className=" mt-1 font-semibold text-gray-500">
                             <p>{set.numberOfCards} cards</p>
                           </div>
                           {folder.creatorUserName ===
                           auth.userResponse?.username ? (
                             <button
                               className="focus:outline-none tooltip"
-                              onClick={() => setIsShowDeleteModal(true)}
+                              onClick={() =>
+                                handleRemoveStudySet(set.studySet_id)
+                              }
                             >
                               <RemoveCircleRoundedIcon className="hover:text-yellow-500 text-gray-700" />
                               <span className="tooltiptext w-20">remove</span>

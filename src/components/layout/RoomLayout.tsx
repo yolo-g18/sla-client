@@ -89,7 +89,9 @@ const RoomLayout = (props: Props) => {
   } = router;
 
   const dispatch = useDispatch();
-  const { auth, alert, search } = useSelector((state: RootStore) => state);
+  const { auth, alert, search, user } = useSelector(
+    (state: RootStore) => state
+  );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [error, setError]: [string, (error: string) => void] =
@@ -727,6 +729,9 @@ const RoomLayout = (props: Props) => {
 
     setIsShowLeaveRoomModal(false);
   }
+
+  console.log(_.isEmpty(auth));
+
   return (
     <div>
       <AppLayout title={`Room | ${room.name}`} desc="room">
@@ -806,7 +811,13 @@ const RoomLayout = (props: Props) => {
           <div className="col-span-3">
             <div className="flex justify-between mt-2">
               <div className="fex flex-col">
-                <Link href={`/${room.ownerName}/library/rooms`}>
+                <Link
+                  href={`/${
+                    !_.isEmpty(user)
+                      ? user.username
+                      : auth.userResponse?.username
+                  }/library/rooms?search_query=`}
+                >
                   <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
                     <ChevronLeftIcon fontSize="small" /> Back to library
                   </p>
