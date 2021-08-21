@@ -155,7 +155,11 @@ const index = () => {
     try {
       const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
       insertToEditor(res.data);
-    } catch (err) {}
+    } catch (err) {
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("Please make sure the uploaded file is less than 5MB");
+    }
   };
   const saveToServer2 = async (file: any) => {
     const data = new FormData();
@@ -164,7 +168,11 @@ const index = () => {
     try {
       const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
       insertToEditor2(res.data);
-    } catch (err) {}
+    } catch (err) {
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("Please make sure the uploaded file is less than 5MB");
+    }
   };
 
   const insertToEditor = (url: string) => {
@@ -1452,7 +1460,7 @@ const index = () => {
         ) : null}
         <Snackbar
           open={isToastOpen}
-          autoHideDuration={1000}
+          autoHideDuration={2000}
           onClose={handleClose}
         >
           <Alert
