@@ -567,7 +567,7 @@ const index = () => {
       setReportContentErr("Report content required");
       return;
     } else if (reportContent.length > 500) {
-      setReportContentErr("cannot exceed 500 character");
+      setReportContentErr("Report content can not exceed 500 characters");
     } else {
       setReportContentErr("");
       try {
@@ -648,7 +648,7 @@ const index = () => {
   const sendFeedback = async () => {
     if (!id) return;
     if (feedback.length > 250) {
-      setFeedbackContentErr("Feedback cannot exceed 250 character.");
+      setFeedbackContentErr("Feedback can not exceed 250 characters.");
       return;
     } else {
       setFeedbackContentErr("");

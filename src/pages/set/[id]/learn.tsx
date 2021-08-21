@@ -686,7 +686,7 @@ const learn = () => {
             </div>
             {!learn.learnDate ? null : !learn.isDone ? (
               <p className="text-md text-gray-600">
-                Review card at{" "}
+                Review cards at{" "}
                 <span className="font-bold">
                   {formatUTCToDate(learn.learnDate)}
                 </span>

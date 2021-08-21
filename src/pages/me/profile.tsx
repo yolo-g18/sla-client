@@ -60,7 +60,7 @@ const profile = () => {
 
     //check bio length
     if (bio.length > 500) {
-      setBioErr("Bio cannot exceed 500 character");
+      setBioErr("Bio can not exceed 500 characters");
     }
   }, [email, bio]);
 
@@ -128,7 +128,9 @@ const profile = () => {
       console.warn(res.data);
     } catch (err) {
       setIsUploading(false);
-      console.log(err);
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("Please make sure the uploaded file is less than 5MB");
     }
   };
 
@@ -165,19 +167,6 @@ const profile = () => {
                     Your name may appear around SLA with your study sets.
                   </p>
                 </div>
-                <div className="px-1">
-                  <InputGroup
-                    type="text"
-                    setValue={setEmail}
-                    placeholder="your email"
-                    error={emailErr}
-                    value={email}
-                    label="Email"
-                  />
-                </div>
-                <p className="text-gray-600 text-xs px-1 -mt-3 mb-2">
-                  Your email address private.
-                </p>
 
                 <div className="px-1">
                   <InputArea
@@ -296,7 +285,13 @@ const profile = () => {
         >
           <Alert
             onClose={handleClose}
-            severity={typeToast === "success" ? "success" : "error"}
+            severity={
+              typeToast === "success"
+                ? "success"
+                : typeToast === "error"
+                ? "error"
+                : "warning"
+            }
           >
             {messageToast}
           </Alert>

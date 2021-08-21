@@ -320,13 +320,13 @@ const Folder = () => {
     if (title.length <= 0) {
       setTitleErr("Title is required.");
     } else if (title.length > 20) {
-      setTitleErr("Title cannot exceed 20 character.");
+      setTitleErr("Title can not exceed 20 characters.");
     } else {
       setTitleErr("");
     }
 
     if (description.length > 150) {
-      setDescErr("Description cannot exceed 150 characters.");
+      setDescErr("Description can not exceed 150 characters.");
     } else {
       setDescErr("");
     }

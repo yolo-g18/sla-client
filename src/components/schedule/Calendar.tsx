@@ -318,13 +318,13 @@ const Calendar = (props: Props) => {
     if (eventName.length <= 0) {
       setEvnNameErr("Title is required.");
     } else if (eventName.length > 50) {
-      setEvnNameErr("Title cannot exceed 50 character.");
+      setEvnNameErr("Title can not exceed 50 characters.");
     } else {
       setEvnNameErr("");
     }
 
     if (eventDesc.length > 150) {
-      setDescNameErr("Description cannot exceed 150 characters.");
+      setDescNameErr("Description can not exceed 150 characters.");
     } else {
       setDescNameErr("");
     }

@@ -93,28 +93,30 @@ const admin = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const allRp = await getAPI(
-        `${PARAMS.ENDPOINT}admin/report/all?page=${
-          currentPage - 1
-        }&sort=createdTime,${dateSort}`
-      );
-      setTotalAllReports(allRp.data.totalElements);
-      const pendingRp = await getAPI(
-        `${
-          PARAMS.ENDPOINT
-        }admin/report/filter?isChecked=false&sort=createdTime,${dateSort}&page=${
-          currentPage - 1
-        }`
-      );
-      setTotalPendingReports(pendingRp.data.totalElements);
-      const checkedRp = await getAPI(
-        `${
-          PARAMS.ENDPOINT
-        }admin/report/filter?isChecked=true&sort=createdTime,${dateSort}&page=${
-          currentPage - 1
-        }`
-      );
-      setTotalCheckedReports(checkedRp.data.totalElements);
+      try {
+        const allRp = await getAPI(
+          `${PARAMS.ENDPOINT}admin/report/all?page=${
+            currentPage - 1
+          }&sort=createdTime,${dateSort}`
+        );
+        setTotalAllReports(allRp.data.totalElements);
+        const pendingRp = await getAPI(
+          `${
+            PARAMS.ENDPOINT
+          }admin/report/filter?isChecked=false&sort=createdTime,${dateSort}&page=${
+            currentPage - 1
+          }`
+        );
+        setTotalPendingReports(pendingRp.data.totalElements);
+        const checkedRp = await getAPI(
+          `${
+            PARAMS.ENDPOINT
+          }admin/report/filter?isChecked=true&sort=createdTime,${dateSort}&page=${
+            currentPage - 1
+          }`
+        );
+        setTotalCheckedReports(checkedRp.data.totalElements);
+      } catch (err) {}
     };
 
     fetchData();

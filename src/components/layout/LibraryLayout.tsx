@@ -276,7 +276,7 @@ const LibraryLayout = (props: Props) => {
     if (title.trim().length <= 0) {
       setTitleErr("Title is required.");
     } else if (title.trim().length > 20) {
-      setTitleErr("Title cannot exceed 20 character.");
+      setTitleErr("Title can not exceed 20 characters.");
     } else {
       setTitleErr("");
     }
@@ -284,13 +284,13 @@ const LibraryLayout = (props: Props) => {
     if (name.trim().length <= 0) {
       setNameErr("Name is required.");
     } else if (name.trim().length > 20) {
-      setNameErr("Name cannot exceed 20 character.");
+      setNameErr("Name can not exceed 20 characters.");
     } else {
       setNameErr("");
     }
 
     if (description.trim().length > 150) {
-      setDescErr("Description cannot exceed 150 characters.");
+      setDescErr("Description can not exceed 150 characters.");
     } else {
       setDescErr("");
     }

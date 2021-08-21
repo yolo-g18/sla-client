@@ -128,6 +128,9 @@ const SetEditLayout = (props: Props) => {
       insertToEditor(res.data);
     } catch (err) {
       console.log(err);
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("Please make sure the uploaded file is less than 5MB");
     }
   };
 
@@ -237,16 +240,16 @@ const SetEditLayout = (props: Props) => {
   };
 
   useEffect(() => {
-    if (title.length <= 0) {
+    if (title.trim().length <= 0) {
       setTitleErr("Title is required.");
-    } else if (title.length > 50) {
-      setTitleErr("Title cannot exceed 50 character.");
+    } else if (title.trim().length > 50) {
+      setTitleErr("Title can not exceed 50 characters.");
     } else {
       setTitleErr("");
     }
 
     if (desc.length > 250) {
-      setDescErr("Description cannot exceed 250 characters.");
+      setDescErr("Description can not exceed 250 characters.");
     } else {
       setDescErr("");
     }
@@ -782,7 +785,7 @@ const SetEditLayout = (props: Props) => {
 
         <Snackbar
           open={isToastOpen}
-          autoHideDuration={1000}
+          autoHideDuration={2000}
           onClose={handleClose}
         >
           <Alert
