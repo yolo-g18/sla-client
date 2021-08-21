@@ -105,7 +105,7 @@ const AppLayout = (props: Props) => {
     }
 
     excute();
-  }, [getNotReadNewsNumber]);
+  }, [getNotReadNewsNumber, alert.success]);
 
   React.useEffect(() => {
     setClickShowMore(false);
@@ -188,7 +188,7 @@ const AppLayout = (props: Props) => {
       dispatch({ type: ALERT, payload: { loading: true } });
       const res = await putAPI(`${PARAMS.ENDPOINT}notify/readAllNews`, data);
 
-      dispatch({ type: ALERT, payload: { loading: false, success: "xxx" } });
+      dispatch({ type: ALERT, payload: { loading: false } });
     } catch (err) {
       dispatch({ type: ALERT, payload: { loading: false } });
     }
