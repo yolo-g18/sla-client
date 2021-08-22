@@ -186,7 +186,7 @@ const admin = () => {
       try {
         dispatch({ type: ALERT, payload: { loading: true } });
         const studySetRes = await getAPI(
-          `${PARAMS.ENDPOINT}studySet/view?id=${currentReport?.ssId}`
+          `${PARAMS.ENDPOINT}admin/studySet/check?id=${currentReport?.ssId}`
         );
         setSSIsActive(true);
       } catch (err) {
@@ -658,9 +658,9 @@ const admin = () => {
                         </div>
                       </div>
 
-                      {listReportOfStudySet.map((report) => {
+                      {listReportOfStudySet.map((report, index) => {
                         return (
-                          <div className="mb-4">
+                          <div key={index} className="mb-4">
                             <p className="text-sm font-medium text-gray-800 flex justify-between">
                               <span>{report.reporter}</span>
                               <span className="text-xs ml-6 font-light">

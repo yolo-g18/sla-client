@@ -442,9 +442,15 @@ const AppLayout = (props: Props) => {
             <div className="w-full mx-auto px-4 flex items-center justify-between">
               <div className="   dark:text-white  flex items-center">
                 <Link href="/home">
-                  <a href="" className="text-2xl font-bold ml-3 text-white">
-                    SLA
-                  </a>
+                  <div className="flex cursor-pointer">
+                    {/* <img src="logo.png" alt="" className="w-12" /> */}
+                    <a
+                      href=""
+                      className="text-2xl font-bold ml-3 text-white my-auto"
+                    >
+                      SLA
+                    </a>
+                  </div>
                 </Link>
                 <form onSubmit={handelSearchSubmit}>
                   <div className="relative text-gray-600 ml-6">

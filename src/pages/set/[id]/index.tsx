@@ -740,7 +740,7 @@ const index = () => {
     });
     const data = {
       creator: auth.userResponse?._id,
-      title: "(Forked) " + title,
+      title: title.includes("(Forked)") ? title : "(Forked) " + title,
       description: desc,
       tag: tags,
       cards: cardsData,
