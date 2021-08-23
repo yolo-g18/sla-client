@@ -21,7 +21,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { getUserByUsername } from "../../../redux/actions/userAction";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { FaStar } from "react-icons/fa";
-import { useClickOutside } from "../../../hook/useClickOutside";
+import { useClickOutside } from "../../../hooks/useClickOutside";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 //alert

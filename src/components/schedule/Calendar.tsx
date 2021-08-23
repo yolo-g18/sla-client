@@ -43,7 +43,7 @@ import {
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import AccessAlarmOutlinedIcon from "@material-ui/icons/AccessAlarmOutlined";
 
-import { useClickOutside } from "../../hook/useClickOutside";
+import { useClickOutside } from "../../hooks/useClickOutside";
 import { putEvent } from "../../redux/actions/eventAction";
 import { eventHandleDispatch } from "../../redux/actions/eventHandleAction";
 import { learnByDay } from "../../redux/actions/learnAction";
@@ -174,6 +174,7 @@ const Calendar = (props: Props) => {
             }
           })
         ).then(() => setListEvent(res.data));
+        dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
@@ -315,9 +316,9 @@ const Calendar = (props: Props) => {
 
   //validate input
   useEffect(() => {
-    if (eventName.length <= 0) {
+    if (eventName.trim().length <= 0) {
       setEvnNameErr("Title is required.");
-    } else if (eventName.length > 50) {
+    } else if (eventName.trim().length > 50) {
       setEvnNameErr("Title can not exceed 50 characters.");
     } else {
       setEvnNameErr("");

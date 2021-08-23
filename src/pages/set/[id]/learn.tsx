@@ -18,7 +18,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import { useClickOutside } from "../../../hook/useClickOutside";
+import { useClickOutside } from "../../../hooks/useClickOutside";
 
 import { FaStar } from "react-icons/fa";
 

@@ -12,7 +12,7 @@ import React from "react";
 import { getAPI, postAPI, putAPI } from "../../utils/FetchData";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
-import { useClickOutside } from "../../hook/useClickOutside";
+import { useClickOutside } from "../../hooks/useClickOutside";
 import AddIcon from "@material-ui/icons/Add";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import dayjs from "dayjs";

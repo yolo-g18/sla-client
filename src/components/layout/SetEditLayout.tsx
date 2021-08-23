@@ -248,7 +248,7 @@ const SetEditLayout = (props: Props) => {
       setTitleErr("");
     }
 
-    if (desc.length > 250) {
+    if (desc.trim().length > 250) {
       setDescErr("Description can not exceed 250 characters.");
     } else {
       setDescErr("");

@@ -24,7 +24,7 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { ALERT } from "../../redux/types/alertType";
 import { PARAMS } from "../../common/params";
 import { GetStaticProps } from "next";
-import { useClickOutside } from "../../hook/useClickOutside";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 //alert
 function Alert(props: AlertProps) {

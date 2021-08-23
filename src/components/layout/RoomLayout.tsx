@@ -857,7 +857,7 @@ const RoomLayout = (props: Props) => {
                         fontSize="default"
                         className="hover:text-gray-400 text-gray-700"
                       />
-                      <span className="tooltiptext w-24">add folder</span>
+                      <span className="tooltiptext w-24">add folders</span>
                     </button>
                     <button
                       onClick={() => setIsShowInviteModal(!isShowInviteModal)}

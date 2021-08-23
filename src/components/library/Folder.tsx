@@ -716,7 +716,7 @@ const Folder = () => {
                 <div className="bg-white rounded shadow p-6 m-4 max-w-xs max-h-full text-center">
                   <div className="mb-8">
                     <p className="text-xl font-semibold">
-                      Are you sure want to remove this folder?
+                      Are you sure want to delete this folder?
                     </p>
                     <small>
                       All sets in this folder will not be deleted from the
@@ -746,7 +746,7 @@ const Folder = () => {
                           </svg>
                         </div>
                       ) : (
-                        "Remove"
+                        "Delete"
                       )}
                     </button>
                     <button
