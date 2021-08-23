@@ -563,7 +563,9 @@ const AppLayout = (props: Props) => {
                       Schedule
                     </a>
                   </Link>
-                  <Link href={`/${auth.userResponse.username}/library/sets`}>
+                  <Link
+                    href={`/${auth.userResponse.username}/library/sets?color=WHITE`}
+                  >
                     <a
                       className={`py-2 px-4 flex hover:underline ${
                         router.pathname.indexOf("/library") !== -1

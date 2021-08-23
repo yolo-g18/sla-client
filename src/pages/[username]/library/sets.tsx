@@ -225,7 +225,7 @@ const sets = (props: any) => {
                               <p>{set.numberOfCards} cards</p>
                             </div>
                           </div>
-                          <Link href={`/${set.owner}/library/sets`}>
+                          <Link href={`/${set.owner}/library/sets?color=WHITE`}>
                             <div className="flex">
                               <img
                                 className="w-5 h-5 my-auto rounded-full object-cover object-center"
@@ -293,7 +293,9 @@ const sets = (props: any) => {
                             <p>{set.numberOfCards} cards</p>
                           </div>
                           <div>
-                            <Link href={`/${set.creator}/library/sets`}>
+                            <Link
+                              href={`/${set.creator}/library/sets?color=WHITE`}
+                            >
                               <div className="flex">
                                 <img
                                   className="w-5 h-5 my-auto rounded-full object-cover object-center"

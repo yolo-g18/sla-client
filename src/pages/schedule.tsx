@@ -61,6 +61,7 @@ const schedule = () => {
             }
           })
         ).then(() => dispatch(putEvent(res.data)));
+        dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         console.log(err);
         dispatch({ type: ALERT, payload: { loading: false } });

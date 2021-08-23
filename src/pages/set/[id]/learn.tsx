@@ -694,7 +694,7 @@ const learn = () => {
             ) : null}
             {showLearningResultModal ? (
               <div className="mx-auto h-2/3 text-center">
-                <p className="font-bold text-gray-700">OVERRAL PROGRESS</p>
+                <p className="font-bold text-gray-700">OVERALL PROGRESS</p>
                 <CircularProgressWithLabel
                   className="w-32 my-6"
                   value={overralProgress * 100}

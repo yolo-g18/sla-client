@@ -250,6 +250,7 @@ const Calendar = (props: Props) => {
         ).then(() => {
           dispatch(putEvent(listTemp));
         });
+        dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
       }
