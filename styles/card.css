@@ -1,0 +1,13 @@
+.card img {
+  height: 250px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-overview img {
+  height: 150px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
