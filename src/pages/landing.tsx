@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import Link from "next/link";
 import { logout as logoutUser } from "../redux/actions/authAction";
 import { useEffect } from "react";
+import Meta from "../components/site/Meta";
 
 const landing = () => {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const landing = () => {
 
   return (
     <div>
+      <Meta pageTitle="Landing" description="Landing" />
       <div className="flex relative z-20 items-center ">
         <div className="container mx-auto px-6 flex flex-col justify-between items-center relative py-4">
           <img

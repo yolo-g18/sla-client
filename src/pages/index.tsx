@@ -5,6 +5,7 @@ import AppLayout from "../components/layout/AppLayout";
 import { RootStore } from "../utils/TypeScript";
 
 import Link from "next/link";
+import Meta from "../components/site/Meta";
 
 export default function index() {
   const { auth } = useSelector((state: RootStore) => state);
@@ -25,6 +26,7 @@ export default function index() {
 
   return (
     <div>
+      <Meta pageTitle="SLA" description="SLA" />
       <div className="flex relative z-20 items-center ">
         <div className="container mx-auto px-6 flex flex-col justify-between items-center relative py-4"></div>
       </div>

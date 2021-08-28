@@ -22,6 +22,31 @@ import InputGroup from "../input/InputGroup";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import SideBar from "../sidebar/SideBar";
+
+import clsx from "clsx";
+import {
+  makeStyles,
+  useTheme,
+  Theme,
+  createStyles,
+} from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import MailIcon from "@material-ui/icons/Mail";
 
 //alert
 function Alert(props: AlertProps) {
@@ -39,7 +64,80 @@ const colorFolderList: String[] = [];
 
 const todayObj = dayjs();
 
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: "flex",
+    },
+    appBar: {
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: drawerWidth,
+    },
+    title: {
+      flexGrow: 1,
+    },
+    hide: {
+      display: "none",
+    },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+    drawerPaper: {
+      width: drawerWidth,
+    },
+    drawerHeader: {
+      display: "flex",
+      alignItems: "center",
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+      justifyContent: "flex-start",
+    },
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(1),
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      marginRight: -drawerWidth,
+    },
+    contentShift: {
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: 0,
+    },
+  })
+);
+
 const AppLayout = (props: Props) => {
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -477,7 +575,7 @@ const AppLayout = (props: Props) => {
                 <div ref={domNodeAddMenu} className="px-6 relative ">
                   {/* create new drop down menu */}
                   <button
-                    className="hover:bg-blue-500 p-1 rounded-md"
+                    className="hover:bg-blue-500 p-1 rounded-full w-14"
                     onClick={() => setShowMenuCreate(!showMenuCreate)}
                   >
                     <AddRoundedIcon fontSize="default" className="text-white" />
@@ -564,7 +662,7 @@ const AppLayout = (props: Props) => {
                     </a>
                   </Link>
                   <Link
-                    href={`/${auth.userResponse.username}/library/sets?color=WHITE`}
+                    href={`/${auth.userResponse.username}/library/sets?color=WHITE&search_query=`}
                   >
                     <a
                       className={`py-2 px-4 flex hover:underline ${
@@ -687,14 +785,17 @@ const AppLayout = (props: Props) => {
                     </div>
                   </div>
                 </nav>
-                <button
-                  className="lg:hidden flex flex-col ml-4"
-                  onClick={handleOnClick}
-                >
-                  <span className="w-6 h-1 bg-white dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-white dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-white dark:bg-white mb-1" />
-                </button>
+                <div className="lg:hidden flex flex-col ml-4">
+                  <IconButton
+                    color="default"
+                    aria-label="open drawer"
+                    edge="end"
+                    onClick={handleDrawerOpen}
+                    className={clsx(open && classes.hide)}
+                  >
+                    <MenuIcon className="text-white text-3xl" />
+                  </IconButton>
+                </div>
               </div>
             </div>
           ) : (
@@ -741,14 +842,6 @@ const AppLayout = (props: Props) => {
                     </div>
                   </div>
                 </nav>
-                <button
-                  className="lg:hidden flex flex-col ml-4"
-                  onClick={handleOnClick}
-                >
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                  <span className="w-6 h-1 bg-gray-800 dark:bg-white mb-1" />
-                </button>
               </div>
             </div>
           )}
@@ -920,6 +1013,92 @@ const AppLayout = (props: Props) => {
           </Alert>
         </Snackbar>
       </main>
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="right"
+        open={open}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "rtl" ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
+          </IconButton>
+          <img
+            className="w-8 h-8 my-auto absolute right-2 rounded-full object-cover object-center bg-white"
+            src={`${
+              auth.userResponse?.avatar
+                ? auth.userResponse?.avatar
+                : "../../user.svg"
+            }`}
+            alt="Avatar Upload"
+          />
+        </div>
+
+        <Divider />
+        <List>
+          {[
+            { label: "Home", link: "/home", check: "/home" },
+            { label: "Schedule", link: "/schedule", check: "/schedule" },
+            {
+              label: "Library",
+              link: `/${auth.userResponse?.username}/library/sets?color=WHITE&search_query=`,
+              check: "/library",
+            },
+            {
+              label: "Invitation",
+              link: "/invitation",
+              check: "/invitation",
+            },
+            {
+              label: `${auth.roles?.includes("ROLE_ADMIN") ? "Reports" : ""} `,
+              link: `${auth.roles?.includes("ROLE_ADMIN") ? "/admin" : ""} `,
+              check: "/admin",
+            },
+          ].map((item, index) => (
+            <Link href={item.link}>
+              <a href="">
+                <p
+                  key={index}
+                  className={`duration-200 hover:bg-gray-200 p-2 w-full px-6 
+                  ${
+                    router.pathname.indexOf(`${item.check}`) !== -1
+                      ? "border-yellow-500 border-l-4"
+                      : ""
+                  } `}
+                >
+                  {item.label}
+                </p>
+              </a>
+            </Link>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {menuitem.map((item, index) => (
+            <Link href={item.link}>
+              <a href="">
+                <p
+                  key={index}
+                  className={`duration-200 hover:bg-gray-200 p-2 w-full px-6 ${
+                    router.pathname.indexOf(`${item.link}`) !== -1
+                      ? "border-yellow-500 border-l-4"
+                      : ""
+                  }`}
+                >
+                  {item.label}
+                </p>
+              </a>
+            </Link>
+          ))}
+        </List>
+      </Drawer>
     </div>
   );
 };

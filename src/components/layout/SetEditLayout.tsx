@@ -25,7 +25,8 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { useMemo } from "react";
 import { route } from "next/dist/next-server/server/router";
 import { RouterRounded } from "@material-ui/icons";
-import { CircularProgress } from "@material-ui/core";
+import { FormGroup, Grid, Typography } from "@material-ui/core";
+import { withStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 //alert
 function Alert(props: AlertProps) {
@@ -59,6 +60,42 @@ const formats = [
   "link",
   "image",
 ];
+
+const AntSwitch = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: 28,
+      height: 16,
+      padding: 0,
+      display: "flex",
+    },
+    switchBase: {
+      padding: 2,
+      color: theme.palette.grey[500],
+      "&$checked": {
+        transform: "translateX(12px)",
+        color: theme.palette.common.white,
+        "& + $track": {
+          backgroundColor: "#1976d2",
+          opacity: 1,
+          border: "none",
+        },
+      },
+    },
+    thumb: {
+      width: 12,
+      height: 12,
+      boxShadow: "none",
+    },
+    track: {
+      border: `1px solid ${theme.palette.grey[500]}`,
+      borderRadius: 16 / 2,
+      opacity: 1,
+      backgroundColor: theme.palette.common.white,
+    },
+    checked: {},
+  })
+)(Switch);
 
 interface Props {
   id?: any;
@@ -187,7 +224,6 @@ const SetEditLayout = (props: Props) => {
           const cardRes = await getAPI(
             `${PARAMS.ENDPOINT}card/list?id=${props.id}`
           );
-          dispatch({ type: ALERT, payload: { loading: false } });
           setIsReset(false);
           setListCardsDelete([]);
           setTitle(studySetRes.data.title);
@@ -198,6 +234,7 @@ const SetEditLayout = (props: Props) => {
             ? setTags(_.split(studySetRes.data.tag, ", "))
             : null;
           setCards(cardRes.data);
+          dispatch({ type: ALERT, payload: { loading: false } });
         } catch (err) {
           console.log("error is: " + err);
 
@@ -276,7 +313,7 @@ const SetEditLayout = (props: Props) => {
 
     const addData = {
       creator: auth.userResponse?._id,
-      title,
+      title: title.trim(),
       description: desc,
       tag: _.map(tags).join(", "),
       cards,
@@ -319,7 +356,7 @@ const SetEditLayout = (props: Props) => {
       const studySetData = {
         id: props.id,
         creator: auth.userResponse?._id,
-        title,
+        title: title.trim(),
         description: desc,
         tag: _.map(tags).join(", "),
         isPublic: isPublic,
@@ -425,7 +462,8 @@ const SetEditLayout = (props: Props) => {
 
   if (
     auth.userResponse?.username !== creatorName &&
-    router.pathname.indexOf("/set/add") === -1
+    router.pathname.indexOf("/set/add") === -1 &&
+    creatorName
   ) {
     return (
       <AppLayput2
@@ -434,376 +472,480 @@ const SetEditLayout = (props: Props) => {
         }`}
         desc="create set"
       >
-        <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
-          Not permitted
-        </h1>
+        <div className="text-center px-2 mb-44">
+          <div className="h-screen w-screen bg-gray-100 flex mt-12">
+            <div className="mx-auto flex flex-col md:flex-row justify-center text-gray-800">
+              <div className="max-w-md">
+                <div className="text-5xl font-dark font-bold">403</div>
+                <p className="text-2xl font-semibold leading-normal mt-2">
+                  Forbidden{" "}
+                </p>
+                <p className="mb-8 mt-2">
+                  Access to this resource on the server is denied!
+                </p>
+                <Link href="/home">
+                  <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                    back to homepage
+                  </button>
+                </Link>
+                <img
+                  src="../../403.jpeg"
+                  alt=""
+                  className="h-64 mx-auto mt-8"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </AppLayput2>
     );
   }
 
-  return (
-    <div>
-      <AppLayput2
-        title={`${
-          router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
-        }`}
-        desc="create set"
-      >
-        {alert.loading === true ? (
-          <div>
-            <h1 className="text-center mx-auto mt-20 text-3xl font-bold">
-              <CircularProgress thickness={6.0} color="primary" disableShrink />
-            </h1>
-          </div>
-        ) : (
-          <div className="lg:w-3/4 mx-auto mt-8 px-4 h-full">
-            <div className="flex justify-between">
-              <div className="flex flex-grow">
-                <h1 className="text-3xl font-semibold">
-                  {router.pathname.indexOf("/set/add") !== -1
-                    ? "Create Study Set"
-                    : "Edit Your Set"}
-                </h1>
-              </div>
-              <div className="flex">
-                {router.pathname.indexOf("/set/add") === -1 ? (
-                  <button
-                    onClick={() => setShowModalConfirm(true)}
-                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
-                    type="button"
+  if (
+    router.pathname.indexOf("/set/add") !== -1 ||
+    (creatorName && router.pathname.indexOf("/set/add") === -1)
+  )
+    return (
+      <div>
+        <AppLayput2
+          title={`${
+            router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
+          }`}
+          desc="create set"
+        >
+          {alert.loading === true ? (
+            <div
+              className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed 
+          inset-0 z-50 backdrop-filter backdrop-blur-md -mt-96"
+            >
+              <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+                <div className="flex justify-center items-center space-x-1 text-sm text-gray-700">
+                  <svg
+                    fill="none"
+                    className="w-6 h-6 animate-spin"
+                    viewBox="0 0 32 32"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    Back to set
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowModalConfirm(true)}
-                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
-                    type="button"
-                  >
-                    Cancel
-                  </button>
-                )}
-
-                <button
-                  onClick={
-                    router.pathname.indexOf("/set/add") === -1
-                      ? () => setShowModaleComfirmModal(true)
-                      : (e) => handleSubmit(e)
-                  }
-                  className="bg-blue-500 text-white w-28 py-1 rounded-sm text-sm font-medium hover:bg-blue-600"
-                >
-                  {alert.loading
-                    ? "Saving..."
-                    : router.pathname.indexOf("/set/add") !== -1
-                    ? "Create"
-                    : "Update"}
-                </button>
+                    <path
+                      clipRule="evenodd"
+                      d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                      fill="currentColor"
+                      fillRule="evenodd"
+                    />
+                  </svg>
+                  <div>Loading ...</div>
+                </div>
               </div>
             </div>
-            <div>
-              <h1 className="text-md mt-4 mb-2">Study set Information</h1>
-              <div className="grid lg:grid-cols-2 gap-4 grid-cols-1 h-1/3 mt-4">
-                <div className="col-span-1 justify-around">
-                  <div className="flex flex-wrap my-1">
-                    <div className="grid lg:grid-cols-3 gap-2 w-full">
-                      <div className="lg:col-span-2 col-span-1">
-                        <InputGroup
-                          type="text"
-                          setValue={setTitle}
-                          placeholder={`enter a title like "Math01-Chap3"`}
-                          value={title}
-                          label="Title"
-                          error={titleErr}
-                          required
+          ) : (
+            <div className="lg:w-3/4 mx-auto mt-8 px-4 h-full">
+              <div className="flex justify-between">
+                <div className="flex flex-grow">
+                  <h1 className="text-3xl font-semibold">
+                    {router.pathname.indexOf("/set/add") !== -1
+                      ? "Create Study Set"
+                      : "Edit Your Set"}
+                  </h1>
+                </div>
+                <div className="flex">
+                  {router.pathname.indexOf("/set/add") === -1 ? (
+                    <button
+                      onClick={() => setShowModalConfirm(true)}
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                    >
+                      Back to set
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setShowModalConfirm(true)}
+                      className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mx-4 rounded-sm text-sm font-medium hover:bg-gray-300"
+                      type="button"
+                    >
+                      Cancel
+                    </button>
+                  )}
+
+                  <button
+                    onClick={
+                      router.pathname.indexOf("/set/add") === -1
+                        ? () => setShowModaleComfirmModal(true)
+                        : (e) => handleSubmit(e)
+                    }
+                    className="bg-blue-500 text-white w-28 py-1 rounded-sm text-sm font-medium hover:bg-blue-600"
+                  >
+                    {alert.loading
+                      ? "Saving..."
+                      : router.pathname.indexOf("/set/add") !== -1
+                      ? "Create"
+                      : "Update"}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <h1 className="text-md mt-4 mb-2">Study set Information</h1>
+                <div className="grid lg:grid-cols-2 gap-4 grid-cols-1 h-1/3 mt-4">
+                  <div className="col-span-1 justify-around">
+                    <div className="flex flex-wrap my-1">
+                      <div className="grid lg:grid-cols-3 gap-2 w-full">
+                        <div className="lg:col-span-2 col-span-1">
+                          <InputGroup
+                            type="text"
+                            setValue={setTitle}
+                            placeholder={`enter a title like "Math01-Chap3"`}
+                            value={title}
+                            label="Title"
+                            error={titleErr}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className=" w-full">
+                        <InputArea
+                          setValue={setDesc}
+                          placeholder="Description"
+                          // error={alert.errors?.errors?.bio}
+                          value={desc}
+                          error={descErr}
+                          label="Description"
                         />
                       </div>
                     </div>
-                    <div className=" w-full">
-                      <InputArea
-                        setValue={setDesc}
-                        placeholder="study set de"
-                        // error={alert.errors?.errors?.bio}
-                        value={desc}
-                        error={descErr}
-                        label="Description"
-                      />
+                    <div className="px-2 mt-4">
+                      {/* <FormControlLabel
+                        control={
+                          <Switch
+                            checked={isPublic}
+                            onChange={handleChange}
+                            color="primary"
+                            name="isPublic"
+                          />
+                        }
+                        label="Public"
+                      /> */}
+                      <FormGroup>
+                        <Typography component="div">
+                          <Grid
+                            component="label"
+                            container
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <p className="text-sm font-medium text-gray-700">
+                              Private
+                            </p>
+                            <Grid item>
+                              <AntSwitch
+                                checked={isPublic}
+                                onChange={handleChange}
+                                name="checkedC"
+                              />
+                            </Grid>
+                            <p className="text-sm font-medium text-gray-700">
+                              Public
+                            </p>
+                          </Grid>
+                        </Typography>
+                      </FormGroup>
                     </div>
                   </div>
-                  <div className="px-1">
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={isPublic}
-                          onChange={handleChange}
-                          color="primary"
-                          name="isPublic"
+                  <div className="col-span-1">
+                    <div className="w-2/3">
+                      <label className="text-gray-700 text-sm font-bold mb-2">
+                        Tags
+                      </label>
+                      <div className="mt-1 py-1">
+                        <ReactTagInput
+                          tags={tags}
+                          onChange={(newTags) => setTags(newTags)}
+                          placeholder="Please enter to add tag"
+                          maxTags={10}
                         />
-                      }
-                      label="Public"
-                    />
-                  </div>
-                </div>
-                <div className="col-span-1">
-                  <div className="w-2/3">
-                    <label className="text-gray-700 text-sm font-bold mb-2">
-                      Tags
-                    </label>
-                    <div className="mt-1 py-1">
-                      <ReactTagInput
-                        tags={tags}
-                        onChange={(newTags) => setTags(newTags)}
-                        placeholder="Please enter to add tag"
-                        maxTags={10}
-                      />
-                      <p className="text-gray-600 text-xs pt-1 mb-2">
-                        Tag make your study set easier to search by other
-                      </p>
+                        <p className="text-gray-600 text-xs pt-1 mb-2">
+                          Tag make your study set easier to search by other
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {router.pathname.indexOf("/set/add") !== -1 ? (
-              <div className="h-full mt-4 w-full">
-                <div className="flex justify-between">
-                  <div className="mb-2">
-                    <h1 className="text-md mt-4 ">Add cards</h1>
-                    <small className="text-gray-500">
-                      * Click into card to edit
-                    </small>
-                  </div>
-
-                  <div className="flex my-auto">
-                    <div className="mx-4 text-center my-auto py-1">
-                      <p>{cards.length} cards</p>
+              {router.pathname.indexOf("/set/add") !== -1 ? (
+                <div className="h-full mt-4 w-full">
+                  <div className="flex justify-between">
+                    <div className="mb-2">
+                      <h1 className="text-md mt-4 ">Add cards</h1>
+                      <small className="text-gray-500">
+                        * Click into card to edit
+                      </small>
                     </div>
-                    <button
-                      onClick={() => setShowModalRemoveAll(true)}
-                      className={`
+
+                    <div className="flex my-auto">
+                      <div className="mx-4 text-center my-auto py-1">
+                        <p>{cards.length} cards</p>
+                      </div>
+                      <button
+                        onClick={() => setShowModalRemoveAll(true)}
+                        className={`
                         text-white w-24 py-1 rounded-sm text-sm font-medium  focus:outline-none
                         ${
                           cards.length <= 2
                             ? "bg-gray-300"
                             : "bg-yellow-500 hover:bg-yellow-600"
                         }`}
-                      disabled={cards.length <= 2}
+                        disabled={cards.length <= 2}
+                      >
+                        {alert.loading ? "Saving..." : "Remove all"}
+                      </button>
+                    </div>
+                  </div>
+                  <hr />
+                  <div className=" w-full mb-44">
+                    {cards.map((card, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="rounded-md flex w-full my-4"
+                        >
+                          <div className="flex justify-between w-full gap-3">
+                            <div
+                              className="card-overview  w-1/2 rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                              dangerouslySetInnerHTML={{ __html: card.front }}
+                              onClick={() => {
+                                setIsFront(true);
+                                handelCardOnClick(card.front, index);
+                              }}
+                            ></div>
+                            <div
+                              className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
+                              dangerouslySetInnerHTML={{ __html: card.back }}
+                              onClick={() => {
+                                setIsFront(false);
+                                handelCardOnClick(card.back, index);
+                              }}
+                            ></div>
+                          </div>
+
+                          <div className="">
+                            <button
+                              onClick={() => handelDeleteCard(index)}
+                              className="mx-2 tooltip focus:outline-none"
+                            >
+                              <DeleteOutlineIcon
+                                fontSize="small"
+                                className="hover:text-yellow-500 text-gray-700"
+                              />
+                              <span className="tooltiptext mt-2 w-20">
+                                remove
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <button
+                      onClick={addMoreCard}
+                      className="text-white w-32 py-2 mx-auto rounded-sm text-sm font-medium bg-blue-500 hover:bg-blue-600 mt-4 focus:outline-none"
+                      type="button"
                     >
-                      {alert.loading ? "Saving..." : "Remove all"}
+                      Add more card
                     </button>
                   </div>
                 </div>
-                <hr />
-                <div className=" w-full mb-44">
-                  {cards.map((card, index) => {
-                    return (
-                      <div key={index} className="rounded-md flex w-full my-4">
-                        <div className="flex justify-between w-full gap-3">
-                          <div
-                            className="card-overview  w-1/2 rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
-                            dangerouslySetInnerHTML={{ __html: card.front }}
-                            onClick={() => {
-                              setIsFront(true);
-                              handelCardOnClick(card.front, index);
-                            }}
-                          ></div>
-                          <div
-                            className="card-overview w-1/2  rounded-md bg-white shadow-lg border-b-1 p-4 text-center"
-                            dangerouslySetInnerHTML={{ __html: card.back }}
-                            onClick={() => {
-                              setIsFront(false);
-                              handelCardOnClick(card.back, index);
-                            }}
-                          ></div>
-                        </div>
+              ) : null}
 
-                        <div className="">
-                          <button
-                            onClick={() => handelDeleteCard(index)}
-                            className="mx-2 tooltip focus:outline-none"
-                          >
-                            <DeleteOutlineIcon
-                              fontSize="small"
-                              className="hover:text-yellow-500 text-gray-700"
-                            />
-                            <span className="tooltiptext mt-2 w-20">
-                              remove
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <button
-                    onClick={addMoreCard}
-                    className="text-white w-32 py-2 mx-auto rounded-sm text-sm font-medium bg-blue-500 hover:bg-blue-600 mt-4 focus:outline-none"
-                    type="button"
-                  >
-                    Add more card
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
-            {/* show modal cf remove all */}
-            {showModalRemoveAll ? (
-              <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-                <div className=" w-full absolute flex items-center justify-center bg-modal">
-                  <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
-                    <div className="mb-8">
-                      <p className="text-xl font-semibold">
-                        Are you sure want to remove all all card of set?
-                      </p>
-                      <small>Your edits will not be saved!</small>
-                    </div>
-
-                    <div className="flex justify-center">
-                      <button
-                        onClick={deleteAll}
-                        className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600 focus:outline-none"
-                      >
-                        Remove
-                      </button>
-                      <button
-                        onClick={() => setShowModalRemoveAll(false)}
-                        className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600 focus:outline-none"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-
-            {/* popup editor */}
-            {showModal ? (
-              <>
+              {/* show modal cf remove all */}
+              {showModalRemoveAll ? (
                 <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-                  <div className="relative w-auto my-6 max-w-3xl">
-                    {/*content*/}
-                    <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                      {/*header*/}
-                      <div className="justify-between px-4 py-4 rounded-t">
-                        <p>Card Content</p>
+                  <div className=" w-full absolute flex items-center justify-center bg-modal">
+                    <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
+                      <div className="mb-8">
+                        <p className="text-xl font-semibold">
+                          Are you sure want to remove all all card of set?
+                        </p>
+                        <small>Your edits will not be saved!</small>
                       </div>
-                      {/*body*/}
-                      <div className="relative h-full px-4 flex flex-wrap">
-                        <QuillNoSSRWrapper
-                          modules={modules}
-                          forwardedRef={editorRef}
-                          formats={formats}
-                          theme="snow"
-                          value={text}
-                          onChange={setText}
-                          className="h-80"
-                          style={{ width: "550px" }}
-                        />
-                      </div>
-                      {/*footer*/}
-                      <div className="flex items-center justify-end px-4 py-4 mt-12">
+
+                      <div className="flex justify-center">
                         <button
-                          className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
-                          type="button"
-                          onClick={() => setShowModal(false)}
+                          onClick={deleteAll}
+                          className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600 focus:outline-none"
+                        >
+                          Remove
+                        </button>
+                        <button
+                          onClick={() => setShowModalRemoveAll(false)}
+                          className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600 focus:outline-none"
                         >
                           Cancel
                         </button>
-                        <button
-                          className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
-                          type="button"
-                          onClick={handleCardSave}
-                        >
-                          Save Changes
-                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </>
-            ) : null}
-          </div>
-        )}
-        {showModaleComfirmModal &&
-        router.pathname.indexOf("/set/add") === -1 ? (
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-            <div className=" w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
-                <div className="mb-8">
-                  <p className="text-xl font-semibold">
-                    Are you sure want to save?
-                  </p>
-                  <small>Your change will be save</small>
-                </div>
+              ) : null}
 
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => setShowModaleComfirmModal(false)}
-                    className="  w-32 py-1 mx-4 rounded bg-gray-100 border-2 text-gray-700 focus:outline-none hover:bg-gray-300"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    className="text-white w-32 rounded mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
-                  >
-                    Save
-                  </button>
+              {/* popup editor */}
+              {showModal ? (
+                <>
+                  <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+                    <div className="relative w-auto my-6 max-w-3xl">
+                      {/*content*/}
+                      <div className="border-0 rounded-lg shadow-md relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                        {/*header*/}
+                        <div className="justify-between px-4 py-4 rounded-t">
+                          <p>Card Content</p>
+                        </div>
+                        {/*body*/}
+                        <div className="relative h-full px-4 flex flex-wrap">
+                          <QuillNoSSRWrapper
+                            modules={modules}
+                            forwardedRef={editorRef}
+                            formats={formats}
+                            theme="snow"
+                            value={text}
+                            onChange={setText}
+                            className="h-80"
+                            style={{ width: "550px" }}
+                          />
+                        </div>
+                        {/*footer*/}
+                        <div className="flex items-center justify-end px-4 py-4 mt-12">
+                          <button
+                            className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                            type="button"
+                            onClick={() => setShowModal(false)}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-md text-sm font-medium hover:bg-blue-600 focus:outline-none"
+                            type="button"
+                            onClick={handleCardSave}
+                          >
+                            Save Changes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          )}
+          {showModaleComfirmModal &&
+          router.pathname.indexOf("/set/add") === -1 ? (
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+              <div className=" w-full absolute flex items-center justify-center bg-modal">
+                <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
+                  <div className="mb-8">
+                    <p className="text-xl font-semibold">
+                      Are you sure want to save?
+                    </p>
+                    <small>Your change will be save</small>
+                  </div>
+
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setShowModaleComfirmModal(false)}
+                      className="  w-32 py-1 mx-4 rounded-sm bg-gray-100 border-2 text-gray-700 focus:outline-none hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSubmit}
+                      className="text-white w-32 rounded-sm mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {showModalConfirm ? (
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-            <div className=" w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
-                <div className="mb-8">
-                  <p className="text-xl font-semibold">
-                    Are you sure want cancel?
-                  </p>
-                  <small>Your changes have not been saved</small>
-                </div>
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => setShowModalConfirm(false)}
-                    className="  w-32 py-1 mx-4 rounded-sm bg-gray-100 border-2 text-gray-700 focus:outline-none hover:bg-gray-300"
-                  >
-                    No
-                  </button>
-                  <button
-                    onClick={confirmCancel}
-                    className="text-white w-32 rounded-sm mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
-                  >
-                    Yes
-                  </button>
+          {showModalConfirm ? (
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+              <div className=" w-full absolute flex items-center justify-center bg-modal">
+                <div className="bg-white rounded-lg shadow p-6 m-4 max-w-xs max-h-full text-center">
+                  <div className="mb-8">
+                    <p className="text-xl font-semibold">
+                      Are you sure want cancel?
+                    </p>
+                    <small>Your changes have not been saved</small>
+                  </div>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setShowModalConfirm(false)}
+                      className="  w-32 py-1 mx-4 rounded-sm bg-gray-100 border-2 text-gray-700 focus:outline-none hover:bg-gray-300"
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={confirmCancel}
+                      className="text-white w-32 rounded-sm mx-4 bg-blue-500 hover:bg-blue-600 focus:outline-none"
+                    >
+                      Yes
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        <Snackbar
-          open={isToastOpen}
-          autoHideDuration={2000}
-          onClose={handleClose}
-        >
-          <Alert
+          <Snackbar
+            open={isToastOpen}
+            autoHideDuration={2000}
             onClose={handleClose}
-            severity={
-              typeToast === "success"
-                ? "success"
-                : typeToast === "error"
-                ? "error"
-                : "warning"
-            }
           >
-            {messageToast}
-          </Alert>
-        </Snackbar>
+            <Alert
+              onClose={handleClose}
+              severity={
+                typeToast === "success"
+                  ? "success"
+                  : typeToast === "error"
+                  ? "error"
+                  : "warning"
+              }
+            >
+              {messageToast}
+            </Alert>
+          </Snackbar>
+        </AppLayput2>
+      </div>
+    );
+  else
+    return (
+      <AppLayput2
+        title={`${
+          router.pathname.indexOf("/set/add") !== -1 ? "create set" : title
+        }`}
+        desc="create set"
+      >
+        <div
+          className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed 
+  inset-0 z-50 backdrop-filter backdrop-blur-md -mt-96"
+        >
+          <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+            <div className="flex justify-center items-center space-x-1 text-sm text-gray-700">
+              <svg
+                fill="none"
+                className="w-6 h-6 animate-spin"
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clipRule="evenodd"
+                  d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                  fill="currentColor"
+                  fillRule="evenodd"
+                />
+              </svg>
+              <div>Loading ...</div>
+            </div>
+          </div>
+        </div>
       </AppLayput2>
-    </div>
-  );
+    );
 };
 
 export default SetEditLayout;

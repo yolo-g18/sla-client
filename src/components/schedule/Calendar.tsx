@@ -183,6 +183,12 @@ const Calendar = (props: Props) => {
     fetchData();
   }, [caledarChange, isSuccess]);
 
+  console.log(
+    convertTimeToMySQl(
+      dayObjOfLast.add(_.range(6 - weekDayOfLast).length + 1, "day")
+    )
+  );
+
   useEffect(() => {
     if (eventHandle.typeAction === 1) {
       setShowModalAdd(true);
@@ -594,7 +600,7 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className="flex px-2 w-full my-1.5"
+                            className="flex px-2 w-full my-1.5 hover:bg-gray-300"
                           >
                             <img
                               src="draft.svg"
@@ -602,7 +608,7 @@ const Calendar = (props: Props) => {
                               alt=""
                             />
                             <div
-                              className={`text-xs font-medium text-gray-800 dark:text-gray-100 truncate ${
+                              className={`text-xs font-medium truncate ${
                                 evn.isDone ? "text-gray-400 " : "text-gray-800"
                               }`}
                             >
@@ -614,7 +620,7 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className={`flex w-full my-1.5 px-2 items-center h-4`}
+                            className={`flex w-full my-1.5 px-2 items-center h-4 hover:bg-gray-300`}
                           >
                             <div className="mr-1">
                               <FiberManualRecordIcon
@@ -669,7 +675,7 @@ const Calendar = (props: Props) => {
                           dayjs(`${dayObjOf1.subtract(weekDayOf1 - i, "day")}`)
                         )
                       }
-                      className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none "
+                      className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none -mt-1"
                     >
                       +
                       <span className="text-sm z-50 tooltiptext w-16">add</span>
@@ -725,7 +731,7 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className={`flex px-2 w-full my-1.5 `}
+                            className={`flex px-2 w-full my-1.5 hover:bg-gray-300`}
                           >
                             <img
                               src="draft.svg"
@@ -744,7 +750,7 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className={`flex w-full my-1.5 px-2 items-center h-4`}
+                            className={`flex w-full my-1.5 px-2 items-center h-4 hover:bg-gray-300`}
                           >
                             <div className="mr-1">
                               <FiberManualRecordIcon
@@ -793,7 +799,7 @@ const Calendar = (props: Props) => {
                           dayjs(`${thisYear}-${thisMonth + 1}-${i + 1}`)
                         )
                       }
-                      className=" tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none "
+                      className=" tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none -mt-1"
                     >
                       +
                       <span className="text-sm absolute z-50 tooltiptext w-16">
@@ -856,7 +862,7 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className="flex px-2 w-full my-1.5"
+                            className="flex px-2 w-full my-1.5 hover:bg-gray-300"
                           >
                             <img
                               src="draft.svg"
@@ -864,7 +870,7 @@ const Calendar = (props: Props) => {
                               alt=""
                             />
                             <div
-                              className={`text-xs font-medium text-gray-800 dark:text-gray-100 truncate ${
+                              className={`text-xs font-medium truncate ${
                                 evn.isDone ? "text-gray-400 " : "text-gray-800"
                               }`}
                             >
@@ -876,7 +882,7 @@ const Calendar = (props: Props) => {
                           <button
                             key={evn.id}
                             onClick={() => showModalViewEventHandle(evn)}
-                            className={`flex w-full my-1.5 px-2 items-center h-4`}
+                            className={`flex w-full my-1.5 px-2 items-center h-4 hover:bg-gray-300`}
                           >
                             <div className="mr-1">
                               <FiberManualRecordIcon
@@ -929,7 +935,7 @@ const Calendar = (props: Props) => {
                           dayjs(`${dayObjOfLast.add(i + 1, "day")}`)
                         )
                       }
-                      className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none "
+                      className="tooltip text-2xl text-gray-800 hover:text-gray-400 focus:outline-none -mt-1"
                     >
                       +
                       <span className="text-sm absolute z-50 tooltiptext w-16">
@@ -967,15 +973,27 @@ const Calendar = (props: Props) => {
                 </button>
               </div>
               <div className="mt-8 p-4">
-                <div className="h-44">
+                <div className="h-60">
                   <div className=" grid grid-cols-1">
                     <div className="flex justify-between items-center">
-                      <p className="text-lg font-bold text-gray-600 dark:text-gray-100 my-auto truncate">
+                      <p className="text-lg font-bold text-gray-600 dark:text-gray-100 my-auto flex">
                         {currentEvent.isLearnEvent ? (
-                          <img src="draft.svg" className="h-6 w-6" alt="" />
+                          <img
+                            src="draft.svg"
+                            className="h-6 w-6 my-auto"
+                            alt=""
+                          />
                         ) : (
-                          <EventIcon className="mr-2" />
+                          <EventIcon className=" my-auto" />
                         )}
+                        <FiberManualRecordIcon
+                          fontSize="small"
+                          className={`mt-1 text-${currentEvent.color?.toLowerCase()}-500 h-2`}
+                          style={{ width: "16px" }}
+                        />
+                        {/* <div
+                          className={`bg-${currentEvent.color?.toLowerCase()}-500 w-3 h-3 mt-2 mx-2 rounded-full`}
+                        ></div> */}
                         {currentEvent.name}
                       </p>
                       {currentEvent.isLearnEvent ? null : (

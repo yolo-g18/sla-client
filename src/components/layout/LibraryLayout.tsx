@@ -349,282 +349,292 @@ const LibraryLayout = (props: Props) => {
     setShowModalFilterByColor(false);
   };
 
-  // useEffect(() => {
-  //   if (!filterColor || !username || keyWord) return;
-  //   if (auth.userResponse?.username !== username) return;
-  //   if (router.pathname.indexOf("/sets") !== -1)
-  //     router.push(
-  //       `/${username}/library/sets?type=2&color=${filterColor}&search_query=${keyWord.trim()}`
-  //     );
-  // }, [filterColor]);
-
-  if (!user._id) {
-    return (
-      <>
-        <AppLayout title={`${username} | SLA`} desc="library">
+  return (
+    <div>
+      <AppLayout title={`${username} | SLA`} desc="library">
+        {!user._id && !alert.loading ? (
           <div className="col-span-2 text-center mx-auto mt-24">
             <p className="text-3xl font-semibold text-gray-700">
               Not found {username}
             </p>
           </div>
-        </AppLayout>
-      </>
-    );
-  }
-
-  return (
-    <div>
-      <AppLayout title={`${username} | SLA`} desc="library">
-        <div className="grid grid-cols-1 lg:grid-cols-3 mt-8 xl:w-3/4 w-11/12 mx-auto">
-          <div className="col-span-1 px-2">
-            <div className="flex flex-col justify-between items-center pt-10">
-              <img
-                className="w-56 h-56 my-auto rounded-full object-cover object-center"
-                src={`${user.avatar ? user.avatar : "../../user.svg"}`}
-                alt="Avatar Upload"
-              />
-              <div className=" px-2 w-full justify-between">
-                <p className=" mt-4">
-                  <span className="w-full text-2xl font-medium">
-                    {user.firstname} {user.lastname}
-                  </span>
-                  <br />
-                  <span className="text-md font-mono text-gray-700">
-                    {username}
-                  </span>
-                </p>
-                <p className="text-left mt-4">
-                  <span className="">{user.bio}</span>
-                </p>
-                <p className="text-left mt-4 text-sm">
-                  {user.schoolName ? (
-                    <span>
-                      <DomainIcon
-                        fontSize="small"
-                        className="text-gray-600 -mt-1"
-                      />{" "}
-                      {user.schoolName}
-                      <br />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 mt-8 xl:w-3/4 w-11/12 mx-auto">
+            <div className="col-span-1 px-2">
+              <div className="flex flex-col justify-between items-center pt-10">
+                <img
+                  className="w-56 h-56 my-auto rounded-full object-cover object-center"
+                  src={`${user.avatar ? user.avatar : "../../user.svg"}`}
+                  alt="Avatar Upload"
+                />
+                <div className=" px-2 w-full justify-between">
+                  <p className=" mt-4">
+                    <span className="w-full text-2xl font-medium">
+                      {user.firstname} {user.lastname}
                     </span>
-                  ) : null}
-                  {user.address ? (
-                    <span>
-                      <RoomIcon fontSize="small" className="text-gray-600" />{" "}
-                      {user.address}
-                      <br />
+                    <br />
+                    <span className="text-md font-mono text-gray-700">
+                      {username}
                     </span>
-                  ) : null}
-
-                  <span>
-                    {user.major ? (
+                  </p>
+                  <p className="text-left mt-4">
+                    <span className="">{user.bio}</span>
+                  </p>
+                  <p className="text-left mt-4 text-sm">
+                    {user.schoolName ? (
                       <span>
-                        {" "}
-                        <ClassIcon
+                        <DomainIcon
                           fontSize="small"
-                          className="text-gray-600"
+                          className="text-gray-600 -mt-1"
                         />{" "}
-                        {user.major}
+                        {user.schoolName}
                         <br />
                       </span>
                     ) : null}
-                  </span>
-                  <span>
-                    {user.email ? (
-                      <MailOutlineIcon
-                        fontSize="small"
-                        className="text-gray-600"
-                      />
-                    ) : null}{" "}
-                    {user.email}
-                  </span>
-                  <br />
-                  <span>
-                    {user.job ? (
-                      <WorkOutlineIcon
-                        fontSize="small"
-                        className="text-gray-600"
-                      />
-                    ) : null}{" "}
-                    {user.job}
-                  </span>
-                </p>
+                    {user.address ? (
+                      <span>
+                        <RoomIcon fontSize="small" className="text-gray-600" />{" "}
+                        {user.address}
+                        <br />
+                      </span>
+                    ) : null}
 
-                {username === auth.userResponse?.username ? (
-                  <Link href="/me/profile">
-                    <button
-                      className="w-3/5 flex mx-auto justify-center mt-8 py-1 rounded-md text-gray-600 border-gray-300 border-2
-                    hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none"
-                    >
-                      Edit profile
-                    </button>
-                  </Link>
-                ) : null}
-              </div>
-            </div>
-          </div>
-          <div className=" col-span-2 px-2">
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 border-b border-gray-200">
-              <div className="col-span-1 grid grid-cols-3 gap-2 mt-4 justify-around text-md text-gray-600 cursor-pointer">
-                <Link href={`/${username}/library/sets?color=WHITE`}>
-                  <a
-                    className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
-                      router.pathname.indexOf("/sets") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                    }`}
-                  >
-                    <p className="font-bold">Sets</p>
-                  </a>
-                </Link>
-                <Link href={`/${username}/library/folders?color=WHITE`}>
-                  <a
-                    className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
-                      router.pathname.indexOf("/folders") !== -1
-                        ? "justify-start border-b-2 border-yellow-500"
-                        : ""
-                    }`}
-                  >
-                    <p className="font-bold">Folders</p>
-                  </a>
-                </Link>
-                <Link
-                  href={{
-                    pathname: "/[username]/library/rooms",
-                    query: { username: username },
-                  }}
-                >
-                  <a
-                    className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
-                      router.pathname.indexOf("/rooms") !== -1
-                        ? "justify-start border-b-2 border-yellow-500 "
-                        : ""
-                    }`}
-                  >
-                    <p className="font-bold">Rooms</p>
-                  </a>
-                </Link>
-              </div>
-            </div>
-            <div className="flex justify-between mt-4">
-              <div className="col-span-2 flex justify-around text-md text-gray-600  cursor-pointer">
-                <div className="text-gray-900 py-3 flex flex-grow">
-                  {router.pathname.indexOf("/sets") !== -1 &&
-                  username === auth.userResponse?.username ? (
-                    <SelectBox
-                      items={
-                        auth.userResponse?.username === username
-                          ? itemsSetsFilter
-                          : itemsSetsFilter.slice(0, 1)
-                      }
-                      typeResult="sets"
-                      username={username}
-                    />
+                    <span>
+                      {user.major ? (
+                        <span>
+                          {" "}
+                          <ClassIcon
+                            fontSize="small"
+                            className="text-gray-600"
+                          />{" "}
+                          {user.major}
+                          <br />
+                        </span>
+                      ) : null}
+                    </span>
+                    <span>
+                      {user.email ? (
+                        <MailOutlineIcon
+                          fontSize="small"
+                          className="text-gray-600"
+                        />
+                      ) : null}{" "}
+                      {user.email}
+                    </span>
+                    <br />
+                    <span>
+                      {user.job ? (
+                        <WorkOutlineIcon
+                          fontSize="small"
+                          className="text-gray-600"
+                        />
+                      ) : null}{" "}
+                      {user.job}
+                    </span>
+                  </p>
+
+                  {username === auth.userResponse?.username ? (
+                    <Link href="/me/profile">
+                      <button
+                        className="w-3/5 flex mx-auto justify-center mt-8 py-1 rounded-md text-gray-600 border-gray-300 border-2
+                  hover:text-gray-900 hover:bg-gray-100 my-1 focus:outline-none"
+                      >
+                        Edit profile
+                      </button>
+                    </Link>
                   ) : null}
                 </div>
-                {(router.pathname.indexOf("/sets") !== -1 ||
-                  router.pathname.indexOf("/folders") !== -1) &&
-                username === auth.userResponse?.username ? (
-                  <div className="flex my-auto ml-4 font-medium">
-                    {router.pathname.indexOf("/sets") !== -1 ? (
-                      <p>Filter sets </p>
-                    ) : (
-                      <p>Filter folders </p>
-                    )}
-
-                    <div className="my-auto ml-2" ref={domNodeFilterByColor}>
-                      <div
-                        onClick={() =>
-                          setShowModalFilterByColor(!showModalFilterByColor)
+              </div>
+            </div>
+            <div className=" col-span-2 px-2">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 border-b border-gray-200">
+                <div className="col-span-1 grid grid-cols-3 gap-2 mt-4 justify-around text-md text-gray-600 cursor-pointer">
+                  <Link href={`/${username}/library/sets?color=WHITE`}>
+                    <a
+                      className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
+                        router.pathname.indexOf("/sets") !== -1
+                          ? "justify-start border-b-2 border-yellow-500"
+                          : ""
+                      }`}
+                    >
+                      <p className="font-bold">Sets</p>
+                    </a>
+                  </Link>
+                  <Link href={`/${username}/library/folders?color=WHITE`}>
+                    <a
+                      className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
+                        router.pathname.indexOf("/folders") !== -1
+                          ? "justify-start border-b-2 border-yellow-500"
+                          : ""
+                      }`}
+                    >
+                      <p className="font-bold">Folders</p>
+                    </a>
+                  </Link>
+                  <Link
+                    href={{
+                      pathname: "/[username]/library/rooms",
+                      query: { username: username },
+                    }}
+                  >
+                    <a
+                      className={`col-span-1 py-2 flex flex-grow justify-center hover:text-gray-900 ${
+                        router.pathname.indexOf("/rooms") !== -1
+                          ? "justify-start border-b-2 border-yellow-500 "
+                          : ""
+                      }`}
+                    >
+                      <p className="font-bold">Rooms</p>
+                    </a>
+                  </Link>
+                </div>
+              </div>
+              <div className="flex justify-between mt-4">
+                <div className="col-span-2 flex justify-around text-md text-gray-600  cursor-pointer">
+                  <div className="text-gray-900 py-3 flex flex-grow">
+                    {router.pathname.indexOf("/sets") !== -1 &&
+                    username === auth.userResponse?.username ? (
+                      <SelectBox
+                        items={
+                          auth.userResponse?.username === username
+                            ? itemsSetsFilter
+                            : itemsSetsFilter.slice(0, 1)
                         }
-                        className={`w-5 h-5 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md
-                                  ${
-                                    filterColor === "WHITE"
-                                      ? "bg-white"
-                                      : `bg-${filterColor.toLowerCase()}-400`
-                                  }  bg-white cursor-pointer hover:bg-${filterColor.toLowerCase()}-300 `}
-                      ></div>
-                      {showModalFilterByColor ? (
-                        <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
-                          <div className="rounded-md bg-white shadow-xs px-4 py-3">
-                            <div className="flex flex-wrap -mx-2">
-                              {listColors.map((color, index) => {
-                                return (
-                                  <div key={index} className="px-2">
-                                    <div
-                                      onClick={() => {
-                                        filterByColor(color);
-                                      }}
-                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
-                                                  bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
-                                    ></div>
+                        typeResult="sets"
+                        username={username}
+                      />
+                    ) : null}
+                  </div>
+                  {(router.pathname.indexOf("/sets") !== -1 ||
+                    router.pathname.indexOf("/folders") !== -1) &&
+                  username === auth.userResponse?.username ? (
+                    <div className="flex my-auto ml-4 font-medium">
+                      {router.pathname.indexOf("/sets") !== -1 ? (
+                        <p>Filter sets </p>
+                      ) : (
+                        <p>Filter folders </p>
+                      )}
+
+                      <div className="my-auto ml-2" ref={domNodeFilterByColor}>
+                        <div
+                          onClick={() =>
+                            setShowModalFilterByColor(!showModalFilterByColor)
+                          }
+                          className={`w-5 h-5 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md
+                                ${
+                                  filterColor === "WHITE"
+                                    ? "bg-white"
+                                    : `bg-${filterColor.toLowerCase()}-400`
+                                }  bg-white cursor-pointer hover:bg-${filterColor.toLowerCase()}-300 `}
+                        ></div>
+                        {showModalFilterByColor ? (
+                          <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
+                            <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                              <div className="flex flex-wrap -mx-2">
+                                {listColors.map((color, index) => {
+                                  return (
+                                    <div key={index} className="px-2">
+                                      <div
+                                        onClick={() => {
+                                          filterByColor(color);
+                                        }}
+                                        className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                      ></div>
+                                    </div>
+                                  );
+                                })}
+                                <div className="px-2">
+                                  <div
+                                    onClick={() => {
+                                      filterByColor("WHITE");
+                                    }}
+                                    className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                focus:outline-none focus:shadow-outline`}
+                                  >
+                                    {" "}
+                                    <p className="text-md text-gray-700 font-medium hover:text-gray-500 hover:underline">
+                                      All
+                                    </p>
                                   </div>
-                                );
-                              })}
-                              <div className="px-2">
-                                <div
-                                  onClick={() => {
-                                    filterByColor("WHITE");
-                                  }}
-                                  className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
-                                  focus:outline-none focus:shadow-outline`}
-                                >
-                                  {" "}
-                                  <p className="text-md text-gray-700 font-medium hover:text-gray-500 hover:underline">
-                                    All
-                                  </p>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ) : null}
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                ) : null}
-              </div>
-              <div className="flex flex-wrap right-2 ">
-                <div className="text-gray-900 py-3 flex relative ">
-                  <form>
-                    <svg
-                      className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
-                    </svg>
-                    <input
-                      type="text"
-                      className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
-                  bg-gray-100 dark:bg-gray-800 text-gray-400"
-                      placeholder="Search"
-                      value={keyWord}
-                      onChange={(e) => {
-                        setKeyWord(e.target.value);
-                      }}
-                      onKeyPress={(e) => {
-                        e.key === "Enter" && e.preventDefault();
-                      }}
-                    />
-                  </form>
-                </div>
-                <div className="py-3 flex relative">
-                  {username === auth.userResponse?.username ? (
-                    <button
-                      id="btnAddNew"
-                      onClick={handleAddNew}
-                      className="w-24 h-8 text-md flex items-center justify-center rounded-sm px-4 
-                   text-sm font-medium py-1 bg-blue-500 hover:bg-blue-600 ml-4
-                text-white  focus:outline-none"
-                    >
-                      Create
-                    </button>
                   ) : null}
                 </div>
+                <div className="flex flex-wrap right-2 ">
+                  <div className="text-gray-900 py-3 flex relative ">
+                    <form>
+                      <svg
+                        className="absolute left-0 mt-2.5 w-4 h-4 ml-4 text-gray-500 pointer-events-none fill-current group-hover:text-gray-400 sm:block"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path>
+                      </svg>
+                      <input
+                        type="text"
+                        className="block w-full py-1.5 pl-10 pr-4 leading-normal rounded-md focus:border-transparent focus:outline-none 
+                bg-gray-100 dark:bg-gray-800 text-gray-400"
+                        placeholder="Search"
+                        value={keyWord}
+                        onChange={(e) => {
+                          setKeyWord(e.target.value);
+                        }}
+                        onKeyPress={(e) => {
+                          e.key === "Enter" && e.preventDefault();
+                        }}
+                      />
+                    </form>
+                  </div>
+                  <div className="py-3 flex relative">
+                    {username === auth.userResponse?.username ? (
+                      <button
+                        id="btnAddNew"
+                        onClick={handleAddNew}
+                        className="w-24 h-8 text-md flex items-center justify-center rounded-sm px-4 
+                 text-sm font-medium py-1 bg-blue-500 hover:bg-blue-600 ml-4
+              text-white  focus:outline-none"
+                      >
+                        Create
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+              {/* {alert.loading || alert.loading === undefined ? (
+            <div
+              className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed 
+          inset-0 z-50 backdrop-filter backdrop-blur-md -mt-12"
+            >
+              <div className="flex justify-center items-center space-x-1 text-sm text-gray-700">
+                <svg
+                  fill="none"
+                  className="w-6 h-6 animate-spin"
+                  viewBox="0 0 32 32"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clipRule="evenodd"
+                    d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                    fill="currentColor"
+                    fillRule="evenodd"
+                  />
+                </svg>
+                <div>Loading ...</div>
               </div>
             </div>
-            <div className="mb-44">{props.children}</div>
+          ) : (
+            
+          )} */}
+              <div className="mb-44">{props.children}</div>
+            </div>
           </div>
-        </div>
+        )}
       </AppLayout>
       {/* popup editor */}
 

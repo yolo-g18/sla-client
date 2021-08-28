@@ -109,7 +109,7 @@ const invitation = () => {
     }
   }
   return (
-    <AppLayout title="INVITATION" desc="INVITATION">
+    <AppLayout title="Invitation" desc="Invitation">
       {invitationList.length > 0 ? (
         invitationList.length === 1 ? (
           <p className="text-lg font-thin text-gray-400 mt-4 mb-6">

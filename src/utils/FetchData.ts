@@ -5,14 +5,16 @@ import { convertTimeToMySQl } from '../components/schedule/convertTime';
 
 
 
+
 axios.interceptors.response.use(async (response) => {
   return response
 }, function (err) {
   const expireAt = localStorage.getItem('expiresAt');
-  const dateNow = new Date()
-  if(new Date(convertTimeToMySQl(expireAt)) < dateNow && expireAt) {
+  const dateNow = new Date();
+  const refreshToken = localStorage.getItem('refresh-token')
+  if(new Date(convertTimeToMySQl(expireAt)) < dateNow && expireAt && refreshToken) {
     console.log("co vao day ko");
-    return postAPIWithoutHeaders(`${PARAMS.ENDPOINT}auth/refresh/token`, 
+    axios.post(`${PARAMS.ENDPOINT}auth/refresh/token`, 
         {
           refreshToken: localStorage.getItem("refresh-token"), 
           username: localStorage.getItem("username")
@@ -23,7 +25,14 @@ axios.interceptors.response.use(async (response) => {
             localStorage.setItem('refresh-token', res.data.refreshToken);
             localStorage.setItem('expiresAt', res.data.expiresAt);
           }
+        }).catch(function(err) {
+          console.log("loi roi");
+            localStorage.setItem('access-token', "");
+            localStorage.setItem('refresh-token', "");
+            localStorage.setItem('expiresAt', "");
+            localStorage.setItem('username', "");
         })
+
   }
   return Promise.reject(err);
 }

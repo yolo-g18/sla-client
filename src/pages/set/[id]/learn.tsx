@@ -258,10 +258,12 @@ const learn = () => {
   const [isLearnByDay, setIsLearnByday] = useState(false);
   //fetch data err
   const [err, setErr] = useState(false);
+  const [errCode, setErrCode] = useState(0);
 
   //fecth to get cards
   useEffect(() => {
     setErr(false);
+    setErrCode(0);
     if (!id) {
       return;
     }
@@ -284,7 +286,6 @@ const learn = () => {
         setCurrentCardColor(
           listCardLearingRes.data.listCardLearning[currentCard].color
         );
-        console.log("update chua");
         if (!learn.isDone && learn.learnDate) {
           console.log("tai sao nhay vao day");
           try {
@@ -305,13 +306,17 @@ const learn = () => {
         setIsContinue(false);
         dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
-        console.log("error is: " + err);
+        dispatch({ type: ALERT, payload: { loading: false } });
         setErr(true);
+        console.log(err);
+        setErrCode(err.response.status);
       }
     };
     fetchData();
     setIsChange(false);
   }, [id, isChange, isContinue]);
+
+  console.log(errCode);
 
   useEffect(() => {
     if (listCardsLearning.length && currentCard < listCardsLearning.length)
@@ -405,13 +410,12 @@ const learn = () => {
     console.log("qs: " + JSON.stringify(listQTemp));
 
     try {
-      dispatch({ type: ALERT, payload: { loading: true } });
       const res = await putAPI(`${PARAMS.ENDPOINT}learn/update`, data);
-      dispatch({ type: ALERT, payload: { loading: false } });
       switchCardHandle("next");
     } catch (err) {
-      dispatch({ type: ALERT, payload: { loading: false } });
-      console.log(err);
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
     }
   };
 
@@ -432,8 +436,6 @@ const learn = () => {
       id: listCardsLearning[currentCard].cardId,
       hint: cardHint,
     };
-
-    console.log("hint is: " + cardHint);
 
     try {
       dispatch({ type: ALERT, payload: { loading: true } });
@@ -551,7 +553,6 @@ const learn = () => {
         studySetId: id,
       };
       try {
-        dispatch({ type: ALERT, payload: { loading: true } });
         const res = await putAPI(`${PARAMS.ENDPOINT}feedback/edit`, data);
         dispatch({ type: ALERT, payload: { loading: false } });
         setMessageToast("Thanks for your feedback 🙏");
@@ -596,14 +597,6 @@ const learn = () => {
       setIsEditCardFromOpen(false);
     } catch (err) {
       setIsChange(false);
-      console.log(err);
-      dispatch({
-        type: ALERT,
-        payload: {
-          loading: false,
-          errors: { message: "An error occurred" },
-        },
-      });
       setMessageToast("An error occurred");
       setTypeToast("error");
       setIsToastOpen(true);
@@ -632,7 +625,9 @@ const learn = () => {
         setIsChange(true);
       } catch (err) {
         setIsChange(false);
-        console.log(err);
+        setMessageToast("An error occurred");
+        setTypeToast("error");
+        setIsToastOpen(true);
         dispatch({ type: ALERT, payload: { loading: false } });
       }
     };
@@ -644,561 +639,634 @@ const learn = () => {
   if (err)
     return (
       <AppLayput2 title="Error" desc={"Error"}>
-        <div className="text-center mt-12">
-          <p className="text-3xl font-semibold text-gray-700">
-            You can not access this set 😑
-          </p>
+        <div className="text-center px-2 mb-44">
+          {errCode === 404 ? (
+            <div className="h-screen w-screen bg-gray-100 flex mt-12">
+              <div className="mx-auto flex flex-col md:flex-row justify-center px-5 text-gray-800">
+                <div className="max-w-md">
+                  <div className="text-5xl font-dark font-bold">404</div>
+                  <p className="text-2xl font-semibold leading-normal mt-2">
+                    Sorry we couldn't find this page.{" "}
+                  </p>
+                  <p className="mb-8 mt-2">
+                    But dont worry, you can find plenty of other things on our
+                    homepage.
+                  </p>
+                  <Link href="/home">
+                    <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                      back to homepage
+                    </button>
+                  </Link>
+                  <img
+                    src="../../404.jpeg"
+                    alt=""
+                    className="h-64 mx-auto mt-8"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : errCode === 403 ? (
+            <div className="h-screen w-screen bg-gray-100 flex mt-12">
+              <div className="mx-auto flex flex-col md:flex-row justify-center text-gray-800">
+                <div className="max-w-md">
+                  <div className="text-5xl font-dark font-bold">403</div>
+                  <p className="text-2xl font-semibold leading-normal mt-2">
+                    Forbidden{" "}
+                  </p>
+                  <p className="mb-8 mt-2">
+                    Access to this resource on the server is denied!
+                  </p>
+                  <Link href="/home">
+                    <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                      back to homepage
+                    </button>
+                  </Link>
+                  <img
+                    src="../../403.jpeg"
+                    alt=""
+                    className="h-64 mx-auto mt-8"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="h-screen w-screen bg-gray-100 flex mt-12">
+              <div className="mx-auto flex flex-col md:flex-row justify-center text-gray-800">
+                <div className="max-w-md">
+                  <div className="text-5xl font-dark font-bold">
+                    An error occurred
+                  </div>
+                  <Link href="/home">
+                    <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                      back to homepage
+                    </button>
+                  </Link>
+                  <img
+                    src="../../error.jpeg"
+                    alt=""
+                    className="h-64 mx-auto mt-8"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </AppLayput2>
     );
 
-  // if (alert.loading) {
-  //   return (
-  //     <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
-  //       <div className="w-full h-full fixed block top-0 left-0 bg-white  z-50">
-  //         <span
-  //           className=" opacity-90 top-1/2 my-0 mx-auto block relative w-0 h-0 text-3xl font-bold"
-  //           style={{ top: "50%" }}
-  //         >
-  //           Loading...
-  //         </span>
-  //       </div>
-  //     </AppLayput2>
-  //   );
-  // }
-
   return (
-    <div>
-      <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto w-full mt-4 inset-0 px-2 h-full">
-          <div className="h-3/5 2xl:w-2/5 md:w-1/2 sm:w-2/3 w-full rounded-md mb-64">
-            <div className="mb-4">
-              <Link
-                href={{
-                  pathname: "/set/[id]",
-                  query: { id: id },
-                }}
-              >
-                <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
-                  <ChevronLeftIcon fontSize="small" /> Back to set
-                </p>
-              </Link>
-            </div>
-            {!learn.learnDate ? null : !learn.isDone ? (
-              <p className="text-md text-gray-600">
-                Review cards at{" "}
-                <span className="font-bold">
-                  {formatUTCToDate(learn.learnDate)}
-                </span>
-              </p>
-            ) : null}
-            {showLearningResultModal ? (
-              <div className="mx-auto h-2/3 text-center">
-                <p className="font-bold text-gray-700">OVERALL PROGRESS</p>
-                <CircularProgressWithLabel
-                  className="w-32 my-6"
-                  value={overralProgress * 100}
-                />
+    <AppLayput2 title={`Learn | ${studySetTitle}`} desc="Learn">
+      <div className="h-4/5 2xl:w-2/5 xl:w-1/2 md:w-3/4 sm:w-4/5 w-full rounded-md mb-64 mt-2 px-3">
+        <div className="mb-4">
+          <Link
+            href={{
+              pathname: "/set/[id]",
+              query: { id: id },
+            }}
+          >
+            <p className="text-sm text-gray-600 hover:underline cursor-pointer hover:text-gray-800">
+              <ChevronLeftIcon fontSize="small" /> Back to set
+            </p>
+          </Link>
+        </div>
+        {!learn.learnDate ? null : !learn.isDone ? (
+          <p className="text-md text-gray-600">
+            Review cards at{" "}
+            <span className="font-bold">
+              {formatUTCToDate(learn.learnDate)}
+            </span>
+          </p>
+        ) : null}
+        {showLearningResultModal ? (
+          <div className="mx-auto h-2/3 text-center">
+            <p className="font-bold text-gray-700">OVERALL PROGRESS</p>
+            <CircularProgressWithLabel
+              className="w-32 my-6"
+              value={overralProgress * 100}
+            />
 
-                {Math.round(overralProgress * 100) === 100 ? (
-                  <div className="mt-6">
-                    <p className="text-gray-700 font-bold text-2xl">
-                      Congratulations, you've learned everything?
-                    </p>
-                    <div className="flex w-full pt-10 px-4 mx-auto justify-center">
-                      <button
-                        className="bg-gray-100 border-2 text-gray-700 w-32 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300 focus:outline-none"
-                        type="button"
-                        onClick={() => learnContinue()}
-                      >
-                        Continue review
-                      </button>
-                      <Link
-                        href={{
-                          pathname: "/set/[id]",
-                          query: { id: id },
-                        }}
-                      >
-                        <button
-                          className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600 focus:outline-none"
-                          type="button"
-                        >
-                          Finish
-                        </button>
-                      </Link>
-                    </div>
-                    {showModalFeedback ? (
-                      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
-                        <div className="h-screen w-full absolute flex items-center justify-center bg-modal px-2">
-                          <div className="bg-white rounded-md shadow p-6 m-4 max-w-md ">
-                            <div className="mb-2 text-gray-600 text-md font-semibold">
-                              <p>Thank you!</p>
-                              <p>Please send us your feedback!</p>
-                            </div>
-                            <div className="mb-4 items-center justify-around">
-                              <div className="justify-center items-center flex">
-                                {stars.map((_, index) => {
-                                  return (
-                                    <FaStar
-                                      key={index}
-                                      size={24}
-                                      onClick={() => handleClick(index + 1)}
-                                      onMouseOver={() =>
-                                        handleMouseOver(index + 1)
-                                      }
-                                      onMouseLeave={handleMouseLeave}
-                                      color={
-                                        (hoverValue || rating) > index
-                                          ? colors.orange
-                                          : colors.grey
-                                      }
-                                      style={{
-                                        marginRight: 10,
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  );
-                                })}
-                              </div>
-                              {rating > 0 ? (
-                                <div className="mt-4">
-                                  <InputArea
-                                    setValue={setFeedback}
-                                    placeholder="Let us know what you think..."
-                                    rows={10}
-                                    value={feedback}
-                                    error={feedbackContentErr}
-                                  />
-                                </div>
-                              ) : null}
-                            </div>
-                            <div className="flex justify-center mt-4 gap-6">
-                              <button
-                                onClick={() => setShowModalFeedback(false)}
-                                className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm 
-                 font-medium hover:bg-gray-300"
-                                type="button"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={sendFeedback}
-                                className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium 
-                 hover:bg-blue-600"
-                                type="button"
-                              >
-                                Send
-                              </button>
-                            </div>
+            {Math.round(overralProgress * 100) === 100 ? (
+              <div className="mt-6">
+                <p className="text-gray-700 font-bold text-2xl">
+                  Congratulations, you've learned everything?
+                </p>
+                <div className="flex w-full pt-10 px-4 mx-auto justify-center">
+                  <button
+                    className="bg-gray-100 border-2 text-gray-700 w-32 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                    type="button"
+                    onClick={() => learnContinue()}
+                  >
+                    Continue review
+                  </button>
+                  <Link
+                    href={{
+                      pathname: "/set/[id]",
+                      query: { id: id },
+                    }}
+                  >
+                    <button
+                      className=" bg-blue-500 text-white w-32 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600 focus:outline-none"
+                      type="button"
+                    >
+                      Finish
+                    </button>
+                  </Link>
+                </div>
+                {showModalFeedback ? (
+                  <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+                    <div className="h-screen w-full absolute flex items-center justify-center bg-modal px-2">
+                      <div className="bg-white rounded-md shadow p-6 m-4 max-w-md ">
+                        <div className="mb-2 text-gray-600 text-md font-semibold">
+                          <p>Thank you!</p>
+                          <p>Please send us your feedback!</p>
+                        </div>
+                        <div className="mb-4 items-center justify-around">
+                          <div className="justify-center items-center flex">
+                            {stars.map((_, index) => {
+                              return (
+                                <FaStar
+                                  key={index}
+                                  size={24}
+                                  onClick={() => handleClick(index + 1)}
+                                  onMouseOver={() => handleMouseOver(index + 1)}
+                                  onMouseLeave={handleMouseLeave}
+                                  color={
+                                    (hoverValue || rating) > index
+                                      ? colors.orange
+                                      : colors.grey
+                                  }
+                                  style={{
+                                    marginRight: 10,
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              );
+                            })}
                           </div>
+                          {rating > 0 ? (
+                            <div className="mt-4">
+                              <InputArea
+                                setValue={setFeedback}
+                                placeholder="Let us know what you think..."
+                                rows={10}
+                                value={feedback}
+                                error={feedbackContentErr}
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                        <div className="flex justify-center mt-4 gap-6">
+                          <button
+                            onClick={() => setShowModalFeedback(false)}
+                            className="bg-gray-100 border-2 text-gray-700 w-28 py-1 rounded-sm text-sm 
+               font-medium hover:bg-gray-300"
+                            type="button"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={sendFeedback}
+                            className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium 
+               hover:bg-blue-600"
+                            type="button"
+                          >
+                            Send
+                          </button>
                         </div>
                       </div>
-                    ) : null}
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex justify-around gap-4">
-                      <div className="text-center">
-                        <p className="text-3xl font-bold text-green-400">
-                          {listQ.filter((qt) => qt.q === 5).length}
-                        </p>
-                        <p>Perfectly</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-3xl font-bold text-blue-400">
-                          {listQ.filter((qt) => qt.q <= 4 && qt.q >= 3).length}
-                        </p>
-                        <p>Understand</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-3xl font-bold text-yellow-400">
-                          {listCardsLearning.length -
-                            listQ.filter((qt) => qt.q === 5).length -
-                            listQ.filter((qt) => qt.q <= 4 && qt.q >= 3)
-                              .length}{" "}
-                        </p>
-                        <p>Studying</p>
-                      </div>
-                    </div>
-                    <div className="flex w-full pt-10 px-4 mx-auto justify-center">
-                      <button
-                        className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300 focus:outline-none"
-                        type="button"
-                        onClick={() => reviewAgain()}
-                      >
-                        Review again
-                      </button>
-                      <button
-                        className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600 focus:outline-none"
-                        type="button"
-                        onClick={() => learnContinue()}
-                      >
-                        Continue
-                      </button>
                     </div>
                   </div>
-                )}
+                ) : null}
               </div>
             ) : (
               <div>
-                <div className="justify-center items-center flex text-gray-700 font-medium text-md mb-1 w-full">
-                  <p>Practice Your Card</p>
-                </div>
-                <div className="flex justify-between w-full mb-2">
-                  <div className="px-1">
-                    <h1>
-                      {currentCard + 1}/{listCardsLearning.length}
-                    </h1>
+                <div className="flex justify-around gap-4">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-green-400">
+                      {listQ.filter((qt) => qt.q === 5).length}
+                    </p>
+                    <p>Perfectly</p>
                   </div>
-                  <div className="flex ">
-                    {currentCardColor ? (
-                      <FiberManualRecordIcon
-                        fontSize="medium"
-                        className={`text-${currentCardColor.toLowerCase()}-400`}
-                      />
-                    ) : (
-                      <FiberManualRecordIcon
-                        fontSize="medium"
-                        className={`text-gray-200`}
-                      />
-                    )}
-
-                    <div ref={domNode}>
-                      <button
-                        className="px-1 focus: outline-none"
-                        onClick={handelExpandMoreBtnClick}
-                      >
-                        <ExpandMoreIcon />
-                      </button>
-                      {isMenuOpen ? (
-                        <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
-                          <div
-                            className={`py-1`}
-                            role="menu"
-                            aria-orientation="vertical"
-                            aria-labelledby="options-menu"
-                          >
-                            <div>
-                              <a
-                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                                role="menuitem"
-                                onClick={openHintModal}
-                              >
-                                <span className="flex flex-col">
-                                  <span>hint</span>
-                                </span>
-                              </a>
-                              {auth.userResponse?.username === ssCreator ? (
-                                <a
-                                  className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
-                            hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
-                                  role="menuitem"
-                                  onClick={showModalEditcard}
-                                >
-                                  <span className="flex flex-col">
-                                    <span>edit</span>
-                                  </span>
-                                </a>
-                              ) : null}
-
-                              <a
-                                className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer hover:text-gray-400"
-                                role="menuitem"
-                              >
-                                <div className="flex flex-col">
-                                  <div
-                                    ref={domNodeModalSetColor}
-                                    onClick={openModalSetColor}
-                                  >
-                                    <span>set color</span>
-                                    {currentCardColor ? (
-                                      <div
-                                        className={`ml-2 w-2 h-2 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md 
-                                bg-${currentCardColor.toLowerCase()}-400 cursor-pointer hover:bg-${currentCardColor.toLowerCase()}-300 `}
-                                      ></div>
-                                    ) : (
-                                      <div
-                                        className={`ml-2 w-2 h-2 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md 
-                              bg-gray-200 cursor-pointer`}
-                                      ></div>
-                                    )}
-
-                                    {showModalSetColor ? (
-                                      <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
-                                        <div className="rounded-md bg-white shadow-xs px-4 py-3">
-                                          <div className="flex flex-wrap -mx-2">
-                                            {listColors.map((color, index) => {
-                                              return (
-                                                <div
-                                                  key={index}
-                                                  className="px-2"
-                                                >
-                                                  {currentCardColor ===
-                                                  color ? (
-                                                    <div
-                                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
-                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
-                                                    ></div>
-                                                  ) : (
-                                                    <div
-                                                      onClick={() => {
-                                                        setColorhandle(color);
-                                                      }}
-                                                      className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
-                                                bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
-                                                    ></div>
-                                                  )}
-                                                </div>
-                                              );
-                                            })}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ) : null}
-                                  </div>
-                                </div>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-blue-400">
+                      {listQ.filter((qt) => qt.q <= 4 && qt.q >= 3).length}
+                    </p>
+                    <p>Understand</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-yellow-400">
+                      {listCardsLearning.length -
+                        listQ.filter((qt) => qt.q === 5).length -
+                        listQ.filter((qt) => qt.q <= 4 && qt.q >= 3)
+                          .length}{" "}
+                    </p>
+                    <p>Studying</p>
                   </div>
                 </div>
-                <div>
-                  {listCardsLearning.map((card, index) => {
-                    if (index === currentCard)
-                      return (
-                        <ReactCardFlip
-                          isFlipped={isFlipped}
-                          flipDirection="vertical"
-                          key={index}
-                        >
-                          <div onClick={flipCardHandel}>
-                            <div
-                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center bg-white
-                              overflow-auto ${
-                                switching ? " bg-gray-200" : ""
-                              } duration-100`}
-                              dangerouslySetInnerHTML={{ __html: card.front }}
-                            ></div>
-                          </div>
-                          <div onClick={flipCardHandel}>
-                            <div
-                              className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-6 text-center text-xl content-center bg-white
-                               overflow-auto ${
-                                 switching ? " bg-gray-200" : ""
-                               } duration-100`}
-                              dangerouslySetInnerHTML={{ __html: card.back }}
-                            ></div>
-                          </div>
-                        </ReactCardFlip>
-                      );
-                  })}
-                </div>
-                <div className="mt-6">
-                  <p className="font-bold justify-center items-center flex text-gray-700 text-sm">
-                    <span>*How well did you know this?</span>
-                    <span className="tooltip hover:underline text-gray-700 font-medium text-md cursor-pointer ml-4">
-                      *tips
-                      <div className="tooltiptext2 w-52 p-2 text-left mr-6">
-                        <p className="mx-2">
-                          <span>
-                            <img
-                              src={`../../${qValueArr[5]}.svg`}
-                              className="h-4 w-4 mr-2 inline"
-                              alt=""
-                            />
-                          </span>
-                          Perfect response
-                        </p>
-                        <p className="mx-2">
-                          <span>
-                            <img
-                              src={`../../${qValueArr[4]}.svg`}
-                              className="h-4 w-4 mr-2 inline"
-                              alt=""
-                            />
-                          </span>
-                          Correct response after a hesitation
-                        </p>
-                        <p className="mx-2">
-                          <span>
-                            <img
-                              src={`../../${qValueArr[3]}.svg`}
-                              className="h-4 w-4 mr-2 inline"
-                              alt=""
-                            />
-                          </span>
-                          Correct response recalled with serious difficulty
-                        </p>
-                        <p className="mx-2">
-                          <span>
-                            <img
-                              src={`../../${qValueArr[2]}.svg`}
-                              className="h-4 w-4 mr-2 inline"
-                              alt=""
-                            />
-                          </span>
-                          Incorrect response; where the correct one seemed easy
-                          to recall
-                        </p>
-                        <p className="mx-2">
-                          <span>
-                            <img
-                              src={`../../${qValueArr[1]}.svg`}
-                              className="h-4 w-4 mr-2 inline"
-                              alt=""
-                            />
-                          </span>
-                          Incorrect response; the correct one remembered
-                        </p>
-                        <p className="mx-2">
-                          <span>
-                            <img
-                              src={`../../${qValueArr[0]}.svg`}
-                              className="h-4 w-4 mr-2 inline"
-                              alt=""
-                            />
-                          </span>
-                          Complete blackout
-                        </p>
-                      </div>
-                    </span>
-                  </p>
-                </div>
-                <div className="justify-center items-center flex mt-2">
-                  {qValueArr.map((qValue, index) => {
-                    return (
-                      <button
-                        onClick={() => handelResultUserSelect(index)}
-                        key={index}
-                        className={`flex-wrap w-1/6 mx-2 h-12 px-2  rounded-md transition duration-300
-                         hover:bg-gray-200 focus:outline-none shadow-md border`}
-                      >
-                        <img
-                          src={`../../${qValue}.svg`}
-                          className="h-6 w-6 my-auto mx-auto"
-                          alt=""
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="justify-center items-center flex mt-6 ">
+                <div className="flex w-full pt-10 px-4 mx-auto justify-center">
                   <button
-                    disabled={currentCard === 0 ? true : false}
-                    className={`${
-                      currentCard === 0
-                        ? "text-gray-300"
-                        : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300"
-                    }  focus:outline-none mx-4`}
-                    onClick={() => switchCardHandle("prev")}
+                    className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300 focus:outline-none"
+                    type="button"
+                    onClick={() => reviewAgain()}
                   >
-                    <KeyboardArrowLeftIcon fontSize="large" />
+                    Review again
                   </button>
                   <button
-                    disabled={
-                      currentCard === listCardsLearning.length ? true : false
-                    }
-                    className="mx-4 hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-                    onClick={() => switchCardHandle("next")}
+                    className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600 focus:outline-none"
+                    type="button"
+                    onClick={() => learnContinue()}
                   >
-                    <KeyboardArrowRightIcon fontSize="large" />
+                    Continue
                   </button>
                 </div>
               </div>
             )}
           </div>
-        </div>
-        {/* show hint  */}
-        {isAddHintFormOpen ? (
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12">
-            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
-              <div className="bg-white rounded-lg shadow-md border-2 border-gray-300 max-w-xs max-h-full text-center">
-                <div className="relative mb-6">
-                  <button
-                    onClick={handelSaveHint}
-                    className="absolute right-2 top-2"
-                  >
-                    <CloseIcon />
-                  </button>
-                </div>
-                <div className="mb-8">
-                  <QuillNoSSRWrapper
-                    theme="bubble"
-                    value={cardHint}
-                    onChange={setCardHint}
-                    className="w-72 h-64 "
-                    placeholder="notes something..."
-                  />
-                </div>
-              </div>
+        ) : (
+          <div>
+            <div className="justify-center items-center flex text-gray-700 font-medium text-md mb-1 w-full">
+              <p>Practice Your Card</p>
             </div>
-          </div>
-        ) : null}
-        {/* show modal edit card */}
-        {isEditCardFromOpen ? (
-          <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
-            <div className="mx-2 py-2 rounded-md bg-white">
-              <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-6 py-2">
-                <div className="col-span-1 flex lg:my-2 my-4">
-                  <QuillNoSSRWrapper
-                    modules={modules}
-                    formats={formats}
-                    theme="snow"
-                    className="editor relative mb-12"
-                    placeholder="front side content"
-                    onChange={setFrontContent}
-                    value={frontContent}
-                  />
-                </div>
-                <div className="col-span-1 flex  lg:my-2 my-4">
-                  <QuillNoSSRWrapper
-                    modules={modules2}
-                    formats={formats}
-                    theme="snow"
-                    className="editor relative mb-12"
-                    onChange={setBackContent}
-                    value={backContent}
-                  />
-                </div>
+            <div className="flex justify-between w-full mb-2">
+              <div className="px-1">
+                <h1>
+                  {currentCard + 1}/{listCardsLearning.length}
+                </h1>
               </div>
-              <div className="flex justify-end px-6 pb-2">
-                <button
-                  className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300"
-                  type="button"
-                  onClick={() => setIsEditCardFromOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600"
-                  type="button"
-                  onClick={handleCardSave}
-                >
-                  {alert.loading ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
+              <div className="flex ">
+                {currentCardColor ? (
+                  <FiberManualRecordIcon
+                    fontSize="medium"
+                    className={`text-${currentCardColor.toLowerCase()}-400`}
+                  />
+                ) : (
+                  <FiberManualRecordIcon
+                    fontSize="medium"
+                    className={`text-gray-200`}
+                  />
+                )}
 
-        <Snackbar
-          open={isToastOpen}
-          autoHideDuration={6000}
-          onClose={handleClose}
+                <div ref={domNode}>
+                  <button
+                    className="px-1 focus: outline-none"
+                    onClick={handelExpandMoreBtnClick}
+                  >
+                    <ExpandMoreIcon />
+                  </button>
+                  {isMenuOpen ? (
+                    <div className="origin-top-right absolute z-50 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+                      <div
+                        className={`py-1`}
+                        role="menu"
+                        aria-orientation="vertical"
+                        aria-labelledby="options-menu"
+                      >
+                        <div>
+                          <a
+                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                          hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                            role="menuitem"
+                            onClick={openHintModal}
+                          >
+                            <span className="flex flex-col">
+                              <span>hint</span>
+                            </span>
+                          </a>
+                          {auth.userResponse?.username === ssCreator ? (
+                            <a
+                              className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer
+                          hover:bg-blue-500 hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600"
+                              role="menuitem"
+                              onClick={showModalEditcard}
+                            >
+                              <span className="flex flex-col">
+                                <span>edit</span>
+                              </span>
+                            </a>
+                          ) : null}
+
+                          <a
+                            className="block px-4 py-1 font-medium text-sm text-gray-700 cursor-pointer hover:text-gray-400"
+                            role="menuitem"
+                          >
+                            <div className="flex flex-col">
+                              <div
+                                ref={domNodeModalSetColor}
+                                onClick={openModalSetColor}
+                              >
+                                <span>set color</span>
+                                {currentCardColor ? (
+                                  <div
+                                    className={`ml-2 w-2 h-2 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md 
+                              bg-${currentCardColor.toLowerCase()}-400 cursor-pointer hover:bg-${currentCardColor.toLowerCase()}-300 `}
+                                  ></div>
+                                ) : (
+                                  <div
+                                    className={`ml-2 w-2 h-2 rounded-full focus:outline-none focus:shadow-outline inline-flex shadow-md 
+                            bg-gray-200 cursor-pointer`}
+                                  ></div>
+                                )}
+
+                                {showModalSetColor ? (
+                                  <div className="origin-top-right absolute z-50  mt-2 -ml-24 w-40 rounded-md shadow-lg hover:shadow-xl">
+                                    <div className="rounded-md bg-white shadow-xs px-4 py-3">
+                                      <div className="flex flex-wrap -mx-2">
+                                        {listColors.map((color, index) => {
+                                          return (
+                                            <div key={index} className="px-2">
+                                              {currentCardColor === color ? (
+                                                <div
+                                                  className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white 
+                                              bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                                ></div>
+                                              ) : (
+                                                <div
+                                                  onClick={() => {
+                                                    setColorhandle(color);
+                                                  }}
+                                                  className={`w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline 
+                                              bg-${color.toLocaleLowerCase()}-400 hover:bg-${color.toLocaleLowerCase()}-500`}
+                                                ></div>
+                                              )}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <div>
+              {listCardsLearning.map((card, index) => {
+                if (index === currentCard)
+                  return (
+                    <ReactCardFlip
+                      isFlipped={isFlipped}
+                      flipDirection="vertical"
+                      key={index}
+                    >
+                      <div onClick={flipCardHandel}>
+                        <div
+                          className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-4 text-center text-xl content-center bg-white
+                    overflow-auto ${
+                      switching ? " bg-gray-200" : ""
+                    } duration-100`}
+                          dangerouslySetInnerHTML={{ __html: card.front }}
+                          style={{ height: "500px" }}
+                        ></div>
+                      </div>
+                      <div onClick={flipCardHandel}>
+                        <div
+                          className={`card w-full shadow-md rounded-md border border-gray-200 text-center text-xl content-center bg-white
+                     overflow-auto ${
+                       switching ? " bg-gray-200" : ""
+                     } duration-100`}
+                          dangerouslySetInnerHTML={{ __html: card.back }}
+                          style={{ height: "500px" }}
+                        ></div>
+                      </div>
+                    </ReactCardFlip>
+                  );
+              })}
+            </div>
+            <div className="mt-6">
+              <p className="font-bold justify-center items-center flex text-gray-700 text-sm">
+                <span>*How well did you know this?</span>
+                <span className="tooltip hover:underline text-gray-700 font-medium text-md cursor-pointer ml-4">
+                  *tips
+                  <div className="tooltiptext2 w-52 p-2 text-left mr-6">
+                    <p className="mx-2">
+                      <span>
+                        <img
+                          src={`../../${qValueArr[5]}.svg`}
+                          className="h-4 w-4 mr-2 inline"
+                          alt=""
+                        />
+                      </span>
+                      Perfect response
+                    </p>
+                    <p className="mx-2">
+                      <span>
+                        <img
+                          src={`../../${qValueArr[4]}.svg`}
+                          className="h-4 w-4 mr-2 inline"
+                          alt=""
+                        />
+                      </span>
+                      Correct response after a hesitation
+                    </p>
+                    <p className="mx-2">
+                      <span>
+                        <img
+                          src={`../../${qValueArr[3]}.svg`}
+                          className="h-4 w-4 mr-2 inline"
+                          alt=""
+                        />
+                      </span>
+                      Correct response recalled with serious difficulty
+                    </p>
+                    <p className="mx-2">
+                      <span>
+                        <img
+                          src={`../../${qValueArr[2]}.svg`}
+                          className="h-4 w-4 mr-2 inline"
+                          alt=""
+                        />
+                      </span>
+                      Incorrect response; where the correct one seemed easy to
+                      recall
+                    </p>
+                    <p className="mx-2">
+                      <span>
+                        <img
+                          src={`../../${qValueArr[1]}.svg`}
+                          className="h-4 w-4 mr-2 inline"
+                          alt=""
+                        />
+                      </span>
+                      Incorrect response; the correct one remembered
+                    </p>
+                    <p className="mx-2">
+                      <span>
+                        <img
+                          src={`../../${qValueArr[0]}.svg`}
+                          className="h-4 w-4 mr-2 inline"
+                          alt=""
+                        />
+                      </span>
+                      Complete blackout
+                    </p>
+                  </div>
+                </span>
+              </p>
+            </div>
+            <div className="justify-center items-center flex mt-2">
+              {qValueArr.map((qValue, index) => {
+                return (
+                  <button
+                    onClick={() => handelResultUserSelect(index)}
+                    key={index}
+                    className={`flex-wrap w-1/6 mx-2 h-12 px-2  rounded-md transition duration-300
+                       hover:bg-gray-200 focus:outline-none shadow-md border`}
+                  >
+                    <img
+                      src={`../../${qValue}.svg`}
+                      className="h-6 w-6 my-auto mx-auto"
+                      alt=""
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            <div className="justify-center items-center flex mt-6 ">
+              <button
+                disabled={currentCard === 0 ? true : false}
+                className={`${
+                  currentCard === 0
+                    ? "text-gray-300"
+                    : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300"
+                }  focus:outline-none mx-4`}
+                onClick={() => switchCardHandle("prev")}
+              >
+                <KeyboardArrowLeftIcon fontSize="large" />
+              </button>
+              <button
+                disabled={
+                  currentCard === listCardsLearning.length ? true : false
+                }
+                className="mx-4 hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                onClick={() => switchCardHandle("next")}
+              >
+                <KeyboardArrowRightIcon fontSize="large" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* show hint  */}
+      {isAddHintFormOpen ? (
+        <div
+          className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed 
+        inset-0 z-50 backdrop-filter backdrop-blur-xs -mt-12"
         >
-          <Alert
-            onClose={handleClose}
-            severity={typeToast === "success" ? "success" : "error"}
-          >
-            {messageToast}
-          </Alert>
-        </Snackbar>
-      </AppLayput2>
-    </div>
+          <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+            <div className="bg-white rounded-lg shadow-md border-2 border-gray-300 max-w-xs max-h-full text-center">
+              <div className="relative mb-6">
+                <button
+                  onClick={handelSaveHint}
+                  className="absolute right-2 top-2"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+              <div className="mb-8">
+                <QuillNoSSRWrapper
+                  theme="bubble"
+                  value={cardHint}
+                  onChange={setCardHint}
+                  className="w-72 h-64 "
+                  placeholder="notes something..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {/* show modal edit card */}
+      {isEditCardFromOpen ? (
+        <div className="justify-center items-center flex flex-row overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12 ">
+          <div className="mx-2 py-2 rounded-md bg-white">
+            <div className=" grid lg:grid-cols-2 grid-cols-1 gap-4 px-6 py-2">
+              <div className="col-span-1 flex lg:my-2 my-4">
+                <QuillNoSSRWrapper
+                  modules={modules}
+                  formats={formats}
+                  theme="snow"
+                  className="editor relative mb-12"
+                  placeholder="front side content"
+                  onChange={setFrontContent}
+                  value={frontContent}
+                />
+              </div>
+              <div className="col-span-1 flex  lg:my-2 my-4">
+                <QuillNoSSRWrapper
+                  modules={modules2}
+                  formats={formats}
+                  theme="snow"
+                  className="editor relative mb-12"
+                  onChange={setBackContent}
+                  value={backContent}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end px-6 pb-2">
+              <button
+                className="bg-gray-100 border-2 text-gray-700 w-28 py-1 mr-1 rounded-sm text-sm font-medium hover:bg-gray-300"
+                type="button"
+                onClick={() => setIsEditCardFromOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className=" bg-blue-500 text-white w-28 py-1 ml-1 rounded-sm text-sm font-medium hover:bg-blue-600"
+                type="button"
+                onClick={handleCardSave}
+              >
+                {alert.loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {alert.loading || alert.loading === undefined ? (
+        <div
+          className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed 
+        inset-0 z-50 backdrop-filter backdrop-blur-md -mt-12"
+        >
+          <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+            <div className="flex justify-center items-center space-x-1 text-sm text-gray-700">
+              <svg
+                fill="none"
+                className="w-6 h-6 animate-spin"
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clipRule="evenodd"
+                  d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                  fill="currentColor"
+                  fillRule="evenodd"
+                />
+              </svg>
+              <div>Loading ...</div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <Snackbar
+        open={isToastOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={typeToast === "success" ? "success" : "error"}
+        >
+          {messageToast}
+        </Alert>
+      </Snackbar>
+    </AppLayput2>
   );
 };
 export default learn;

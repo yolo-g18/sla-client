@@ -62,7 +62,7 @@ const rooms = (props: any) => {
           );
         }
 
-        if (rooms.length === 0) setIsShowEmpty(true);
+        if (res.data.length === 0) setIsShowEmpty(true);
         else setIsShowEmpty(false);
       } catch (err) {
         dispatch({ type: ALERT, payload: { loading: false } });
@@ -124,7 +124,7 @@ const rooms = (props: any) => {
   return (
     <div>
       <LibraryLayout>
-        {rooms.length === 0 ? (
+        {isShowEmpty && alert.loading === false ? (
           <div>
             <div className="col-span-2 text-center mx-auto mt-24">
               <p className="text-3xl font-semibold text-gray-700">

@@ -15,6 +15,11 @@ export const itemListProfile = [
   { label: "Account", link: "/me/account" },
 ];
 
+export const listItemSidebar = [
+  { label: "Home", link: "/home" },
+  { label: "Schedule", link: "/schedule" },
+  { label: "lib", link: "/me/account" },
+];
 export const menuitem = [
   {
     label: "Your Profile",

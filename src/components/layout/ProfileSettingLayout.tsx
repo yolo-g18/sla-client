@@ -15,7 +15,7 @@ const ProfileSettingLayout = (props: Props) => {
   return (
     <div>
       <AppLayput2 title="me" desc="me">
-        <div className="lg:w-2/3 mx-auto px-4">
+        <div className="lg:w-2/3 md:w-4/5 w-full mx-auto px-4">
           <div className="flex justify-around mt-4 ">
             <div className="flex flex-grow">
               <img

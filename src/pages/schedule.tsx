@@ -87,11 +87,11 @@ const schedule = () => {
   return (
     <div>
       <AppLayout2 title="Schedule" desc="Schedule">
-        <div className=" grid grid-cols-1 lg:grid-cols-5 w-full px-4 mb-36">
+        <div className=" grid grid-cols-1 lg:grid-cols-5 w-full px-2 mb-36">
           <div className="col-span-1 px-2 mt-2">
             <div
-              className="shadow-lg rounded-md w-full p-4 bg-white mb-6 md:h-64"
-              style={{ height: "780px" }}
+              className="rounded-md p-2 overflow-y-auto overflow-x-hidden mb-6"
+              style={{ maxHeight: "780px" }}
             >
               <div className="w-full flex items-center justify-between">
                 <p className="text-gray-800 dark:text-white text-xl font-medium">
@@ -116,36 +116,39 @@ const schedule = () => {
                 return (
                   <article
                     key={index}
-                    className={`cursor-pointer rounded-md bg-white flex text-gray-700 mb-2 `}
+                    className={`cursor-pointer rounded-md bg-gray-100 p-2 flex text-gray-700 mb-2 hover:bg-gray-200 duration-150`}
                     onClick={() => viewEventhandle(evn)}
                   >
                     <span className="flex-none pr-2 my-auto">
-                      <div>
+                      <div className="flex">
                         {evn.isLearnEvent ? (
                           <img
                             src="draft.svg"
-                            className="h-6 w-6 my-auto mx-auto"
+                            className="h-5 w-5 my-auto mx-auto"
                             alt=""
                           />
                         ) : (
                           <EventIcon />
                         )}
                       </div>
-                      <div
-                        className={`bg-${evn.color?.toLowerCase()}-500 w-2 h-2 rounded-full mx-auto mt-2`}
-                      ></div>
                     </span>
                     <div className="flex-1 w-full pr-6">
                       <header className="mb-1 text-sm w-full">
                         {evn.isLearnEvent ? (
-                          <div className="flex justify-between">
+                          <div
+                            className="flex justify-start w-full"
+                            onClick={() => viewEventhandle(evn)}
+                          >
+                            <FiberManualRecordIcon
+                              className={`text-${evn.color?.toLowerCase()}-600 -mt-0.5 mr-1`}
+                              style={{ width: "12px" }}
+                            />
                             <div
                               className={`font-semibold ${
                                 evn.isDone ? "text-gray-400 " : "text-gray-800"
-                              } hover:text-gray-800 hover:underline truncate`}
-                              onClick={() => viewEventhandle(evn)}
+                              } hover:text-gray-800 hover:underline flex truncate`}
                             >
-                              {evn.name}{" "}
+                              <p className="truncate">{evn.name} </p>
                             </div>
                             {evn.isDone ? (
                               <CheckCircleIcon
@@ -156,15 +159,23 @@ const schedule = () => {
                           </div>
                         ) : (
                           <div
-                            className={`font-semibold truncate hover:underline
+                            className="flex justify-start w-full"
+                            onClick={() => viewEventhandle(evn)}
+                          >
+                            <FiberManualRecordIcon
+                              className={`text-${evn.color?.toLowerCase()}-600 -mt-0.5 mr-1`}
+                              style={{ width: "12px" }}
+                            />
+                            <div
+                              className={`font-semibold hover:underline
                               ${
                                 new Date(evn.toTime) < dateNow
                                   ? " text-gray-400 line-through"
-                                  : "text-gray-800 "
-                              }`}
-                            onClick={() => viewEventhandle(evn)}
-                          >
-                            {evn.name}
+                                  : "text-gray-800"
+                              } flex truncate`}
+                            >
+                              <p className="truncate">{evn.name} </p>
+                            </div>
                           </div>
                         )}
                       </header>

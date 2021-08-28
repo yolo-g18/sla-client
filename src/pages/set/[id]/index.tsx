@@ -23,6 +23,7 @@ import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { FaStar } from "react-icons/fa";
 import { useClickOutside } from "../../../hooks/useClickOutside";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { learnByDay } from "../../../redux/actions/learnAction";
 
 //alert
 function Alert(props: AlertProps) {
@@ -238,12 +239,14 @@ const index = () => {
 
   //fetch data err
   const [err, setErr] = useState(false);
+  const [errCode, setErrCode] = useState(0);
 
   //frag ss learned
   const [isLearned, setIsLearned] = useState(false);
   //get data of set by id
   useEffect(() => {
     setErr(false);
+    setErrCode(0);
     setIsSuc(false);
     const fetchData = async () => {
       if (!id) {
@@ -322,6 +325,7 @@ const index = () => {
         } else dispatch({ type: ALERT, payload: { loading: false } });
       } catch (err) {
         setErr(true);
+        setErrCode(err.response.status);
       }
       //get color of SS
       try {
@@ -764,18 +768,107 @@ const index = () => {
     }
   };
 
+  const learn = () => {
+    dispatch(learnByDay({}));
+    router.push(`/set/${id}/learn`);
+  };
+
+  const [showModalResetCF, setShowModalResetCF] = useState(false);
+
+  const reset = async () => {
+    try {
+      const res = await deleteAPI(`${PARAMS.ENDPOINT}learn/stop?id=${id}`);
+      setIsSuc(true);
+      setTypeToast("success");
+      setMessageToast("Reset!");
+      setIsToastOpen(true);
+      setShowModalResetCF(false);
+    } catch (err) {
+      dispatch({ type: ALERT, payload: { loading: false } });
+      setMessageToast("An error occurred");
+      setTypeToast("error");
+      setIsToastOpen(true);
+    }
+  };
+
   if (err)
     return (
       <AppLayout title="Error" desc={"Error"}>
-        <div className="text-center mt-12">
-          <p className="text-3xl font-semibold text-gray-700">
-            You can not access this set 😑
-          </p>
+        <div className="text-center mb-44">
+          {errCode === 404 ? (
+            <div className="h-screen w-screen bg-gray-100 flex mt-12">
+              <div className="mx-auto flex flex-col md:flex-row justify-center px-5 text-gray-800">
+                <div className="max-w-md">
+                  <div className="text-5xl font-dark font-bold">404</div>
+                  <p className="text-2xl font-semibold leading-normal mt-2">
+                    Sorry we couldn't find this page.{" "}
+                  </p>
+                  <p className="mb-8 mt-2">
+                    But dont worry, you can find plenty of other things on our
+                    homepage.
+                  </p>
+                  <Link href="/home">
+                    <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                      back to homepage
+                    </button>
+                  </Link>
+                  <img
+                    src="../../404.jpeg"
+                    alt=""
+                    className="h-64 mx-auto mt-8"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : errCode === 403 ? (
+            <div className="h-screen w-screen bg-gray-100 flex mt-12">
+              <div className="mx-auto flex flex-col md:flex-row justify-center text-gray-800">
+                <div className="max-w-md">
+                  <div className="text-5xl font-dark font-bold">403</div>
+                  <p className="text-2xl font-semibold leading-normal mt-2">
+                    Forbidden{" "}
+                  </p>
+                  <p className="mb-8 mt-2">
+                    Access to this resource on the server is denied!
+                  </p>
+                  <Link href="/home">
+                    <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                      back to homepage
+                    </button>
+                  </Link>
+                  <img
+                    src="../../403.jpeg"
+                    alt=""
+                    className="h-64 mx-auto mt-8"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="h-screen w-screen bg-gray-100 flex mt-12">
+              <div className="mx-auto flex flex-col md:flex-row justify-center text-gray-800">
+                <div className="max-w-md">
+                  <div className="text-5xl font-dark font-bold">
+                    An error occurred
+                  </div>
+
+                  <Link href="/home">
+                    <button className="px-4 inline py-2 text-sm font-medium leading-5 shadow text-white transition-colors duration-150 border border-transparent rounded-sm focus:outline-none focus:shadow-outline-blue bg-blue-500 active:bg-blue-600 hover:bg-blue-600">
+                      back to homepage
+                    </button>
+                  </Link>
+                  <img
+                    src="../../error.jpeg"
+                    alt=""
+                    className="h-64 mx-auto mt-8"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </AppLayout>
     );
-
-  console.log();
 
   return (
     <div>
@@ -848,15 +941,14 @@ const index = () => {
               </div>
               {/* toolbar */}
               <div className="flex h-8">
-                <Link href={`/set/${id}/learn`}>
-                  <button
-                    className="w-24 text-md rounded-sm px-4 mx-2
+                <button
+                  onClick={learn}
+                  className="w-24 text-md rounded-sm px-4 mx-2
                    text-sm font-medium bg-blue-500 hover:bg-blue-600 
                 text-white focus:outline-none"
-                  >
-                    Learn
-                  </button>
-                </Link>
+                >
+                  Learn
+                </button>
                 {creatorName === auth.userResponse?.username ? (
                   <div className="flex">
                     <button
@@ -970,6 +1062,19 @@ const index = () => {
                               <span>Fork</span>
                             </span>
                           </a>
+                          {isLearned ? (
+                            <a
+                              className="block px-4 py-1 font-medium text-sm text-gray-700 hover:bg-blue-500 
+                            hover:text-white dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600 cursor-pointer"
+                              role="menuitem"
+                              onClick={() => setShowModalResetCF(true)}
+                            >
+                              <span className="flex flex-col">
+                                <span>Reset</span>
+                              </span>
+                            </a>
+                          ) : null}
+
                           {auth.userResponse?.username === creatorName ? (
                             <a
                               className="block px-4 py-1 font-medium text-sm text-gray-700 hover:text-white hover:bg-yellow-500
@@ -1310,13 +1415,44 @@ const index = () => {
                 <div className="flex justify-center">
                   <button
                     onClick={handelDeleteStudySet}
-                    className="text-white w-32 rounded mx-4 bg-yellow-500 hover:bg-yellow-600"
+                    className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => setShowModalDelete(false)}
-                    className=" text-white w-32 py-1 mx-4 rounded bg-blue-500 hover:bg-blue-600"
+                    className=" text-white w-32 py-1 mx-4 rounded0sm bg-blue-500 hover:bg-blue-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {showModalResetCF ? (
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 backdrop-filter backdrop-brightness-50 -mt-12">
+            <div className="h-screen w-full absolute flex items-center justify-center bg-modal">
+              <div className="bg-white rounded-md shadow p-6 m-4 max-w-xs max-h-full text-center">
+                <div className="mb-4"></div>
+                <div className="mb-8">
+                  <p>Are you sure want to reset this study set</p>
+                  <p className="text-gray-600 text-xs px-1 mb-2">
+                    When you reset this study set, all information about your
+                    learning process about this study set will reset.
+                  </p>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={reset}
+                    className="text-white w-32 rounded-sm mx-4 bg-yellow-500 hover:bg-yellow-600"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => setShowModalResetCF(false)}
+                    className=" text-white w-32 py-1 mx-4 rounded0sm bg-blue-500 hover:bg-blue-600"
                   >
                     Cancel
                   </button>
@@ -1448,14 +1584,27 @@ const index = () => {
             </div>
           </div>
         ) : null}
-        {alert.loading ? (
-          <div className="w-full h-full fixed block top-0 left-0 backdrop-filter backdrop-blur-sm  z-50">
-            <span
-              className=" opacity-90 top-1/2 my-0 mx-auto block relative w-0 h-0 text-3xl font-bold"
-              style={{ top: "50%" }}
-            >
-              <CircularProgress thickness={6.0} color="primary" disableShrink />
-            </span>
+        {alert.loading || alert.loading === undefined ? (
+          <div
+            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed 
+        inset-0 z-50 backdrop-filter backdrop-blur-md -mt-12"
+          >
+            <div className="flex justify-center items-center space-x-1 text-sm text-gray-700">
+              <svg
+                fill="none"
+                className="w-6 h-6 animate-spin"
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clipRule="evenodd"
+                  d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+                  fill="currentColor"
+                  fillRule="evenodd"
+                />
+              </svg>
+              <div>Loading ...</div>
+            </div>
           </div>
         ) : null}
         <Snackbar

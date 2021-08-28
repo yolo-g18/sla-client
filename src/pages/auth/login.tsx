@@ -13,6 +13,8 @@ import { postAPIWithoutHeaders } from "../../utils/FetchData";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { convertTimeToMySQl } from "../../components/schedule/convertTime";
+import Meta from "../../components/site/Meta";
 
 //alert
 function Alert(props: AlertProps) {
@@ -101,6 +103,8 @@ const login = () => {
         router.push("/home");
       }
     } else {
+      const dateNow = new Date();
+      const expireAt = localStorage.getItem("expiresAt");
       if (localStorage.getItem("access-token")) {
         router.push("/home");
       }
@@ -117,6 +121,7 @@ const login = () => {
 
   return (
     <div>
+      <Meta pageTitle="Login" description="Login" />
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
           <div className="bg-white px-6 py-8 rounded shadow-lg text-black w-full">

@@ -7,6 +7,7 @@ import { registerAction } from "../../redux/actions/authAction";
 import { useDispatch, useSelector } from "react-redux";
 import { RootStore } from "../../utils/TypeScript";
 import Link from "next/link";
+import Meta from "../../components/site/Meta";
 
 const register = () => {
   const [email, setEmail] = useState("");
@@ -61,6 +62,7 @@ const register = () => {
 
   return (
     <div>
+      <Meta pageTitle="Register" description="Register" />
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
           <div className="bg-white px-6 py-8 rounded shadow-lg text-black w-full">

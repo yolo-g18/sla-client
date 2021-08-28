@@ -146,7 +146,7 @@ const folder = () => {
   return (
     <div>
       <LibraryLayout>
-        {isShowEmpty ? (
+        {isShowEmpty && alert.loading === false ? (
           <div className="col-span-2 text-center mx-auto mt-24">
             <p className="text-3xl font-semibold text-gray-700">
               This folder has no sets yet
