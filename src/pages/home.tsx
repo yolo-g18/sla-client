@@ -38,6 +38,13 @@ const home = () => {
   const [numberOfSetsCreated, setNumberSetsCreated] = useState();
   const [numberOfSetsLearning, setNumberSetsLearning] = useState();
 
+  const [list4StudySetLeaning, setList4StudySetLearning] = useState<
+    IStudySetLearning[]
+  >([]);
+  const [list4StudySetCreated, setList4StudySetCreated] = useState<
+    IStudySetInfo2[]
+  >([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -89,13 +96,6 @@ const home = () => {
     };
     fetchData();
   }, [auth.userResponse?._id]);
-
-  const [list4StudySetLeaning, setList4StudySetLearning] = useState<
-    IStudySetLearning[]
-  >([]);
-  const [list4StudySetCreated, setList4StudySetCreated] = useState<
-    IStudySetInfo2[]
-  >([]);
 
   // useEffect(() => {
   //   if (!auth.userResponse?._id) return;

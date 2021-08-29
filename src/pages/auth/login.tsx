@@ -102,6 +102,14 @@ const login = () => {
       } else {
         router.push("/home");
       }
+    } else {
+      const expireAt = localStorage.getItem("expiresAt");
+      const dateNow = new Date();
+      if (localStorage.getItem("access-token")) {
+        console.log("okela");
+
+        router.push("/home");
+      }
     }
   }, [auth.roles]);
 

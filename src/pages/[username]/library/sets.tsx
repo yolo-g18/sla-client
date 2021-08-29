@@ -32,8 +32,8 @@ const sets = (props: any) => {
     IStudySetInfo2[]
   >([]);
 
-  const [isShowEmptyCreatedSS, setIsShowEmptyCreatedSS] = useState(false);
-  const [isShowEmptyLearningSS, setIsShowEmptyLearningSS] = useState(false);
+  const [isShowEmptyCreatedSS, setIsShowEmptyCreatedSS] = useState(true);
+  const [isShowEmptyLearningSS, setIsShowEmptyLearningSS] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,7 +109,8 @@ const sets = (props: any) => {
     fetchData();
   }, [user._id, type, search_query, color]);
 
-  console.log(listStudySetLeaning);
+  console.log("learn: " + isShowEmptyLearningSS);
+  console.log("create: " + isShowEmptyCreatedSS);
 
   if (
     search_query &&
@@ -157,174 +158,180 @@ const sets = (props: any) => {
                   </Link>
                 </div>
               </div>
-            ) : (
-              <div>
+            ) : null}
+          </div>
+        ) : (
+          <div>
+            {isShowEmptyCreatedSS === true &&
+            alert.loading === false &&
+            user.username !== auth.userResponse?.username ? (
+              <div className="col-span-2 text-center mx-auto mt-24">
                 <p className="text-3xl font-semibold text-gray-700">
                   {user.username} hasn't created any sets yet
                 </p>
-                <p className="text-md text-gray-600">
-                  Sets they create will appear here
-                </p>
+              </div>
+            ) : (
+              <div className=" px-2">
+                {/* list set learning */}
+                {user.username === auth.userResponse?.username &&
+                listStudySetLeaning.length !== 0 ? (
+                  <div>
+                    <div className="flex justify-between">
+                      <div className="flex flex-col mt-2">
+                        <div className="w-44 h-2 bg-blue-600 mb-2"></div>
+                        <p className="text-lg font-bold text-blue-600">
+                          Learning ({listStudySetLeaning.length})
+                        </p>
+                      </div>
+                    </div>
+                    <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                      {listStudySetLeaning.map((set, index) => {
+                        return (
+                          <div key={index} className="col-span-1">
+                            <div
+                              className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
+                            >
+                              <div className=" w-full flex flex-row mb-2">
+                                <div className="w-full flex justify-between my-auto">
+                                  <Link href={`/set/${set.studySetId}`}>
+                                    <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                      {set.color ? (
+                                        <FiberManualRecordIcon
+                                          className={`py-1 text-${set.color.toLowerCase()}-500`}
+                                        />
+                                      ) : null}
+                                      {set.studySetName}
+                                    </p>
+                                  </Link>
+                                </div>
+                              </div>
+                              <div className="mb-4 h-20 text-sm">
+                                {set.ssDescription.length <= 100 ? (
+                                  <p className="text-gray-500">
+                                    {set.ssDescription}
+                                  </p>
+                                ) : (
+                                  <p className="text-gray-500">
+                                    {set.ssDescription.substring(0, 150)}...
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex justify-between">
+                                <div>
+                                  <div>
+                                    <p className="text-blue-500 font-medium text-sm">
+                                      Progress: {Math.round(set.progress * 100)}
+                                      %
+                                    </p>
+                                  </div>
+                                  <div className="font-semibold text-gray-500">
+                                    <p>{set.numberOfCards} cards</p>
+                                  </div>
+                                </div>
+                                <Link
+                                  href={`/${set.owner}/library/sets?color=WHITE`}
+                                >
+                                  <div className="flex">
+                                    <img
+                                      className="w-5 h-5 my-auto rounded-full object-cover object-center"
+                                      src={`${
+                                        set.creatorAvatar
+                                          ? set.creatorAvatar
+                                          : "../../user.svg"
+                                      }`}
+                                      alt="Avatar Upload"
+                                    />
+                                    <p className="my-auto ml-2">
+                                      <span className="text-gray-600 font-medium text-md hover:underline">
+                                        {set.owner}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+                {/* ss created */}
+                {listStudySetCreated.length !== 0 ? (
+                  <div className="">
+                    <div className="flex justify-between">
+                      <div className="flex flex-col mt-2">
+                        <div className="w-44 h-2 bg-blue-600 mb-2"></div>
+                        <p className="text-lg font-bold text-blue-600">
+                          Created ({listStudySetCreated.length})
+                        </p>
+                      </div>
+                    </div>
+                    <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+                      {listStudySetCreated.map((set, index) => {
+                        return (
+                          <div className=" col-span-1" key={index}>
+                            <div
+                              className="flex-col col-span-1 rounded-md my-4 bg-white 
+                          hover:border-gray-300 hover:shadow-lg duration-150 cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
+                            >
+                              <div className=" w-full flex flex-row mb-2">
+                                <div className="w-full flex justify-between my-auto">
+                                  <Link href={`/set/${set.id}`}>
+                                    <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
+                                      {set.title}
+                                    </p>
+                                  </Link>
+                                </div>
+                              </div>
+                              <div className="mb-4 h-20 text-sm">
+                                {set.description.length <= 150 ? (
+                                  <p className="text-gray-500">
+                                    {set.description}
+                                  </p>
+                                ) : (
+                                  <p className="text-gray-500">
+                                    {set.description.substring(0, 150)}...
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex justify-between">
+                                <div className=" mt-1 font-semibold text-gray-500">
+                                  <p>{set.numberOfCards} cards</p>
+                                </div>
+                                <div>
+                                  <Link
+                                    href={`/${set.creator}/library/sets?color=WHITE`}
+                                  >
+                                    <div className="flex">
+                                      <img
+                                        className="w-5 h-5 my-auto rounded-full object-cover object-center"
+                                        src={`${
+                                          set.creatorAvatar
+                                            ? set.creatorAvatar
+                                            : "../../user.svg"
+                                        }`}
+                                        alt="Avatar Upload"
+                                      />
+                                      <p className="my-auto ml-2">
+                                        <span className="text-gray-600 font-medium text-md hover:underline">
+                                          {set.creator}
+                                        </span>
+                                      </p>
+                                    </div>
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
-          </div>
-        ) : (
-          <div className=" px-2">
-            {/* list set learning */}
-            {user.username === auth.userResponse?.username &&
-            listStudySetLeaning.length !== 0 ? (
-              <div>
-                <div className="flex justify-between">
-                  <div className="flex flex-col mt-2">
-                    <div className="w-44 h-2 bg-blue-600 mb-2"></div>
-                    <p className="text-lg font-bold text-blue-600">
-                      Learning ({listStudySetLeaning.length})
-                    </p>
-                  </div>
-                </div>
-                <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
-                  {listStudySetLeaning.map((set, index) => {
-                    return (
-                      <div key={index} className="col-span-1">
-                        <div
-                          className="flex-col col-span-1 rounded-md my-4 bg-white 
-                          hover:border-gray-300 hover:shadow-lg cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
-                        >
-                          <div className=" w-full flex flex-row mb-2">
-                            <div className="w-full flex justify-between my-auto">
-                              <Link href={`/set/${set.studySetId}`}>
-                                <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
-                                  {set.color ? (
-                                    <FiberManualRecordIcon
-                                      className={`py-1 text-${set.color.toLowerCase()}-500`}
-                                    />
-                                  ) : null}
-                                  {set.studySetName}
-                                </p>
-                              </Link>
-                            </div>
-                          </div>
-                          <div className="mb-4 h-20 text-sm">
-                            {set.ssDescription.length <= 100 ? (
-                              <p className="text-gray-500">
-                                {set.ssDescription}
-                              </p>
-                            ) : (
-                              <p className="text-gray-500">
-                                {set.ssDescription.substring(0, 150)}...
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex justify-between">
-                            <div>
-                              <div>
-                                <p className="text-blue-500 font-medium text-sm">
-                                  Progress: {Math.round(set.progress * 100)}%
-                                </p>
-                              </div>
-                              <div className="font-semibold text-gray-500">
-                                <p>{set.numberOfCards} cards</p>
-                              </div>
-                            </div>
-                            <Link
-                              href={`/${set.owner}/library/sets?color=WHITE`}
-                            >
-                              <div className="flex">
-                                <img
-                                  className="w-5 h-5 my-auto rounded-full object-cover object-center"
-                                  src={`${
-                                    set.creatorAvatar
-                                      ? set.creatorAvatar
-                                      : "../../user.svg"
-                                  }`}
-                                  alt="Avatar Upload"
-                                />
-                                <p className="my-auto ml-2">
-                                  <span className="text-gray-600 font-medium text-md hover:underline">
-                                    {set.owner}
-                                  </span>
-                                </p>
-                              </div>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
-            {/* ss created */}
-            {listStudySetCreated.length !== 0 ? (
-              <div className="">
-                <div className="flex justify-between">
-                  <div className="flex flex-col mt-2">
-                    <div className="w-44 h-2 bg-blue-600 mb-2"></div>
-                    <p className="text-lg font-bold text-blue-600">
-                      Created ({listStudySetCreated.length})
-                    </p>
-                  </div>
-                </div>
-                <div className=" grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
-                  {listStudySetCreated.map((set, index) => {
-                    return (
-                      <div className=" col-span-1" key={index}>
-                        <div
-                          className="flex-col col-span-1 rounded-md my-4 bg-white 
-                          hover:border-gray-300 hover:shadow-lg duration-150 cursor-pointer shadow-md border-b-2 border-gray-200 p-4"
-                        >
-                          <div className=" w-full flex flex-row mb-2">
-                            <div className="w-full flex justify-between my-auto">
-                              <Link href={`/set/${set.id}`}>
-                                <p className="text-gray-800 dark:text-white text-xl font-medium truncate hover:underline">
-                                  {set.title}
-                                </p>
-                              </Link>
-                            </div>
-                          </div>
-                          <div className="mb-4 h-20 text-sm">
-                            {set.description.length <= 150 ? (
-                              <p className="text-gray-500">{set.description}</p>
-                            ) : (
-                              <p className="text-gray-500">
-                                {set.description.substring(0, 150)}...
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex justify-between">
-                            <div className=" mt-1 font-semibold text-gray-500">
-                              <p>{set.numberOfCards} cards</p>
-                            </div>
-                            <div>
-                              <Link
-                                href={`/${set.creator}/library/sets?color=WHITE`}
-                              >
-                                <div className="flex">
-                                  <img
-                                    className="w-5 h-5 my-auto rounded-full object-cover object-center"
-                                    src={`${
-                                      set.creatorAvatar
-                                        ? set.creatorAvatar
-                                        : "../../user.svg"
-                                    }`}
-                                    alt="Avatar Upload"
-                                  />
-                                  <p className="my-auto ml-2">
-                                    <span className="text-gray-600 font-medium text-md hover:underline">
-                                      {set.creator}
-                                    </span>
-                                  </p>
-                                </div>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
           </div>
         )}
       </LibraryLayout>

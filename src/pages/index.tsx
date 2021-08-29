@@ -6,6 +6,7 @@ import { RootStore } from "../utils/TypeScript";
 
 import Link from "next/link";
 import Meta from "../components/site/Meta";
+import { convertTimeToMySQl } from "../components/schedule/convertTime";
 
 export default function index() {
   const { auth } = useSelector((state: RootStore) => state);
@@ -15,6 +16,14 @@ export default function index() {
       if (auth.roles?.includes("ROLE_ADMIN")) {
         router.push("/admin");
       } else {
+        router.push("/home");
+      }
+    } else {
+      const expireAt = localStorage.getItem("expiresAt");
+      const dateNow = new Date();
+      if (localStorage.getItem("access-token")) {
+        console.log("okela");
+
         router.push("/home");
       }
     }

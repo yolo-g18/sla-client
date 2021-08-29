@@ -13,7 +13,7 @@ const landing = () => {
 
   return (
     <div>
-      <Meta pageTitle="Landing" description="Landing" />
+      <Meta pageTitle="Goodbye" description="Goodbye" />
       <div className="flex relative z-20 items-center ">
         <div className="container mx-auto px-6 flex flex-col justify-between items-center relative py-4">
           <img

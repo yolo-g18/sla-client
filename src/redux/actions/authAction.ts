@@ -91,14 +91,16 @@ async (dispatch: Dispatch<IAuthType | IAlertType >) => {
   if(localStorage.getItem("access-token")) {
     try {
       await getAPI(`${PARAMS.ENDPOINT}auth/logout`)
+      dispatch({type: AUTH, payload: {userResponse: undefined}})
       localStorage.removeItem('access-token')
       localStorage.removeItem('refresh-token')
       localStorage.removeItem('expiresAt')
       localStorage.removeItem('username')
-      dispatch({type: AUTH, payload: {userResponse: undefined}})
+      console.log("log out ...");
+      
     } catch (err: any) {
       console.log(err);
-      dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
+      // dispatch({ type: ALERT, payload: { errors: err.response.data.msg } })
     }
   }
 }

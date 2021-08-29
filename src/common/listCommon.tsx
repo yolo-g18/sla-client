@@ -39,7 +39,7 @@ export const menuitem = [
   },
   {
     label: "Logout",
-    link: "/landing",
+    link: "/logout",
   },
 ];
 
