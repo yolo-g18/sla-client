@@ -216,7 +216,7 @@ const learn = () => {
         container: [
           ["bold", "italic", "underline"],
           [{ color: [] }, { background: [] }],
-          ["link", "image"],
+          ["link", "image", "video"],
         ],
 
         handlers: {
@@ -233,7 +233,7 @@ const learn = () => {
         container: [
           ["bold", "italic", "underline"],
           [{ color: [] }, { background: [] }],
-          ["link", "image"],
+          ["link", "image", "video"],
         ],
 
         handlers: {

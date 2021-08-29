@@ -59,6 +59,7 @@ const formats = [
   "underline",
   "link",
   "image",
+  "video",
 ];
 
 const AntSwitch = withStyles((theme: Theme) =>
@@ -183,7 +184,7 @@ const SetEditLayout = (props: Props) => {
         container: [
           ["bold", "italic", "underline"],
           [{ color: [] }, { background: [] }],
-          ["link", "image"],
+          ["link", "image", "video"],
         ],
 
         handlers: {

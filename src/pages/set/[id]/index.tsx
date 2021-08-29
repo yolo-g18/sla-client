@@ -193,7 +193,7 @@ const index = () => {
         container: [
           ["bold", "italic", "underline"],
           [{ color: [] }, { background: [] }],
-          ["link", "image"],
+          ["link", "image", "video"],
         ],
 
         handlers: {
@@ -210,7 +210,7 @@ const index = () => {
         container: [
           ["bold", "italic", "underline"],
           [{ color: [] }, { background: [] }],
-          ["link", "image"],
+          ["link", "image", "video"],
         ],
 
         handlers: {
@@ -875,15 +875,15 @@ const index = () => {
       <AppLayout title={title} desc={desc}>
         <div className="grid lg:grid-cols-5 grid-cols-1 gap-8 h-full lg:w-4/5 mx-auto mt-6">
           <div className="col-span-1 px-4">
-            <div className=" flex items-center px-2">
+            <div className="flex px-2">
               <div>
                 <img
-                  className="w-12 h-12 my-auto rounded-full object-cover object-center"
+                  className="w-10 h-10 my-auto rounded-full object-cover object-center"
                   src={`${user.avatar ? user.avatar : "../../user.svg"}`}
                   alt="Avatar Upload"
                 />
               </div>
-              <div className="px-3 mr-auto">
+              <div className="px-1 ml-2">
                 <small className="text-sm">create by </small>
                 <Link href={`/${creatorName}/library/sets`}>
                   <a className="font-medium text-md hover:underline cursor-pointer">
@@ -892,24 +892,29 @@ const index = () => {
                 </Link>
               </div>
             </div>
-            <p>
-              <span className="text-md font-bold">{title}</span>
+            <p className="mt-4">
+              <span className="text-xl font-bold">{title}</span>
               <br />
-              <br />
-              <hr />
-              <br />
-              <span className="text-sm text-gray-700">about</span>
-              <br />
-              <span className="text-sm">{desc}</span>
-              <br />
+
+              {desc ? (
+                <div>
+                  <br />
+                  <hr />
+                  <span className="text-sm text-gray-700 font-medium">
+                    about
+                  </span>
+                  <br />
+                  <span className="text-sm">{desc}</span>
+                  <br />
+                </div>
+              ) : null}
             </p>
             <br />
             <br />
             {tags ? (
               <div>
                 <hr />
-                <br />
-                <span className="text-sm text-gray-700">tags</span>
+                <span className="text-sm text-gray-700 font-medium">tags</span>
                 <div className="flex flex-wrap">
                   {_.split(tags, ",").map((tag, index) => {
                     return (
@@ -1240,6 +1245,7 @@ const index = () => {
               </div>
               <div className="mt-24">
                 <hr />
+                <br />
                 <div className="flex justify-between">
                   <p className="text-lg text-gray-700 font-semibold cursor-pointer mb-4">
                     Feedback
