@@ -184,7 +184,9 @@ const learn = () => {
       const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
       insertToEditor(res.data);
     } catch (err) {
-      console.log(err);
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("Please make sure the uploaded file is less than 5MB");
     }
   };
   const saveToServer2 = async (file: any) => {
@@ -195,7 +197,9 @@ const learn = () => {
       const res = await postAPI(`${PARAMS.ENDPOINT}storage/upload`, data);
       insertToEditor2(res.data);
     } catch (err) {
-      console.log(err);
+      setIsToastOpen(true);
+      setTypeToast("warning");
+      setMessageToast("Please make sure the uploaded file is less than 5MB");
     }
   };
 
@@ -1016,7 +1020,7 @@ const learn = () => {
                     >
                       <div onClick={flipCardHandel}>
                         <div
-                          className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-4 text-center text-xl content-center bg-white
+                          className={`card h-96 w-full shadow-md rounded-md border border-gray-200 p-5 text-center text-xl content-center bg-white 
                     overflow-auto ${
                       switching ? " bg-gray-200" : ""
                     } duration-100`}
@@ -1026,7 +1030,7 @@ const learn = () => {
                       </div>
                       <div onClick={flipCardHandel}>
                         <div
-                          className={`card w-full shadow-md rounded-md border border-gray-200 text-center text-xl content-center bg-white
+                          className={`card w-full shadow-md rounded-md border border-gray-200 text-center p-5 text-xl content-center bg-white
                      overflow-auto ${
                        switching ? " bg-gray-200" : ""
                      } duration-100`}
@@ -1190,20 +1194,23 @@ const learn = () => {
               <div className="col-span-1 flex lg:my-2 my-4">
                 <QuillNoSSRWrapper
                   modules={modules}
+                  forwardedRef={editorRefFront}
                   formats={formats}
                   theme="snow"
                   className="editor relative mb-12"
-                  placeholder="front side content"
                   onChange={setFrontContent}
+                  placeholder="front side content"
                   value={frontContent}
                 />
               </div>
-              <div className="col-span-1 flex  lg:my-2 my-4">
+              <div className="col-span-1 flex lg:my-2 my-4 ">
                 <QuillNoSSRWrapper
                   modules={modules2}
+                  forwardedRef={editorRefBack}
                   formats={formats}
                   theme="snow"
                   className="editor relative mb-12"
+                  placeholder="back side content"
                   onChange={setBackContent}
                   value={backContent}
                 />
