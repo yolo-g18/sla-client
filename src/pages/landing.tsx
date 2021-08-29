@@ -8,10 +8,6 @@ const landing = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    localStorage.removeItem("access-token");
-    localStorage.removeItem("refresh-token");
-    localStorage.removeItem("expiresAt");
-    localStorage.removeItem("username");
     dispatch(logoutUser());
   }, []);
 

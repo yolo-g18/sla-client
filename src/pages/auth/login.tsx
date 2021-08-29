@@ -102,12 +102,6 @@ const login = () => {
       } else {
         router.push("/home");
       }
-    } else {
-      const dateNow = new Date();
-      const expireAt = localStorage.getItem("expiresAt");
-      if (localStorage.getItem("access-token")) {
-        router.push("/home");
-      }
     }
   }, [auth.roles]);
 

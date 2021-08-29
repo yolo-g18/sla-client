@@ -385,169 +385,185 @@ const admin = () => {
             </div>
             <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
               <div className="inline-block min-w-full shadow rounded-md overflow-hidden">
-                <table className="min-w-full leading-normal">
-                  <thead>
-                    <tr>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="text-gray-900 whitespace-no-wrap">id</p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          reporter
-                        </p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="text-gray-900 w-16">set id</p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="text-gray-900 whitespace-no-wrap w-16">
-                          set title
-                        </p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          report content
-                        </p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          status
-                        </p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      >
-                        <p className="w-24 text-gray-900 whitespace-no-wrap">
-                          created at
-                        </p>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
-                      ></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {listReport.map((_, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <p className="text-gray-900 whitespace-no-wrap">
-                              {_.id}
-                            </p>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm cursor-pointer">
-                            <Link href={`/${_.reporter}/library/sets`}>
-                              <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                  <a href="#" className="block relative">
-                                    <img
-                                      className="mx-auto object-cover rounded-full h-10 w-10"
-                                      src={`${
-                                        _.user_avatar
-                                          ? _.user_avatar
-                                          : "../../user.svg"
-                                      }`}
-                                      alt={_.reporter}
-                                    />
-                                  </a>
-                                </div>
-                                <div className="ml-3">
-                                  <p className="text-gray-900 whitespace-no-wrap hover:underline">
-                                    {_.reporter}
-                                  </p>
-                                </div>
-                              </div>
-                            </Link>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <p className="text-gray-900">{_.ssId}</p>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <p className="text-gray-900">{_.ssTitle}</p>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <p className="text-gray-900">{_.content}</p>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                              <span
-                                aria-hidden="true"
-                                className={`absolute inset-0 ${
-                                  _.checked ? "bg-green-200" : "bg-yellow-400"
-                                }  opacity-50 rounded-full`}
-                              ></span>
-                              <span>{_.checked ? "Checked" : "Pending"}</span>
-                            </span>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <p className="text-gray-900 w-32">
-                              {formatCreatedDate(_.createdTime)}
-                            </p>
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm font-medium">
-                            <p
-                              onClick={() => showModalReportDetailHandle(_)}
-                              className="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer"
-                            >
-                              View
-                            </p>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <div className="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
-                  <div className="flex items-center">
-                    <button
-                      className={`${
-                        currentPage <= 1
-                          ? "text-gray-300"
-                          : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-                      } focus:outline-none mx-4`}
-                      onClick={() => handlePageChange("prev")}
-                      disabled={currentPage <= 1}
-                    >
-                      <KeyboardArrowLeftIcon fontSize="large" />
-                    </button>
-                    <div>
-                      <p className="my-auto text-xl font-bold mx-4">
-                        {currentPage}
-                      </p>
-                    </div>
-                    <button
-                      className={`${
-                        currentPage >= totalPages
-                          ? "text-gray-300"
-                          : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
-                      } focus:outline-none mx-4`}
-                      onClick={() => handlePageChange("next")}
-                      disabled={currentPage >= totalPages}
-                    >
-                      <KeyboardArrowRightIcon fontSize="large" />
-                    </button>
+                {listReport.length === 0 ? (
+                  <div>
+                    <p className="text-gray-700 text-3xl text-center font-bold">
+                      There are no reports yet
+                    </p>
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <table className="min-w-full leading-normal">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="text-gray-900 whitespace-no-wrap">
+                              id
+                            </p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="text-gray-900 whitespace-no-wrap">
+                              reporter
+                            </p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="text-gray-900 w-16">set id</p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="text-gray-900 whitespace-no-wrap w-16">
+                              set title
+                            </p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="text-gray-900 whitespace-no-wrap">
+                              report content
+                            </p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="text-gray-900 whitespace-no-wrap">
+                              status
+                            </p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          >
+                            <p className="w-24 text-gray-900 whitespace-no-wrap">
+                              created at
+                            </p>
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-5 py-3 text-left bg-white  border-b border-gray-200 text-gray-800 text-sm uppercase font-normal"
+                          ></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listReport.map((_, index) => {
+                          return (
+                            <tr key={index}>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p className="text-gray-900 whitespace-no-wrap">
+                                  {_.id}
+                                </p>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm cursor-pointer">
+                                <Link href={`/${_.reporter}/library/sets`}>
+                                  <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                      <a href="#" className="block relative">
+                                        <img
+                                          className="mx-auto object-cover rounded-full h-10 w-10"
+                                          src={`${
+                                            _.user_avatar
+                                              ? _.user_avatar
+                                              : "../../user.svg"
+                                          }`}
+                                          alt={_.reporter}
+                                        />
+                                      </a>
+                                    </div>
+                                    <div className="ml-3">
+                                      <p className="text-gray-900 whitespace-no-wrap hover:underline">
+                                        {_.reporter}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </Link>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p className="text-gray-900">{_.ssId}</p>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p className="text-gray-900">{_.ssTitle}</p>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p className="text-gray-900">{_.content}</p>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                  <span
+                                    aria-hidden="true"
+                                    className={`absolute inset-0 ${
+                                      _.checked
+                                        ? "bg-green-200"
+                                        : "bg-yellow-400"
+                                    }  opacity-50 rounded-full`}
+                                  ></span>
+                                  <span>
+                                    {_.checked ? "Checked" : "Pending"}
+                                  </span>
+                                </span>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p className="text-gray-900 w-32">
+                                  {formatCreatedDate(_.createdTime)}
+                                </p>
+                              </td>
+                              <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm font-medium">
+                                <p
+                                  onClick={() => showModalReportDetailHandle(_)}
+                                  className="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer"
+                                >
+                                  View
+                                </p>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    <div className="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
+                      <div className="flex items-center">
+                        <button
+                          className={`${
+                            currentPage <= 1
+                              ? "text-gray-300"
+                              : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                          } focus:outline-none mx-4`}
+                          onClick={() => handlePageChange("prev")}
+                          disabled={currentPage <= 1}
+                        >
+                          <KeyboardArrowLeftIcon fontSize="large" />
+                        </button>
+                        <div>
+                          <p className="my-auto text-xl font-bold mx-4">
+                            {currentPage}
+                          </p>
+                        </div>
+                        <button
+                          className={`${
+                            currentPage >= totalPages
+                              ? "text-gray-300"
+                              : "hover:bg-blue-500 rounded-full hover:text-white transition duration-300 focus:outline-none"
+                          } focus:outline-none mx-4`}
+                          onClick={() => handlePageChange("next")}
+                          disabled={currentPage >= totalPages}
+                        >
+                          <KeyboardArrowRightIcon fontSize="large" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
